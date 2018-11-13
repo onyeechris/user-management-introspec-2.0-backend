@@ -1,4 +1,4 @@
-##	IntroSpec User Management Repository
+##	IntroSpec User Management Development Repository
 
  IntroSpec Single Sign On Service.
 
