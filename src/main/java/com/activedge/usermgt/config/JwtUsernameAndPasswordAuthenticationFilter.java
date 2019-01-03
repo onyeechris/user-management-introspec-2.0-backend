@@ -5,11 +5,14 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -44,19 +47,15 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-
         try {
-
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
 
             // Create auth object (contains credentials) which will be used by auth manager
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            UsernamePasswordAuthenticationToken daoAuthToken = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(), creds.getPassword(), Collections.emptyList());
 
-            // Authentication manager authenticate the user, and use UserDetialsServiceImpl::loadUserByUsername() method to load the user.
-            // which can be tweaked to pull from any source
-            return authManager.authenticate(authToken);
+            return authManager.authenticate(daoAuthToken);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,7 @@
 package com.activedge.usermgt.service;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -20,13 +21,14 @@ import java.util.List;
  * It doesn’t do authentication. It just loads the user given his username.
  */
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
+        System.out.println("UserDetailsService: " + username);
         // temporarily hard coding the users. All passwords must be encoded.
         final List<AppUser> users = Arrays.asList(
                 new AppUser(1, "uzer", encoder.encode("01234"), "USER"),
@@ -36,16 +38,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // micmic account fetching...
         for(AppUser appUser: users) {
             if(appUser.getUsername().equals(username)) {
-                // append "ROLE_" to user roles as required by spring
-                List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                        .commaSeparatedStringToAuthorityList("ROLE_" + appUser.getRole());
+                try {
+                    // append "ROLE_" to user roles as required by spring
+                    List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                            .commaSeparatedStringToAuthorityList("ROLE_" + appUser.getRole());
 
-                // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
-                // And used by auth manager to verify and check user authentication.
-                return new User(appUser.getUsername(), appUser.getPassword(), grantedAuthorities);
+                    // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
+                    // And used by auth manager to verify and check user authentication.
+                    return new User(appUser.getUsername(), appUser.getPassword(), grantedAuthorities);
+                } catch (Exception e){
+                    System.out.println("Exception. User could not be authenticated! " + e.getMessage());
+                }
             }
         }
-
+        System.out.println("UserDetailsService could not be authenticated! " + username);
         // If user not found. Throw this exception.
         throw new UsernameNotFoundException("Username: " + username + " not found");
     }

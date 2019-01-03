@@ -18,7 +18,7 @@
 > Step One: Build the client side (from the root directory, navigate to the client folder)
 ```
 ~/client$> npm install
-~/client$> npm build
+~/client$> npm run build
 ```
 > From the root directory.
 ```

@@ -1,8 +1,11 @@
 package com.activedge.usermgt.config;
 
+import com.sun.jndi.ldap.LdapClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,10 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 
 @EnableWebSecurity
 public class SecurityCredentials extends WebSecurityConfigurerAdapter {
@@ -32,7 +38,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // handle an authorized attempts
-                .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {
+                    System.out.print("Error caught - Authentication failed! " + e.getMessage());
+                    rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                })
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
@@ -49,12 +58,30 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     // define the password encoder to be used by the auth manager to compare and verify passwords.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth
+            .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+
+        auth
+            .ldapAuthentication()
+            .userDnPatterns("uid={0},ou=people")
+            .userSearchBase("ou=people")
+            .userSearchFilter("uid={0}")
+            .groupSearchBase("ou=groups") // map LDAP groups to roles in Spring
+            .groupSearchFilter("uniqueMember={0}")
+            .contextSource(contextSource())
+            .passwordCompare()
+            .passwordEncoder(new LdapShaPasswordEncoder())
+            .passwordAttribute("userPassword");
     }
 
     @Bean
     public JwtConfig jwtConfig() {
         return new JwtConfig();
+    }
+
+    @Bean
+    public LdapTemplate ldapTemplate() {
+        return new LdapTemplate(contextSource());
     }
 
     @Bean
@@ -73,6 +100,39 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                         .allowedHeaders("*");
             }
         };
+    }
+
+//    @Override
+//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+//                .ldapAuthentication()
+//                .userDnPatterns("uid={0},ou=people")
+//                .userSearchBase("ou=people")
+//                .userSearchFilter("uid={0}")
+//                .groupSearchBase("ou=groups") // map LDAP groups to roles in Spring
+//                .groupSearchFilter("uniqueMember={0}")
+//                .contextSource(contextSource())
+//                .passwordCompare()
+//                .passwordEncoder(new LdapShaPasswordEncoder())
+//                .passwordAttribute("userPassword");
+//    }
+
+//    @Bean
+//    @Override
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
+//
+//    @Bean("oin")
+//    @Override
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
+
+    @Bean
+    public DefaultSpringSecurityContextSource contextSource() {
+        return  new DefaultSpringSecurityContextSource(
+                Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
     }
 
 }
