@@ -2,10 +2,9 @@ package com.activedge.usermgt.model;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.istack.internal.NotNull;
-import org.springframework.data.annotation.Id;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
