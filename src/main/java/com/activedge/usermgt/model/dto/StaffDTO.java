@@ -2,8 +2,10 @@ package com.activedge.usermgt.model.dto;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.time.Instant;
+import javax.persistence.Version;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -14,27 +16,40 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StaffDTO implements Serializable {
 
+    @ApiModelProperty(notes = "The database generated staff ID")
     private Long id;
 
+    @Version
+    @ApiModelProperty(notes = "The auto-generated version of the staff")
+    private Integer version;
+
     @NotNull
+    @ApiModelProperty(notes = "The staff first name", required = true)
     private String firstName;
 
+    @ApiModelProperty(notes = "The staff last name")
     private String lastName;
 
+    @ApiModelProperty(notes = "The staff phone number")
     private String phone;
 
     @NotNull
+    @ApiModelProperty(notes = "The staff email", required = true)
     private String email;
 
     @NotNull
+    @ApiModelProperty(notes = "The staff password", required = true)
     private String password;
 
     private MakerChecker makerChecker;
 
+    @ApiModelProperty(notes = "The staff hired date")
     private Instant hireDate;
 
+    @ApiModelProperty(notes = "The staff permission group id")
     private Long groupId;
 
+    @ApiModelProperty(notes = "The staff permission group id2")
     private Long groupsId;
 
     public Long getId() {

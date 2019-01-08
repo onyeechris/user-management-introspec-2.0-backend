@@ -5,6 +5,8 @@ import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.service.StaffService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
+@Api(value="staff", description="Operations pertaining to bank's staff")
 public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
@@ -45,7 +48,8 @@ public class StaffController {
      * @return the ResponseEntity with status 201 (Created) and with body the new staffDTO, or with status 400 (Bad Request) if the staff has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/staff")
+    @PostMapping(value = "/staff", produces = "application/json")
+    @ApiOperation(value = "Create a new staff")
     public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
         log.debug("REST request to save Staff : {}", staffDTO);
         if (staffDTO.getId() != null) {
@@ -67,6 +71,7 @@ public class StaffController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/staff")
+    @ApiOperation(value = "Update an existing staff")
     public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
         log.debug("REST request to update Staff : {}", staffDTO);
         if (staffDTO.getId() == null) {
@@ -86,6 +91,7 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
     @GetMapping("/staff")
+    @ApiOperation(value = "Get all existing staff")
     public ResponseEntity<ResponseWrapper> getAllStaff(Pageable pageable) {
         log.debug("REST request to get a page of Staff");
         Page<StaffDTO> page = staffService.findAll(pageable);
@@ -102,6 +108,7 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
     @GetMapping("/staff/{id}")
+    @ApiOperation(value = "Get a single staff based on their id")
     public ResponseEntity<StaffDTO> getStaff(@PathVariable Long id) throws Exception {
         log.debug("REST request to get Staff : {}", id);
         Optional<StaffDTO> staffDTO = staffService.findOne(id);
@@ -123,6 +130,7 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/staff/{id}")
+    @ApiOperation(value = "Delete a single staff")
     public ResponseEntity<Void> deleteStaff(@PathVariable Long id) {
         log.debug("REST request to delete Staff : {}", id);
         staffService.delete(id);
