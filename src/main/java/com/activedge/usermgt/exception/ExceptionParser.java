@@ -43,6 +43,8 @@ public class ExceptionParser {
 		errors.put("status", HttpStatus.BAD_REQUEST.toString());
 		errors.put("message", e.getMessage());
 
+		e.printStackTrace();
+
 		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
 		
 	}

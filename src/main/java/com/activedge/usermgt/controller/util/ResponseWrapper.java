@@ -8,18 +8,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
-//@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseWrapper {
 
-	private Object content;
+	private Object payload;
 	
 	private Page<?> page;
 
 	private MetaFields meta = new MetaFields();
 	
 	public ResponseWrapper(Page<?> page) {
-		this.content = page.getContent();
+		this.payload = page.getContent();
 		this.meta.setSize(page.getSize());
 		this.meta.setNumber(page.getNumber());
 		this.meta.setNumberOfElements(page.getNumberOfElements());

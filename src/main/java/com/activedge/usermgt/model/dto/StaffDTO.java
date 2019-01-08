@@ -1,6 +1,7 @@
 package com.activedge.usermgt.model.dto;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.Instant;
 import javax.validation.constraints.*;
@@ -10,6 +11,7 @@ import java.util.Objects;
 /**
  * A DTO for the Staff entity.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StaffDTO implements Serializable {
 
     private Long id;

@@ -32,8 +32,8 @@ spring:
       url: jdbc:postgresql://localhost:5432/usermgt2
       username: ds
       password: dsadmin;
-#      hikari:
-#          auto-commit: false
+      hikari:
+          auto-commit: false
       initialization-mode: always
       data: classpath:data.sql, classpath:groups.sql
 
