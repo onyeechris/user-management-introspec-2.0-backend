@@ -12,25 +12,31 @@ spring:
       database-platform: org.hibernate.dialect.PostgreSQL9Dialect
       database: POSTGRESQL
       show-sql: true
+      generate-ddl: true
+      hibernate:
+          ddl-auto: create-drop
       properties:
           hibernate.id.new_generator_mappings: true
           hibernate.connection.provider_disables_autocommit: true
           hibernate.cache.use_second_level_cache: false
           hibernate.cache.use_query_cache: false
-          hibernate.generate_statistics: true
+          hibernate.generate_statistics: false
           hibernate:
               jdbc:
                 lob:
                   non_contextual_creation: true
-              ddl-auto: create-update
+              ddl-auto: create
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
       url: jdbc:postgresql://localhost:5432/usermgt2
       username: ds
       password: dsadmin;
-      hikari:
-          auto-commit: false
+#      hikari:
+#          auto-commit: false
+      initialization-mode: always
+      data: classpath:data.sql, classpath:groups.sql
+
   ldap:
 
     # Spring LDAP

@@ -35,7 +35,7 @@ public class Staff implements Serializable {
     private String email;
 
     @NotNull
-    @Column(name = "jhi_password", nullable = false)
+    @Column(name = "i_password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -50,7 +50,7 @@ public class Staff implements Serializable {
     private Groups group;
 
     @ManyToOne
-    @JsonIgnoreProperties("staff")
+//    @JsonIgnoreProperties("staff")
     private Groups groups;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
