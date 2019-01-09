@@ -2,7 +2,12 @@ package com.activedge.usermgt.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.RedirectViewControllerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -12,6 +17,8 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.List;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -47,4 +54,16 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .contact(new Contact("ActivEdge Support", "http://www.activedgetechnologies.com/SitePages/Web/about.html", "support@activedgetechnologies.com"))
                 .build();
     }
+
+    @Override
+    public void addViewControllers (ViewControllerRegistry registry) {
+        RedirectViewControllerRegistration r = registry.addRedirectViewController("/", "/swagger-ui.html");
+        r.setStatusCode(HttpStatus.SEE_OTHER);
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add( new PageableHandlerMethodArgumentResolver());
+    }
+
 }

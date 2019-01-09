@@ -1,5 +1,6 @@
 package com.activedge.usermgt.config;
 
+import com.activedge.usermgt.security.JwtTokenAuthenticationFilter;
 import com.sun.jndi.ldap.LdapClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -45,9 +47,16 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
+                .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
+                // allow all to access OPTIONS for handshake
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
+                .antMatchers("/api/permissions/**").hasRole("INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
+                .antMatchers("/api/groups/**").hasRole("INTROSPEC-SYSADMIN")
+                .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
+                .antMatchers("/api/staff/**").hasRole("INTROSPEC-SYSADMIN")
                 // allow all POST requests to jwt authentication URI
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 // any other requests must be authenticated
@@ -72,6 +81,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .passwordCompare()
             .passwordEncoder(new LdapShaPasswordEncoder())
             .passwordAttribute("userPassword");
+
     }
 
     @Bean

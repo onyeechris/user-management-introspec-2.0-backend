@@ -31,8 +31,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println("UserDetailsService: " + username);
         // temporarily hard coding the users. All passwords must be encoded.
         final List<AppUser> users = Arrays.asList(
-                new AppUser(1, "uzer", encoder.encode("01234"), "USER"),
-                new AppUser(2, "admean", encoder.encode("56789"), "ADMIN")
+                new AppUser(1, "uzer", encoder.encode("01234"), "INTROSPEC-SYSDEV"),
+                new AppUser(2, "admean", encoder.encode("56789"), "INTROSPEC-SYSADMIN"),
+                new AppUser(3, "admiin", encoder.encode("56799"), "INTROSPEC-SYSADMIN")
         );
 
         // micmic account fetching...

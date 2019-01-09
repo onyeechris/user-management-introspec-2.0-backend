@@ -29,9 +29,9 @@ spring:
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
-      url: jdbc:postgresql://localhost:5432/usermgt2
-      username: ds
-      password: dsadmin;
+      url: jdbc:postgresql://localhost:5432/usermgt
+      username: postgres
+      password: passadmin
       hikari:
           auto-commit: false
       initialization-mode: always
