@@ -47,17 +47,17 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
+                // Add a filter to check token for secured resource
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                // allow all to access OPTIONS for handshake
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
                 .antMatchers("/api/permissions/**").hasRole("INTROSPEC-SYSDEV")
                 .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
                 .antMatchers("/api/groups/**").hasRole("INTROSPEC-SYSADMIN")
                 .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
                 .antMatchers("/api/staff/**").hasRole("INTROSPEC-SYSADMIN")
-                // allow all POST requests to jwt authentication URI
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 // any other requests must be authenticated
                 .anyRequest().authenticated().and().cors();

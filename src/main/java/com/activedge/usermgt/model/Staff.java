@@ -1,17 +1,30 @@
 package com.activedge.usermgt.model;
 
+import com.activedge.usermgt.model.enumeration.Action;
 import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.activedge.usermgt.model.event.StaffEntityListener;
+import com.activedge.usermgt.model.log.StaffLog;
+import com.activedge.usermgt.repository.StaffLogRepository;
+import com.activedge.usermgt.service.BeanUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
+import static com.activedge.usermgt.model.enumeration.Action.DELETED;
+import static com.activedge.usermgt.model.enumeration.Action.INSERTED;
+import static com.activedge.usermgt.model.enumeration.Action.UPDATED;
+import static javax.transaction.Transactional.TxType.MANDATORY;
+
 @Entity
 @Table(name = "staff")
-public class Staff implements Serializable {
+@EntityListeners(StaffEntityListener.class)
+public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -178,7 +191,6 @@ public class Staff implements Serializable {
     public void setGroups(Groups groups) {
         this.groups = groups;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -213,5 +225,5 @@ public class Staff implements Serializable {
                 ", hireDate='" + getHireDate() + "'" +
                 "}";
     }
-}
 
+}

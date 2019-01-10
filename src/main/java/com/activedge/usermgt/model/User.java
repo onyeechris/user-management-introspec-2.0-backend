@@ -24,7 +24,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "i_user")
 
-public class User extends AbstractAuditingEntity implements Serializable {
+public class User extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

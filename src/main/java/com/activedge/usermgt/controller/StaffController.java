@@ -48,15 +48,15 @@ public class StaffController {
      * @return the ResponseEntity with status 201 (Created) and with body the new staffDTO, or with status 400 (Bad Request) if the staff has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping(value = "/staff", produces = "application/json")
-    @ApiOperation(value = "Create a new staff")
+    @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
+    @ApiOperation(value = "Create a new "+ENTITY_NAME)
     public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
-        log.debug("REST request to save Staff : {}", staffDTO);
-        if (staffDTO.getId() != null) {
-            throw new ValidationException("A new staff cannot already have an ID");
-        }
+        log.debug("REST request to save a {} : {}", ENTITY_NAME, staffDTO);
+
+        staffDTO.setId(null);
         StaffDTO result = staffService.save(staffDTO);
-        return ResponseEntity.created(new URI("/api/staff/" + result.getId()))
+
+        return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -70,12 +70,12 @@ public class StaffController {
      * or with status 500 (Internal Server Error) if the staffDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/staff")
-    @ApiOperation(value = "Update an existing staff")
+    @PutMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
     public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
-        log.debug("REST request to update Staff : {}", staffDTO);
+        log.debug("REST request to update {} : {}", ENTITY_NAME, staffDTO);
         if (staffDTO.getId() == null) {
-            throw new ValidationException("Invalid id");
+            throw new ValidationException("> Please specify a valid Id");
         }
         StaffDTO result = staffService.save(staffDTO);
 
@@ -90,13 +90,13 @@ public class StaffController {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
-    @GetMapping("/staff")
-    @ApiOperation(value = "Get all existing staff")
+    @GetMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaff(Pageable pageable) {
-        log.debug("REST request to get a page of Staff");
+        log.debug("REST request to get a page of "+ENTITY_NAME);
         Page<StaffDTO> page = staffService.findAll(pageable);
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/staff");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
     }
@@ -107,17 +107,17 @@ public class StaffController {
      * @param id the id of the staffDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/staff/{id}")
-    @ApiOperation(value = "Get a single staff based on their id")
+    @GetMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<StaffDTO> getStaff(@PathVariable Long id) throws Exception {
-        log.debug("REST request to get Staff : {}", id);
+        log.debug("REST request to get {} : {}", ENTITY_NAME, id);
         Optional<StaffDTO> staffDTO = staffService.findOne(id);
 
         if (!staffDTO.isPresent()) {
-            throw new ValidationException("No user was found for id " + id);
+            throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/staff/" + id);
+        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/"+ENTITY_NAME+"/" + id);
 
         return new ResponseEntity<>(staffDTO.get(), headers, HttpStatus.OK);
 
@@ -129,10 +129,10 @@ public class StaffController {
      * @param id the id of the staffDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
-    @DeleteMapping("/staff/{id}")
-    @ApiOperation(value = "Delete a single staff")
+    @DeleteMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteStaff(@PathVariable Long id) {
-        log.debug("REST request to delete Staff : {}", id);
+        log.debug("REST request to delete {} : {}", ENTITY_NAME, id);
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
