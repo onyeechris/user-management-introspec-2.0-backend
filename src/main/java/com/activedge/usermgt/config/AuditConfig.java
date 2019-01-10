@@ -1,32 +1,18 @@
 package com.activedge.usermgt.config;
 
 
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Configurable
-//@EnableJpaRepositories
-@EnableJpaAuditing(auditorAwareRef = "auditorAware")
-public class AuditConfig {
+@Component
+public class AuditConfig implements AuditorAware<String>{
 
-    @Bean
-    public AuditorAware<String> auditorAware() {
-        return new AuditorAwareImpl();
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        return Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    private class AuditorAwareImpl implements AuditorAware<String> {
-
-        @Override
-        public Optional<String> getCurrentAuditor() {
-            System.out.println("...returning current user as created by...");
-            return Optional.of("Eluvis");
-        }
-
-    }
 }

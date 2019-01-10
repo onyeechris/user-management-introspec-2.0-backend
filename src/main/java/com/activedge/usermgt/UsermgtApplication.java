@@ -10,10 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @EnableJpaAuditing
-@EnableJpaRepositories
 @SpringBootApplication
-public class UsermgtApplication extends WebMvcConfigurerAdapter {
-//public class UsermgtApplication implements WebMvcConfigurer {
+//public class UsermgtApplication extends WebMvcConfigurerAdapter {
+public class UsermgtApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(UsermgtApplication.class, args);

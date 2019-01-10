@@ -20,7 +20,6 @@ import java.time.Instant;
  */
 @Data
 @MappedSuperclass
-@Audited
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAuditingEntity<U> implements Serializable {
 
