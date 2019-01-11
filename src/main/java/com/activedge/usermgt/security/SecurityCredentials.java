@@ -1,9 +1,13 @@
-package com.activedge.usermgt.config;
+package com.activedge.usermgt.security;
 
+import com.activedge.usermgt.config.JwtConfig;
 import com.activedge.usermgt.security.JwtTokenAuthenticationFilter;
+import com.activedge.usermgt.service.LdapUserService;
 import com.sun.jndi.ldap.LdapClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +27,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
+@Slf4j
 @EnableWebSecurity
 public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
@@ -31,6 +36,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtConfig jwtConfig; // jwt define config class
+
+    @Lazy
+    @Autowired
+    LdapUserService ldapUserService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,12 +50,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // handle an authorized attempts
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {
-                    System.out.print("Error caught - Authentication failed! " + e.getMessage());
+                    log.error("Error caught - Authentication failed for object {}", e.getMessage());
                     rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 })
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, ldapUserService))
                 // Add a filter to check token for secured resource
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
@@ -111,33 +120,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             }
         };
     }
-
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//                .ldapAuthentication()
-//                .userDnPatterns("uid={0},ou=people")
-//                .userSearchBase("ou=people")
-//                .userSearchFilter("uid={0}")
-//                .groupSearchBase("ou=groups") // map LDAP groups to roles in Spring
-//                .groupSearchFilter("uniqueMember={0}")
-//                .contextSource(contextSource())
-//                .passwordCompare()
-//                .passwordEncoder(new LdapShaPasswordEncoder())
-//                .passwordAttribute("userPassword");
-//    }
-
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-//
-//    @Bean("oin")
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
 
     @Bean
     public DefaultSpringSecurityContextSource contextSource() {

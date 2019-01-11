@@ -4,6 +4,7 @@ import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.service.LdapUserService;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,9 +37,11 @@ public class StaffController {
     private static final String ENTITY_NAME = "staff";
 
     private final StaffService staffService;
+    private final LdapUserService ldapUserService;
 
-    public StaffController(StaffService staffService) {
+    public StaffController(StaffService staffService, LdapUserService ldapUserService) {
         this.staffService = staffService;
+        this.ldapUserService = ldapUserService;
     }
 
     /**
@@ -93,6 +96,7 @@ public class StaffController {
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaff(Pageable pageable) {
+
         log.debug("REST request to get a page of "+ENTITY_NAME);
         Page<StaffDTO> page = staffService.findAll(pageable);
 

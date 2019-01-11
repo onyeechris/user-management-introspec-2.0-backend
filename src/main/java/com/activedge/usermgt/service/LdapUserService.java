@@ -1,7 +1,7 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.model.LdapUser;
-import com.activedge.usermgt.repository.UserRepository;
+import com.activedge.usermgt.repository.LdapUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.stereotype.Service;
@@ -17,16 +17,35 @@ import java.util.stream.Collectors;
 public class LdapUserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private LdapUserRepository ldapUserRepository;
 
     public Boolean authenticate(final String username, final String password) {
-        LdapUser user = null; // userRepository.findByUsernameAndPassword(username, password);
+        LdapUser user = ldapUserRepository.findByUseridAndPassword(username, password);
         return user != null;
     }
 
+    public LdapUser getByUserid(final String userid) {
+        LdapUser staff = ldapUserRepository.findByUserid(userid);
+        return staff;
+    }
+
+    public LdapUser getByUsername(final String username) {
+        LdapUser staff = ldapUserRepository.findByUsername(username);
+        return staff;
+    }
+
+    public void getAll() {
+        System.out.println("Getting all users...");
+        ldapUserRepository.findAll().forEach(ldapUser -> {
+            System.out.println(ldapUser);}
+        );
+        System.out.println("Done!");
+    }
+
     public List<String> search(final String username) {
-        List<LdapUser> userList = null; // userRepository.findByUsernameLikeIgnoreCase(username);
-        if (userList == null) {
+        List<LdapUser> userList = ldapUserRepository.findByUsernameLikeIgnoreCase(username);
+        if (userList.isEmpty()) {
+            System.out.println("Empty result ...");
             return Collections.emptyList();
         }
 
@@ -38,14 +57,14 @@ public class LdapUserService {
     public void create(final String username, final String password) {
         LdapUser newUser = new LdapUser(username,digestSHA(password));
         newUser.setId(LdapUtils.emptyLdapName());
-//        userRepository.save(newUser);
+        ldapUserRepository.save(newUser);
 
     }
 
     public void modify(final String username, final String password) {
-        LdapUser user = null; // userRepository.findByUsername(username);
+        LdapUser user = ldapUserRepository.findByUsername(username);
         user.setPassword(password);
-//        userRepository.save(user);
+        ldapUserRepository.save(user);
     }
 
     private String digestSHA(final String password) {

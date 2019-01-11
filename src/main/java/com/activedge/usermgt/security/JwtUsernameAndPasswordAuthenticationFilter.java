@@ -1,20 +1,25 @@
-package com.activedge.usermgt.config;
+package com.activedge.usermgt.security;
 
+import com.activedge.usermgt.config.JwtConfig;
+import com.activedge.usermgt.service.LdapUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     // We use auth manager to validate the user credentials
@@ -35,10 +41,12 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     private final JwtConfig jwtConfig;
 
-    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authManager, JwtConfig jwtConfig) {
+    private LdapUserService ldapUserService;
+
+    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authManager, JwtConfig jwtConfig, LdapUserService ldapUserService) {
         this.authManager = authManager;
         this.jwtConfig = jwtConfig;
-
+        this.ldapUserService = ldapUserService;
         // By default, UsernamePasswordAuthenticationFilter listens to "/login" path.
         // In our case, we use "/auth". So, we need to override the defaults.
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri(), "POST"));
@@ -47,6 +55,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
+
         try {
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
@@ -68,6 +77,26 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
+        log.info("Authentication object {}", auth);
+
+        if(auth.getPrincipal() instanceof LdapUserDetailsImpl) {
+
+            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
+
+//            log.info("Authentication successful from LDAP - Authorities:{} --- Dn:{} --- Username:{} --- Password:{} --- Enabled:{}",
+//                    ((LdapUserDetailsImpl) auth.getPrincipal()).getAuthorities(),
+//                    ((LdapUserDetailsImpl) auth.getPrincipal()).getDn(),
+//                    ((LdapUserDetailsImpl) auth.getPrincipal()).getUsername(),
+//                    ((LdapUserDetailsImpl) auth.getPrincipal()).getPassword(),
+//                    ((LdapUserDetailsImpl) auth.getPrincipal()).isEnabled());
+        } else {
+            log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
+                    ((User) auth.getPrincipal()).getAuthorities(),
+                    ((User) auth.getPrincipal()).getUsername(),
+                    ((User) auth.getPrincipal()).getPassword());
+        }
+//        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
+
         Long now = System.currentTimeMillis();
         String token = Jwts.builder()
                 .setSubject(auth.getName())
@@ -80,8 +109,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();
 
-        System.out.println("Authorities: >" + auth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
 

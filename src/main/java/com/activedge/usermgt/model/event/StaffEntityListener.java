@@ -17,7 +17,6 @@ import static com.activedge.usermgt.model.enumeration.Action.DELETED;
 import static com.activedge.usermgt.model.enumeration.Action.INSERTED;
 import static com.activedge.usermgt.model.enumeration.Action.UPDATED;
 import static javax.transaction.Transactional.TxType.MANDATORY;
-import static javax.transaction.Transactional.TxType.REQUIRES_NEW;
 
 public class StaffEntityListener {
 
@@ -37,8 +36,7 @@ public class StaffEntityListener {
         perform(target, DELETED);
     }
 
-//    @Transactional(MANDATORY)
-    @Transactional(REQUIRES_NEW)
+    @Transactional(MANDATORY)
     public void perform(Staff target, Action action) {
         EntityManager entityManager = BeanUtil.getBean(EntityManager.class);
         entityManager.persist(new StaffLog(target, action));

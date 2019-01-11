@@ -1,10 +1,9 @@
 package com.activedge.usermgt.controller;
 
 
-import com.activedge.usermgt.model.User;
 import com.activedge.usermgt.model.dto.NewUserDTO;
 import com.activedge.usermgt.model.dto.UserDTO;
-import com.activedge.usermgt.repository.UserRepository;
+import com.activedge.usermgt.repository.LdapUserRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.UserService;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,12 +27,12 @@ public class AccountController {
 
     private final Logger log = LoggerFactory.getLogger(AccountController.class);
 
-    private final UserRepository userRepository;
+    private final LdapUserRepository ldapUserRepository;
 
     private final UserService userService;
 
-    public AccountController(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
+    public AccountController(LdapUserRepository ldapUserRepository, UserService userService) {
+        this.ldapUserRepository = ldapUserRepository;
         this.userService = userService;
     }
 

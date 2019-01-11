@@ -86,11 +86,11 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-        name = "jhi_user_authority",
+        name = "i_user_authority",
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
 
-    @BatchSize(size = 20)
+    @BatchSize(size = 10)
     private Set<Authority> authorities = new HashSet<>();
 
     public Long getId() {

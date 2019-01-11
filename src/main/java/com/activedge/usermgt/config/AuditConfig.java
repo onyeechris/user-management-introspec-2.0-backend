@@ -15,4 +15,6 @@ public class AuditConfig implements AuditorAware<String>{
         return Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+// account, product, expected, derived, date
+
 }
