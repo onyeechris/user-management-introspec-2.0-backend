@@ -83,15 +83,15 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @Column(name = "reset_date")
     private Instant resetDate = null;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-        name = "i_user_authority",
-        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+//    @JsonIgnore
+//    @ManyToMany
+//    @JoinTable(
+//        name = "staff_authority",
+//        joinColumns = {@JoinColumn(name = "staff_id", referencedColumnName = "id")},
+//        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
 
-    @BatchSize(size = 10)
-    private Set<Authority> authorities = new HashSet<>();
+//    @BatchSize(size = 10)
+//    private Set<Authority> authorities = new HashSet<>();HashSet
 
     public Long getId() {
         return id;
@@ -190,13 +190,13 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
         this.langKey = langKey;
     }
 
-    public Set<Authority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
-    }
+//    public Set<Authority> getAuthorities() {
+//        return authorities;
+//    }
+//
+//    public void setAuthorities(Set<Authority> authorities) {
+//        this.authorities = authorities;
+//    }
 
     @Override
     public boolean equals(Object o) {

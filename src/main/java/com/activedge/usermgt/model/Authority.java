@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "console_authority")
+@Table(name = "introspec_authority")
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;

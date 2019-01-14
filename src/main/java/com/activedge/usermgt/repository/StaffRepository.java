@@ -29,10 +29,10 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 //
 //    @EntityGraph(attributePaths = "authorities")
 //    Optional<User> findOneWithAuthoritiesByLogin(String login);
-//
-//    @EntityGraph(attributePaths = "authorities")
-//    Optional<User> findOneWithAuthoritiesByEmail(String email);
-//
+
+    @EntityGraph(attributePaths = "authorities")
+    Optional<Staff> findOneWithAuthoritiesByEmail(String email);
+
 //    Page<User> findAllByLoginNot(Pageable pageable, String login);
 
 

@@ -1,6 +1,8 @@
 package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
+import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.LdapUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -16,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -36,17 +39,22 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    // We use auth manager to validate the user credentials
+    private BCryptPasswordEncoder encoder;
+
     private AuthenticationManager authManager;
 
     private final JwtConfig jwtConfig;
 
     private LdapUserService ldapUserService;
 
-    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authManager, JwtConfig jwtConfig, LdapUserService ldapUserService) {
+    private StaffRepository staffRepository;
+
+    public JwtUsernameAndPasswordAuthenticationFilter(StaffRepository staffRepository, AuthenticationManager authManager, JwtConfig jwtConfig, LdapUserService ldapUserService, BCryptPasswordEncoder encoder) {
+        this.staffRepository = staffRepository;
         this.authManager = authManager;
         this.jwtConfig = jwtConfig;
         this.ldapUserService = ldapUserService;
+        this.encoder = encoder;
         // By default, UsernamePasswordAuthenticationFilter listens to "/login" path.
         // In our case, we use "/auth". So, we need to override the defaults.
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri(), "POST"));
@@ -55,7 +63,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-
+//        log.info("elvosecret: {}, ndsecret: {}", encoder.encode("elvosecret"), encoder.encode("ndsecret"));
         try {
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
@@ -80,9 +88,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         log.info("Authentication object {}", auth);
 
         if(auth.getPrincipal() instanceof LdapUserDetailsImpl) {
+            // if the user exist and activated on local-store and get its permission.
+            // Else create the user locally without activation pending makerchecker.
+            staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
+                    .ifPresent(existingUser -> {
+                        if(existingUser.isActivated()) {
+                             this.displayToken(this.generateToken(auth, existingUser), response);
+                        }
+                    });
 
-            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
-
+//            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
+//
 //            log.info("Authentication successful from LDAP - Authorities:{} --- Dn:{} --- Username:{} --- Password:{} --- Enabled:{}",
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getAuthorities(),
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getDn(),
@@ -97,18 +113,27 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         }
 //        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
 
+
+
+    }
+
+    public String generateToken(Authentication auth, Staff staff) {
         Long now = System.currentTimeMillis();
-        String token = Jwts.builder()
+
+        return Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.
                 // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList())) //.collect(Collectors.joining(",")
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();
 
+    }
+
+    private void displayToken(String token, HttpServletResponse response) {
         // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
 
@@ -117,11 +142,16 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         String json = new Gson().toJson(res);
 
-        PrintWriter out = response.getWriter();
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        out.print(json);
-        out.flush();
+        PrintWriter out = null;
+        try {
+            out = response.getWriter();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            out.print(json);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // A (temporary) class just to represent the user credentials

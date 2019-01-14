@@ -1,7 +1,7 @@
 insert into groups(id, name, description)
-values(1, 'g1', 'g1 description');
+values(1, 'INTROSPEC-SYSDEV', 'This group exposes priviledges for the system developers, majorly to add new endpoints.');
 
 insert into groups(id, name, description)
-values(2, 'g2', 'g2 description');
+values(2, 'INTROSPEC-SYSADMIN', 'This group exposes ALL priviledges except adding endpoints to Super Admins.');
 
 COMMIT;

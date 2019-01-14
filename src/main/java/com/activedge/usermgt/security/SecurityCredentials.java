@@ -1,6 +1,7 @@
 package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
+import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.security.JwtTokenAuthenticationFilter;
 import com.activedge.usermgt.service.LdapUserService;
 import com.sun.jndi.ldap.LdapClient;
@@ -37,6 +38,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtConfig jwtConfig; // jwt define config class
 
+    @Autowired
+    private StaffRepository staffRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     @Lazy
     @Autowired
     LdapUserService ldapUserService;
@@ -55,7 +62,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, ldapUserService))
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(staffRepository, authenticationManager(), jwtConfig, ldapUserService, encoder))
                 // Add a filter to check token for secured resource
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()

@@ -6,7 +6,11 @@ import com.activedge.usermgt.model.event.StaffEntityListener;
 import com.activedge.usermgt.model.log.StaffLog;
 import com.activedge.usermgt.repository.StaffLogRepository;
 import com.activedge.usermgt.service.BeanUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
@@ -14,7 +18,10 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.activedge.usermgt.model.enumeration.Action.DELETED;
 import static com.activedge.usermgt.model.enumeration.Action.INSERTED;
@@ -57,6 +64,19 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @Column(name = "hire_date")
     private Instant hireDate;
+
+    @NotNull
+    @Column(nullable = false)
+//    @ColumnDefault("1")
+    private boolean activated = false;
+
+    @ManyToMany
+    @JoinTable(
+            name = "staff_authority",
+            joinColumns = {@JoinColumn(name = "staff_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+    @BatchSize(size = 10)
+    private Set<Authority> authorities = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties("")
@@ -101,6 +121,15 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.lastName = lastName;
     }
 
+
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -124,7 +153,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = StringUtils.lowerCase(email, Locale.ENGLISH);;
     }
 
     public String getPassword() {
@@ -188,6 +217,14 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         return this;
     }
 
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
     public void setGroups(Groups groups) {
         this.groups = groups;
     }
@@ -222,6 +259,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
                 ", email='" + getEmail() + "'" +
                 ", password='" + getPassword() + "'" +
                 ", makerChecker='" + getMakerChecker() + "'" +
+                ", Authorities='" + getAuthorities() + "'" +
                 ", hireDate='" + getHireDate() + "'" +
                 "}";
     }

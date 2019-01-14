@@ -51,7 +51,7 @@ public class UserDTO {
 
     private Instant lastModifiedDate;
 
-    private Set<String> authorities;
+//    private Set<String> authorities;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
@@ -70,9 +70,9 @@ public class UserDTO {
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
-        this.authorities = user.getAuthorities().stream()
-            .map(Authority::getName)
-            .collect(Collectors.toSet());
+//        this.authorities = user.getAuthorities().stream()
+//            .map(Authority::getName)
+//            .collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -171,13 +171,13 @@ public class UserDTO {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Set<String> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<String> authorities) {
-        this.authorities = authorities;
-    }
+//    public Set<String> getAuthorities() {
+//        return authorities;
+//    }
+//
+//    public void setAuthorities(Set<String> authorities) {
+//        this.authorities = authorities;
+//    }
 
     @Override
     public String toString() {
@@ -193,7 +193,6 @@ public class UserDTO {
             ", createdDate=" + createdDate +
             ", lastModifiedBy='" + lastModifiedBy + '\'' +
             ", lastModifiedDate=" + lastModifiedDate +
-            ", authorities=" + authorities +
             "}";
     }
 }

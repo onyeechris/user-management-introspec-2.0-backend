@@ -1,10 +1,13 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.repository.StaffRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,8 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class acts like a provider for the user;
@@ -23,54 +26,23 @@ import java.util.List;
 @Service
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
+
     @Autowired
-    private BCryptPasswordEncoder encoder;
+    private StaffRepository staffRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("UserDetailsService: " + username);
-        // temporarily hard coding the users. All passwords must be encoded.
-        final List<AppUser> users = Arrays.asList(
-                new AppUser(1, "uzer", encoder.encode("01234"), "INTROSPEC-SYSDEV"),
-                new AppUser(2, "admean", encoder.encode("56789"), "INTROSPEC-SYSADMIN"),
-                new AppUser(3, "admiin", encoder.encode("56799"), "INTROSPEC-SYSADMIN")
-        );
 
-        // micmic account fetching...
-        for(AppUser appUser: users) {
-            if(appUser.getUsername().equals(username)) {
-                try {
-                    // append "ROLE_" to user roles as required by spring
-                    List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                            .commaSeparatedStringToAuthorityList("ROLE_" + appUser.getRole());
+        Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(username);
 
-                    // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
-                    // And used by auth manager to verify and check user authentication.
-                    return new User(appUser.getUsername(), appUser.getPassword(), grantedAuthorities);
-                } catch (Exception e){
-                    System.out.println("Exception. User could not be authenticated! " + e.getMessage());
-                }
-            }
+        if(authUser.isPresent()) {
+            List<GrantedAuthority> grantedAuthorities = authUser.get().getAuthorities().stream()
+                    .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                    .collect(Collectors.toList());
+            return new User(authUser.get().getEmail(), authUser.get().getPassword(), authUser.get().isActivated(), true, true, true, grantedAuthorities);
         }
-        System.out.println("UserDetailsService could not be authenticated! " + username);
-        // If user not found. Throw this exception.
+
         throw new UsernameNotFoundException("Username: " + username + " not found");
-    }
-
-    // A (temporary) class represent the user saved in the database or gotten from an external source.
-    @Data
-    private static class AppUser {
-        private Integer id;
-        private String username;
-        private String password;
-        private String role;
-
-        public AppUser(Integer id, String username, String password, String role) {
-            this.id = id;
-            this.username = username;
-            this.password = password;
-            this.role = role;
-        }
 
     }
 
