@@ -49,8 +49,8 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The staff permission group id")
     private Long groupId;
 
-    @ApiModelProperty(notes = "The staff permission group id2")
-    private Long groupsId;
+//    @ApiModelProperty(notes = "The staff permission group id2")
+//    private Long groupsId;
 
     public Long getId() {
         return id;
@@ -124,13 +124,13 @@ public class StaffDTO implements Serializable {
         this.groupId = groupsId;
     }
 
-    public Long getGroupsId() {
-        return groupsId;
-    }
-
-    public void setGroupsId(Long groupsId) {
-        this.groupsId = groupsId;
-    }
+//    public Long getGroupsId() {
+//        return groupsId;
+//    }
+//
+//    public void setGroupsId(Long groupsId) {
+//        this.groupsId = groupsId;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -165,7 +165,6 @@ public class StaffDTO implements Serializable {
             ", makerChecker='" + getMakerChecker() + "'" +
             ", hireDate='" + getHireDate() + "'" +
             ", group=" + getGroupId() +
-            ", groups=" + getGroupsId() +
             "}";
     }
 }

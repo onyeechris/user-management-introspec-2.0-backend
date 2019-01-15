@@ -1,10 +1,10 @@
 insert into staff_authority(staff_id, authority_name)
-values(1, 'INTROSPEC-SYSDEV');
+values(1, 'ROLE_INTROSPEC-SYSDEV');
 
 insert into staff_authority(staff_id, authority_name)
-values(1, 'INTROSPEC-SYSUSER');
+values(1, 'ROLE_INTROSPEC-SYSUSER');
 
 insert into staff_authority(staff_id, authority_name)
-values(2, 'INTROSPEC-SYSADMIN');
+values(2, 'ROLE_INTROSPEC-SYSADMIN');
 
 COMMIT;

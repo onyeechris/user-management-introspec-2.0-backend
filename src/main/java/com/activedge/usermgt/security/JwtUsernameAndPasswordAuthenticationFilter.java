@@ -30,10 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,14 +85,19 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         log.info("Authentication object {}", auth);
 
         if(auth.getPrincipal() instanceof LdapUserDetailsImpl) {
+
             // if the user exist and activated on local-store and get its permission.
             // Else create the user locally without activation pending makerchecker.
             staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
-                    .ifPresent(existingUser -> {
+                    .map(existingUser -> {
+                        // this means that a user can use his AD account or Introspec account to login
                         if(existingUser.isActivated()) {
-                             this.displayToken(this.generateToken(auth, existingUser), response);
+//                            log.info("staff permissions: {}", existingUser.getGroup().getPermissions());
+                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
                         }
-                    });
+                        return existingUser;
+                    })
+                    .orElse(this.createNewUser(auth));
 
 //            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
 //
@@ -106,15 +108,15 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getPassword(),
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).isEnabled());
         } else {
+            Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(((User) auth.getPrincipal()).getUsername());
+            this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
+//            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions());
             log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
                     ((User) auth.getPrincipal()).getAuthorities(),
                     ((User) auth.getPrincipal()).getUsername(),
                     ((User) auth.getPrincipal()).getPassword());
         }
 //        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
-
-
-
     }
 
     public String generateToken(Authentication auth, Staff staff) {
@@ -126,6 +128,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList())) //.collect(Collectors.joining(",")
+//                .claim("permissions", staff.getGroup().getPermissions())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
@@ -133,12 +136,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     }
 
-    private void displayToken(String token, HttpServletResponse response) {
+    private Staff createNewUser(Authentication auth) {
+        return null;
+    }
+
+    private void displayToken(String token, String whois, HttpServletResponse response) {
         // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
 
         Map<String, String> res = new HashMap<>();
         res.put("token", jwtConfig.getPrefix() + token);
+        res.put("status", whois);
 
         String json = new Gson().toJson(res);
 

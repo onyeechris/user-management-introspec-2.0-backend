@@ -1,20 +1,11 @@
 package com.activedge.usermgt.model;
 
-import com.activedge.usermgt.model.enumeration.Action;
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.model.event.StaffEntityListener;
-import com.activedge.usermgt.model.log.StaffLog;
-import com.activedge.usermgt.repository.StaffLogRepository;
-import com.activedge.usermgt.service.BeanUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
@@ -22,11 +13,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-
-import static com.activedge.usermgt.model.enumeration.Action.DELETED;
-import static com.activedge.usermgt.model.enumeration.Action.INSERTED;
-import static com.activedge.usermgt.model.enumeration.Action.UPDATED;
-import static javax.transaction.Transactional.TxType.MANDATORY;
 
 @Entity
 @Table(name = "staff")
@@ -79,14 +65,9 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private Set<Authority> authorities = new HashSet<>();
 
     @ManyToOne
-    @JsonIgnoreProperties("")
-    private Groups group;
-
-    @ManyToOne
 //    @JsonIgnoreProperties("staff")
-    private Groups groups;
+    private Group group;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
     }
@@ -195,26 +176,17 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.hireDate = hireDate;
     }
 
-    public Groups getGroup() {
+    public Group getGroup() {
         return group;
     }
 
-    public Staff group(Groups groups) {
-        this.group = groups;
+    public Staff group(Group group) {
+        this.group = group;
         return this;
     }
 
-    public void setGroup(Groups groups) {
-        this.group = groups;
-    }
-
-    public Groups getGroups() {
-        return groups;
-    }
-
-    public Staff groups(Groups groups) {
-        this.groups = groups;
-        return this;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public boolean isActivated() {
@@ -223,10 +195,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     public void setActivated(boolean activated) {
         this.activated = activated;
-    }
-
-    public void setGroups(Groups groups) {
-        this.groups = groups;
     }
 
     @Override

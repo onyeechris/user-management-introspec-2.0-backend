@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.Objects;
 
 /**
- * A DTO for the Groups entity.
+ * A DTO for the Group entity.
  */
 public class GroupsDTO implements Serializable {
 

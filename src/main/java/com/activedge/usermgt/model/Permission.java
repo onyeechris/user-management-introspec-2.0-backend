@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,9 +27,8 @@ public class Permission implements Serializable {
 
     @ManyToMany(mappedBy = "permissions")
     @JsonIgnore
-    private Set<Groups> grps = new HashSet<>();
+    private Set<Group> grps = new HashSet<>();
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
     }
@@ -64,31 +63,30 @@ public class Permission implements Serializable {
         this.description = description;
     }
 
-    public Set<Groups> getGrps() {
+    public Set<Group> getGrps() {
         return grps;
     }
 
-    public Permission grps(Set<Groups> groups) {
+    public Permission grps(Set<Group> groups) {
         this.grps = groups;
         return this;
     }
 
-    public Permission addGrp(Groups groups) {
-        this.grps.add(groups);
-        groups.getPermissions().add(this);
+    public Permission addGrp(Group group) {
+        this.grps.add(group);
+        group.getPermissions().add(this);
         return this;
     }
 
-    public Permission removeGrp(Groups groups) {
-        this.grps.remove(groups);
-        groups.getPermissions().remove(this);
+    public Permission removeGrp(Group group) {
+        this.grps.remove(group);
+        group.getPermissions().remove(this);
         return this;
     }
 
-    public void setGrps(Set<Groups> groups) {
+    public void setGrps(Set<Group> groups) {
         this.grps = groups;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {

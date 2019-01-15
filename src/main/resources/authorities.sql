@@ -1,10 +1,10 @@
 insert into introspec_authority(name)
-values('INTROSPEC-SYSDEV');
+values('ROLE_INTROSPEC-SYSDEV');
 
 insert into introspec_authority(name)
-values('INTROSPEC-SYSADMIN');
+values('ROLE_INTROSPEC-SYSADMIN');
 
 insert into introspec_authority(name)
-values('INTROSPEC-SYSUSER');
+values('ROLE_INTROSPEC-SYSUSER');
 
 COMMIT;

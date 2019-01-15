@@ -12,11 +12,11 @@ import org.mapstruct.*;
 public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
     @Mapping(source = "group.id", target = "groupId")
-    @Mapping(source = "groups.id", target = "groupsId")
+//    @Mapping(source = "groups.id", target = "groupsId")
     StaffDTO toDto(Staff staff);
 
     @Mapping(source = "groupId", target = "group")
-    @Mapping(source = "groupsId", target = "groups")
+//    @Mapping(source = "groupsId", target = "groups")
     Staff toEntity(StaffDTO staffDTO);
 
     default Staff fromId(Long id) {

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 /**
- * Service Interface for managing Groups.
+ * Service Interface for managing Group.
  */
 public interface GroupsService {
 
@@ -29,7 +29,7 @@ public interface GroupsService {
     Page<GroupsDTO> findAll(Pageable pageable);
 
     /**
-     * Get all the Groups with eager load of many-to-many relationships.
+     * Get all the Group with eager load of many-to-many relationships.
      *
      * @return the list of entities
      */

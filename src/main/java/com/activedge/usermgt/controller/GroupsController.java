@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * REST controller for managing Groups.
+ * REST controller for managing Group.
  */
 @RestController
 @RequestMapping("/api")
@@ -47,7 +47,7 @@ public class GroupsController {
      */
     @PostMapping("/groups")
     public ResponseEntity<GroupsDTO> createGroups(@Valid @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
-        log.debug("REST request to save Groups : {}", groupsDTO);
+        log.debug("REST request to save Group : {}", groupsDTO);
         if (groupsDTO.getId() != null) {
             throw new ValidationException("A new groups cannot already have an ID");
         }
@@ -68,7 +68,7 @@ public class GroupsController {
      */
     @PutMapping("/groups")
     public ResponseEntity<GroupsDTO> updateGroups(@Valid @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
-        log.debug("REST request to update Groups : {}", groupsDTO);
+        log.debug("REST request to update Group : {}", groupsDTO);
         if (groupsDTO.getId() == null) {
             throw new ValidationException("Invalid id");
         }
@@ -87,7 +87,7 @@ public class GroupsController {
      */
     @GetMapping("/groups")
     public ResponseEntity<List<GroupsDTO>> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Groups");
+        log.debug("REST request to get a page of Group");
         Page<GroupsDTO> page;
         if (eagerload) {
             page = groupsService.findAllWithEagerRelationships(pageable);
@@ -106,7 +106,7 @@ public class GroupsController {
      */
     @GetMapping("/groups/{id}")
     public ResponseEntity<GroupsDTO> getGroups(@PathVariable Long id) {
-        log.debug("REST request to get Groups : {}", id);
+        log.debug("REST request to get Group : {}", id);
         Optional<GroupsDTO> groupsDTO = groupsService.findOne(id);
 
         if (!groupsDTO.isPresent()) {
@@ -126,7 +126,7 @@ public class GroupsController {
      */
     @DeleteMapping("/groups/{id}")
     public ResponseEntity<Void> deleteGroups(@PathVariable Long id) {
-        log.debug("REST request to delete Groups : {}", id);
+        log.debug("REST request to delete Group : {}", id);
         groupsService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }

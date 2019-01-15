@@ -1,6 +1,6 @@
 package com.activedge.usermgt.service;
 
-import com.activedge.usermgt.model.Groups;
+import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.dto.GroupsDTO;
 import com.activedge.usermgt.model.mapper.GroupsMapper;
 import com.activedge.usermgt.repository.GroupsRepository;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Service Implementation for managing Groups.
+ * Service Implementation for managing Group.
  */
 @Service
 @Transactional
@@ -40,11 +40,11 @@ public class GroupsServiceImpl implements GroupsService {
      */
     @Override
     public GroupsDTO save(GroupsDTO groupsDTO) {
-        log.debug("Request to save Groups : {}", groupsDTO);
+        log.debug("Request to save Group : {}", groupsDTO);
 
-        Groups groups = groupsMapper.toEntity(groupsDTO);
-        groups = groupsRepository.save(groups);
-        return groupsMapper.toDto(groups);
+        Group group = groupsMapper.toEntity(groupsDTO);
+        group = groupsRepository.save(group);
+        return groupsMapper.toDto(group);
     }
 
     /**
@@ -56,13 +56,13 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     @Transactional(readOnly = true)
     public Page<GroupsDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Groups");
+        log.debug("Request to get all Group");
         return groupsRepository.findAll(pageable)
             .map(groupsMapper::toDto);
     }
 
     /**
-     * Get all the Groups with eager load of many-to-many relationships.
+     * Get all the Group with eager load of many-to-many relationships.
      *
      * @return the list of entities
      */
@@ -80,7 +80,7 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupsDTO> findOne(Long id) {
-        log.debug("Request to get Groups : {}", id);
+        log.debug("Request to get Group : {}", id);
         return groupsRepository.findOneWithEagerRelationships(id)
             .map(groupsMapper::toDto);
     }
@@ -92,7 +92,7 @@ public class GroupsServiceImpl implements GroupsService {
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Groups : {}", id);
+        log.debug("Request to delete Group : {}", id);
         groupsRepository.deleteById(id);
     }
 }

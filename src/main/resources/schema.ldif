@@ -4,10 +4,10 @@ objectclass: domain
 objectclass: extensibleObject
 dc: memorynotfound
 
-dn: ou=groups,dc=memorynotfound,dc=com
+dn: ou=group,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: organizationalUnit
-ou: groups
+ou: group
 
 dn: ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -23,14 +23,14 @@ cn: John Doe
 uid: john
 userPassword: {SHA}5en6G6MezRroT3XKqkdPOmY/BfQ=
 
-dn: cn=developers,ou=groups,dc=memorynotfound,dc=com
+dn: cn=developers,ou=group,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
 cn: developers
 ou: developer
 uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
 
-dn: cn=managers,ou=groups,dc=memorynotfound,dc=com
+dn: cn=managers,ou=group,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
 cn: managers

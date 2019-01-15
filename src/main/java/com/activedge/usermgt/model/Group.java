@@ -1,6 +1,8 @@
 package com.activedge.usermgt.model;
 
 
+import org.springframework.data.repository.cdi.Eager;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -10,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "groups")
-public class Groups implements Serializable {
+public class Group implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +28,7 @@ public class Groups implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "groups")
+    @OneToMany(mappedBy = "group")
     private Set<Staff> staff = new HashSet<>();
 
     @ManyToMany
@@ -47,7 +49,7 @@ public class Groups implements Serializable {
         return name;
     }
 
-    public Groups name(String name) {
+    public Group name(String name) {
         this.name = name;
         return this;
     }
@@ -60,7 +62,7 @@ public class Groups implements Serializable {
         return description;
     }
 
-    public Groups description(String description) {
+    public Group description(String description) {
         this.description = description;
         return this;
     }
@@ -73,20 +75,20 @@ public class Groups implements Serializable {
         return staff;
     }
 
-    public Groups staff(Set<Staff> staff) {
+    public Group staff(Set<Staff> staff) {
         this.staff = staff;
         return this;
     }
 
-    public Groups addStaff(Staff staff) {
+    public Group addStaff(Staff staff) {
         this.staff.add(staff);
-        staff.setGroups(this);
+//        staff.setGroups(this);
         return this;
     }
 
-    public Groups removeStaff(Staff staff) {
+    public Group removeStaff(Staff staff) {
         this.staff.remove(staff);
-        staff.setGroups(null);
+//        staff.setGroups(null);
         return this;
     }
 
@@ -98,18 +100,18 @@ public class Groups implements Serializable {
         return permissions;
     }
 
-    public Groups permissions(Set<Permission> permissions) {
+    public Group permissions(Set<Permission> permissions) {
         this.permissions = permissions;
         return this;
     }
 
-    public Groups addPermission(Permission permission) {
+    public Group addPermission(Permission permission) {
         this.permissions.add(permission);
         permission.getGrps().add(this);
         return this;
     }
 
-    public Groups removePermission(Permission permission) {
+    public Group removePermission(Permission permission) {
         this.permissions.remove(permission);
         permission.getGrps().remove(this);
         return this;
@@ -118,7 +120,6 @@ public class Groups implements Serializable {
     public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -128,11 +129,11 @@ public class Groups implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Groups groups = (Groups) o;
-        if (groups.getId() == null || getId() == null) {
+        Group group = (Group) o;
+        if (group.getId() == null || getId() == null) {
             return false;
         }
-        return Objects.equals(getId(), groups.getId());
+        return Objects.equals(getId(), group.getId());
     }
 
     @Override
@@ -142,7 +143,7 @@ public class Groups implements Serializable {
 
     @Override
     public String toString() {
-        return "Groups{" +
+        return "Group{" +
                 "id=" + getId() +
                 ", name='" + getName() + "'" +
                 ", description='" + getDescription() + "'" +
