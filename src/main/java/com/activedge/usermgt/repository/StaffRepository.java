@@ -20,7 +20,7 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 //
 //    Optional<User> findOneByResetKey(String resetKey);
 //
-//    Optional<User> findOneByEmailIgnoreCase(String email);
+    Optional<Staff> findOneByEmailIgnoreCase(String email);
 //
 //    Optional<User> findOneByLogin(String login);
 //
@@ -30,7 +30,7 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 //    @EntityGraph(attributePaths = "authorities")
 //    Optional<User> findOneWithAuthoritiesByLogin(String login);
 
-    @EntityGraph(attributePaths = "authorities")
+    @EntityGraph(attributePaths = {"authorities", "group"})
     Optional<Staff> findOneWithAuthoritiesByEmail(String email);
 
 //    Page<User> findAllByLoginNot(Pageable pageable, String login);

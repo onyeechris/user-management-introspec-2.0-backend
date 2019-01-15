@@ -31,7 +31,7 @@ public class Group implements Serializable {
     @OneToMany(mappedBy = "group")
     private Set<Staff> staff = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "groups_permission",
             joinColumns = @JoinColumn(name = "groups_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "permissions_id", referencedColumnName = "id"))

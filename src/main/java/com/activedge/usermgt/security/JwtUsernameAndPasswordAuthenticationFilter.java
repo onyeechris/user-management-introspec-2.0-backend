@@ -108,9 +108,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getPassword(),
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).isEnabled());
         } else {
+//            Optional<Staff> authUser = staffRepository.findOneByEmailIgnoreCase(((User) auth.getPrincipal()).getUsername());
             Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(((User) auth.getPrincipal()).getUsername());
-            this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
+
+            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions()
+                    .stream()
+                    .map(permission -> permission.getAction())
+                    .collect(Collectors.joining(", ")));
 //            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions());
+
+            this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
+
             log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
                     ((User) auth.getPrincipal()).getAuthorities(),
                     ((User) auth.getPrincipal()).getUsername(),

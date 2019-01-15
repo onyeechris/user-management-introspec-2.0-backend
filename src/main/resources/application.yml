@@ -35,7 +35,7 @@ spring:
       hikari:
           auto-commit: false
       initialization-mode: always
-      data: classpath:staff.sql, classpath:groups.sql, classpath:authorities.sql, classpath:staff_authorities.sql
+      data: classpath:groups.sql, classpath:staff.sql, classpath:authorities.sql, classpath:staff_authorities.sql
 
   ldap:
 
