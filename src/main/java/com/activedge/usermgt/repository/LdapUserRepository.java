@@ -24,7 +24,7 @@ public interface LdapUserRepository extends CrudRepository<LdapUser, Name> {
 
     LdapUser findByUsername(String username);
 
-    LdapUser findByUseridAndPassword(String username, String password);
+//    LdapUser findByUseridAndPassword(String username, String password);
 
     List<LdapUser> findByUsernameLikeIgnoreCase(String username);
 

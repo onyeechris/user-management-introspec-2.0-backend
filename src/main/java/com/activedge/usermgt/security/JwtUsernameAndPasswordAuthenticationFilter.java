@@ -1,6 +1,9 @@
 package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
+import com.activedge.usermgt.model.Authority;
+import com.activedge.usermgt.model.Group;
+import com.activedge.usermgt.model.LdapUser;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.LdapUserService;
@@ -88,19 +91,20 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
             // if the user exist and activated on local-store and get its permission.
             // Else create the user locally without activation pending makerchecker.
-            staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
-                    .map(existingUser -> {
-                        // this means that a user can use his AD account or Introspec account to login
-                        if(existingUser.isActivated()) {
-//                            log.info("staff permissions: {}", existingUser.getGroup().getPermissions());
-                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
-                        }
-                        return existingUser;
-                    })
-                    .orElse(this.createNewUser(auth));
+//            staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
+//                    .map(existingUser -> {
+//                        // this means that a user can use his AD account or Introspec account to login
+//                        if(existingUser.isActivated()) {
+////                            log.info("staff permissions: {}", existingUser.getGroup().getPermissions());
+//                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
+//                        }
+//                        return existingUser;
+//                    })
+//                    .orElse(this.createNewUser(auth, response));
 
 //            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
-//
+            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.getByUserid("john"));
+
 //            log.info("Authentication successful from LDAP - Authorities:{} --- Dn:{} --- Username:{} --- Password:{} --- Enabled:{}",
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getAuthorities(),
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getDn(),
@@ -114,7 +118,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             log.info("staff permissions: {}", authUser.get().getGroup().getPermissions()
                     .stream()
                     .map(permission -> permission.getAction())
-                    .collect(Collectors.joining(", ")));
+                    .collect(Collectors.joining(",")));
 //            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions());
 
             this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
@@ -136,7 +140,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList())) //.collect(Collectors.joining(",")
-//                .claim("permissions", staff.getGroup().getPermissions())
+                .claim("permissions", staff.getGroup().getPermissions()
+                        .stream()
+                        .map(permission -> permission.getAction())
+                        .collect(Collectors.joining(",")))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
@@ -144,8 +151,36 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     }
 
-    private Staff createNewUser(Authentication auth) {
-        return null;
+    private Staff createNewUser(Authentication auth, HttpServletResponse response) {
+        Staff newUser = new Staff();
+
+        LdapUser ldapUser = ldapUserService.getByUserid(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername());
+
+        String encryptedPassword = encoder.encode(ldapUser.getUsername());
+        newUser.setPassword(encryptedPassword);
+        newUser.setFirstName(ldapUser.getUsername().split(" ")[0]);
+        newUser.setLastName(ldapUser.getUsername().split(" ")[1]);
+        newUser.setEmail(ldapUser.getUserid().toLowerCase());
+        // new user is not active
+        newUser.setActivated(false);
+        // new user gets registration key
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = new Authority();
+        authority.setName(AuthoritiesConstants.USER);
+        authorities.add(authority);
+        newUser.setAuthorities(authorities);
+        // assign new user group
+        Group group = new Group();
+        group.setId(3L);
+        newUser.setGroup(group);
+
+        staffRepository.save(newUser);
+
+        log.debug("Created Information for Staff: {}", newUser);
+
+        this.displayToken(this.generateToken(auth, newUser), "new", response);
+
+        return newUser;
     }
 
     private void displayToken(String token, String whois, HttpServletResponse response) {

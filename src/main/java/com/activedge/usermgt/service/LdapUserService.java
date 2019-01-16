@@ -20,7 +20,7 @@ public class LdapUserService {
     private LdapUserRepository ldapUserRepository;
 
     public Boolean authenticate(final String username, final String password) {
-        LdapUser user = ldapUserRepository.findByUseridAndPassword(username, password);
+        LdapUser user = null;//ldapUserRepository.findByUseridAndPassword(username, password);
         return user != null;
     }
 
@@ -63,7 +63,7 @@ public class LdapUserService {
 
     public void modify(final String username, final String password) {
         LdapUser user = ldapUserRepository.findByUsername(username);
-        user.setPassword(password);
+//        user.setPassword(password);
         ldapUserRepository.save(user);
     }
 
