@@ -12,18 +12,17 @@ public class LdapUser  {
     @Id
     private Name id;
 
-//    private @Attribute(name = "ou") String organization;
+    private @Attribute(name = "ou") String organization;
     private @Attribute(name = "cn") String username;
-//    private @Attribute(name = "uid") String userid;
-    private @Attribute(name = "sn") String userid;
-//    private @Attribute(name = "userPassword") String password;
+    private @Attribute(name = "uid") String userid;
+    private @Attribute(name = "userPassword") String password;
 
     public LdapUser() {
     }
 
     public LdapUser(String username, String password) {
         this.username = username;
-//        this.password = password;
+        this.password = password;
     }
 
     public Name getId() {
@@ -42,21 +41,21 @@ public class LdapUser  {
         this.username = username;
     }
 
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+    public String getPassword() {
+        return password;
+    }
 
-//    public String getOrganization() {
-//        return organization;
-//    }
-//
-//    public void setOrganization(String organization) {
-//        this.organization = organization;
-//    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 
     public String getUserid() {
         return userid;

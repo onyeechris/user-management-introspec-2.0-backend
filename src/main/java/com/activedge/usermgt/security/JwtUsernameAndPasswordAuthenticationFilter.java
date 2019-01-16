@@ -91,19 +91,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
             // if the user exist and activated on local-store and get its permission.
             // Else create the user locally without activation pending makerchecker.
-//            staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
-//                    .map(existingUser -> {
-//                        // this means that a user can use his AD account or Introspec account to login
-//                        if(existingUser.isActivated()) {
-////                            log.info("staff permissions: {}", existingUser.getGroup().getPermissions());
-//                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
-//                        }
-//                        return existingUser;
-//                    })
-//                    .orElse(this.createNewUser(auth, response));
+            staffRepository.findOneWithAuthoritiesByEmail(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername().toLowerCase())
+                    .map(existingUser -> {
+                        // this means that a user can use his AD account or Introspec account to login
+                        if(existingUser.isActivated()) {
+                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
+                        }
+                        return existingUser;
+                    })
+                    .orElse(this.createNewUser(auth, response));
 
 //            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
-            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.getByUserid("john"));
 
 //            log.info("Authentication successful from LDAP - Authorities:{} --- Dn:{} --- Username:{} --- Password:{} --- Enabled:{}",
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getAuthorities(),

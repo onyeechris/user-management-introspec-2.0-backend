@@ -91,7 +91,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .userDnPatterns("uid={0},ou=people")
             .userSearchBase("ou=people")
             .userSearchFilter("uid={0}")
-            .groupSearchBase("ou=groups") // map LDAP groups to roles in Spring
+            .groupSearchBase("ou=group") // map LDAP groups to roles in Spring
             .groupSearchFilter("uniqueMember={0}")
             .contextSource(contextSource())
             .passwordCompare()

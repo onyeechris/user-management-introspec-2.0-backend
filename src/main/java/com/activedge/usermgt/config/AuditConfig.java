@@ -12,7 +12,7 @@ public class AuditConfig implements AuditorAware<String>{
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        return Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
+        return SecurityContextHolder.getContext().getAuthentication() == null ? Optional.of("SYSTEM") : Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 }
