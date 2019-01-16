@@ -63,7 +63,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-//        log.info("elvosecret: {}, ndsecret: {}", encoder.encode("elvosecret"), encoder.encode("ndsecret"));
         try {
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
@@ -97,7 +96,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                         if(existingUser.isActivated()) {
                             this.displayToken(this.generateToken(auth, existingUser), "old", response);
                         }
-                        return existingUser;
+                        return null;
                     })
                     .orElse(this.createNewUser(auth, response));
 
@@ -110,21 +109,14 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).getPassword(),
 //                    ((LdapUserDetailsImpl) auth.getPrincipal()).isEnabled());
         } else {
-//            Optional<Staff> authUser = staffRepository.findOneByEmailIgnoreCase(((User) auth.getPrincipal()).getUsername());
             Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(((User) auth.getPrincipal()).getUsername());
-
-            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions()
-                    .stream()
-                    .map(permission -> permission.getAction())
-                    .collect(Collectors.joining(",")));
-//            log.info("staff permissions: {}", authUser.get().getGroup().getPermissions());
 
             this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
 
-            log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
-                    ((User) auth.getPrincipal()).getAuthorities(),
-                    ((User) auth.getPrincipal()).getUsername(),
-                    ((User) auth.getPrincipal()).getPassword());
+//            log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
+//                    ((User) auth.getPrincipal()).getAuthorities(),
+//                    ((User) auth.getPrincipal()).getUsername(),
+//                    ((User) auth.getPrincipal()).getPassword());
         }
 //        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
     }
@@ -154,11 +146,11 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         LdapUser ldapUser = ldapUserService.getByUserid(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername());
 
-        String encryptedPassword = encoder.encode(ldapUser.getUsername());
+        String encryptedPassword = encoder.encode(ldapUser.getUsername() + "secret");
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(ldapUser.getUsername().split(" ")[0]);
         newUser.setLastName(ldapUser.getUsername().split(" ")[1]);
-        newUser.setEmail(ldapUser.getUserid().toLowerCase());
+        newUser.setEmail(ldapUser.getUserid().toLowerCase() + "@default.com");
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key

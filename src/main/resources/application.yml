@@ -68,3 +68,5 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
+#    root: DEBUG
+#  file: ${java.io.tmpdir}/${spring.application.name}.log

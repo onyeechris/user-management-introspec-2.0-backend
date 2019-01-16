@@ -11,12 +11,16 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses = {GroupsMapper.class})
 public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
-    @Mapping(source = "group.id", target = "groupId")
-//    @Mapping(source = "groups.id", target = "groupsId")
+    @Mapping(source = "group.id", target = "group_id")
+    @Mapping(source = "firstName", target = "first_name")
+    @Mapping(source = "lastName", target = "last_name")
+    @Mapping(source = "hireDate", target = "hire_date")
     StaffDTO toDto(Staff staff);
 
-    @Mapping(source = "groupId", target = "group")
-//    @Mapping(source = "groupsId", target = "groups")
+    @Mapping(source = "group_id", target = "group")
+    @Mapping(source = "first_name", target = "firstName")
+    @Mapping(source = "last_name", target = "lastName")
+    @Mapping(source = "hire_date", target = "hireDate")
     Staff toEntity(StaffDTO staffDTO);
 
     default Staff fromId(Long id) {

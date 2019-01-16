@@ -2,13 +2,17 @@ package com.activedge.usermgt.model;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.model.event.StaffEntityListener;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
@@ -34,14 +38,17 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private String lastName;
 
     @Column(name = "phone")
+    @Size(min = 9, max = 13)
     private String phone;
 
     @NotNull
     @Column(name = "email", nullable = false)
+    @Email
     private String email;
 
     @NotNull
     @Column(name = "i_password", nullable = false)
+    @Size(min = 50, max = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -49,7 +56,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private MakerChecker makerChecker;
 
     @Column(name = "hire_date")
-    private Instant hireDate;
+    @JsonFormat(pattern = "MM/dd/yyyy")
+    private LocalDate hireDate;
 
     @NotNull
     @Column(nullable = false)
@@ -163,16 +171,16 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.makerChecker = makerChecker;
     }
 
-    public Instant getHireDate() {
+    public LocalDate getHireDate() {
         return hireDate;
     }
 
-    public Staff hireDate(Instant hireDate) {
+    public Staff hireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
         return this;
     }
 
-    public void setHireDate(Instant hireDate) {
+    public void setHireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Staff.
@@ -53,8 +55,15 @@ public class StaffController {
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
+    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to save a {} : {}", ENTITY_NAME, staffDTO);
+
+        if (errors.hasErrors()) {
+            log.error("Error in creating new user detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(", ")));
+        }
 
         staffDTO.setId(null);
         StaffDTO result = staffService.save(staffDTO);
@@ -75,11 +84,16 @@ public class StaffController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO) throws Exception {
+    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update {} : {}", ENTITY_NAME, staffDTO);
-        if (staffDTO.getId() == null) {
-            throw new ValidationException("> Please specify a valid Id");
+
+        if (errors.hasErrors() || staffDTO.getId() == null) {
+            log.error("Error in creating new user detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
         }
+
         StaffDTO result = staffService.save(staffDTO);
 
         return ResponseEntity.ok()
