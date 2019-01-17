@@ -71,12 +71,12 @@ public class StaffServiceImpl implements StaffService {
             s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
             s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
             s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
-            // check if makerchecker is true
-            if (true) {
+            if (false) { // check if item is closed
                 staff = s;
-            } else {
-                // put the update on pending status
+            } else if(false) { // check if this update requires a checker's action
                 // serialize "s" for checker
+            } else { // put the update on pending status
+
             }
         }
 

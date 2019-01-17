@@ -64,6 +64,10 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 //    @ColumnDefault("1")
     private boolean activated = false;
 
+//    private boolean open;
+//    private Long openedBy;
+//    private Long closedBy;
+
     @ManyToMany
     @JoinTable(
             name = "staff_authority",
