@@ -30,6 +30,7 @@ public class StaffEntityListener {
         System.out.println("...In preUpdate()");
         perform(target, UPDATED);
     }
+
     @PreRemove
     public void preRemove(Staff target) {
         System.out.println("...In preRemove()");

@@ -51,6 +51,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Size(min = 50, max = 100)
     private String password;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "maker_checker")
     private MakerChecker makerChecker;
@@ -62,7 +63,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @NotNull
     @Column(nullable = false)
 //    @ColumnDefault("1")
-    private boolean activated = false;
+    private Boolean activated = false;
 
 //    private boolean open;
 //    private Long openedBy;
@@ -201,11 +202,11 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.group = group;
     }
 
-    public boolean isActivated() {
+    public Boolean isActivated() {
         return activated;
     }
 
-    public void setActivated(boolean activated) {
+    public void setActivated(Boolean activated) {
         this.activated = activated;
     }
 

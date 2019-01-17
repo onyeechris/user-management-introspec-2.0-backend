@@ -51,6 +51,8 @@ public class StaffDTO implements Serializable {
     @JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @ApiModelProperty(notes = "The staff account type", required = true, example = "MAKER")
+    @NotNull(message = "Staff Maker or Checker role is required.")
     private MakerChecker maker_checker;
 
     @ApiModelProperty(notes = "The staff hired date", example = "MM/dd/yyyy")
@@ -60,6 +62,24 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The staff permission group id", required = true)
     @NotNull(message = "Staff access group is required.")
     private Long group_id;
+
+    private Boolean activated;
+
+    public Boolean getActivated() {
+        return activated;
+    }
+
+    public void setActivated(Boolean activated) {
+        this.activated = activated;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     public Long getId() {
         return id;

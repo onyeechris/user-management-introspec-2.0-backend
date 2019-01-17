@@ -29,7 +29,7 @@ public class ExceptionParser {
 
 		Map<String, Object> errors = new HashMap<>();
 		errors.put("status", HttpStatus.BAD_REQUEST.toString());
-		errors.put("message", Arrays.asList(ve.getMessage().split("\\s*,\\s*")));
+		errors.put("message", ve.getMessage().isEmpty() ? "Missing Object ID" : Arrays.asList(ve.getMessage().split("\\s*,\\s*")));
 
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
  

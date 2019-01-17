@@ -4,9 +4,12 @@ import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.activedge.usermgt.model.enumeration.Notification;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.security.AuthoritiesConstants;
+import com.activedge.usermgt.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.security.validator.ValidatorException;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -48,11 +52,15 @@ public class StaffServiceImpl implements StaffService {
      * @return the persisted entity
      */
     @Override
-    public StaffDTO save(StaffDTO staffDTO) {
-        log.debug("Request to save Staff : {}", staffDTO);
+    public StaffDTO save(StaffDTO staffDTO) throws ValidatorException {
+        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
+
+        log.info("Request to save Staff: {} by User: {}", staffDTO, currentUserPosition);
 
         Staff staff = staffMapper.toEntity(staffDTO);
         if(staff.getId() == null) {
+//            if(!currentUserPosition.equals(MakerChecker.MAKER))
+//                throw new ValidatorException(Notification.UNAUTHORIZED_ACCOUNT);
             // new user, set default authority, and encode password
             Set<Authority> authorities = new HashSet<>();
             Authority authority = new Authority();
@@ -61,6 +69,8 @@ public class StaffServiceImpl implements StaffService {
             staff.setAuthorities(authorities);
             staff.setPassword(encoder.encode(staff.getPassword()));
         } else {
+//            if(!currentUserPosition.equals(MakerChecker.MAKER))
+//                throw new ValidatorException(Notification.UNAUTHORIZED_ACCOUNT);
             // get previous record and update appropriately
             Staff s = staffMapper.toEntity(this.findOne(staff.getId()).get());
             log.debug("Updating Staff...{}", staff.getId());
@@ -71,13 +81,15 @@ public class StaffServiceImpl implements StaffService {
             s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
             s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
             s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
-            if (false) { // check if item is closed
+            s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
+            s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
+//            if (false) { // check if item is closed
                 staff = s;
-            } else if(false) { // check if this update requires a checker's action
-                // serialize "s" for checker
-            } else { // put the update on pending status
-
-            }
+//            } else if(false) { // check if this update requires a checker's action
+//                // serialize "s" for checker
+//            } else { // put the update on pending status
+//
+//            }
         }
 
         staff = staffRepository.save(staff);
@@ -122,6 +134,9 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Staff : {}", id);
-        staffRepository.deleteById(id);
+        StaffDTO s = findOne(id).get();
+        Staff sf = staffMapper.toEntity(s);
+        sf.setActivated(false);
+        staffRepository.save(sf);
     }
 }

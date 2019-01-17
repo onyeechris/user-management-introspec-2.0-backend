@@ -5,6 +5,7 @@ import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.LdapUser;
 import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.LdapUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -151,6 +152,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         newUser.setFirstName(ldapUser.getUsername().split(" ")[0]);
         newUser.setLastName(ldapUser.getUsername().split(" ")[1]);
         newUser.setEmail(ldapUser.getUserid().toLowerCase() + "@default.com");
+        newUser.setMakerChecker(MakerChecker.MAKER);
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
