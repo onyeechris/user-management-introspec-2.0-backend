@@ -1,5 +1,6 @@
 package com.activedge.usermgt.config;
 
+import com.activedge.usermgt.controller.AccountController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -31,7 +32,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.activedge.usermgt.controller")) // RequestHandlerSelectors.any()
-                .paths(regex("/api.*")) // generate documentation only for the path starting with /product ELSE PathSelectors.any()
+                .paths(regex("/api.*|/auth")) // generate documentation only for the path starting with /product ELSE PathSelectors.any()
                 .build()
                 .apiInfo(metaData());
     }

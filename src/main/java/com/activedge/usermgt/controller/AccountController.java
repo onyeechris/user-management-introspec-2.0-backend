@@ -1,8 +1,8 @@
 package com.activedge.usermgt.controller;
 
 
-import com.activedge.usermgt.model.dto.NewUserDTO;
-import com.activedge.usermgt.model.dto.UserDTO;
+import com.activedge.usermgt.model.dto.NewStaffDTO;
+import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.LdapUserRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.UserService;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api")
+//@Api(hidden=true)
+@ApiIgnore
 public class AccountController {
 
     private final Logger log = LoggerFactory.getLogger(AccountController.class);
@@ -46,7 +49,7 @@ public class AccountController {
      */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerAccount(@Valid @RequestBody NewUserDTO newUser, Errors errors) {
+    public void registerAccount(@Valid @RequestBody NewStaffDTO newUser, Errors errors) {
         log.info("REST request to create new User : {}", newUser);
 
         if (errors.hasErrors()) {
@@ -89,7 +92,7 @@ public class AccountController {
      * @throws RuntimeException 500 (Internal Server Error) if the user couldn't be returned
      */
     @GetMapping("/account")
-    public UserDTO getAccount() {
+    public StaffDTO getAccount() {
         return null;
 //        return userService.getUserWithAuthorities()
 //            .map(UserDTO::new)
@@ -104,7 +107,7 @@ public class AccountController {
      * @throws RuntimeException 500 (Internal Server Error) if the user login wasn't found
      */
     @PostMapping("/account")
-    public void saveAccount(@Valid @RequestBody UserDTO userDTO) {
+    public void saveAccount(@Valid @RequestBody StaffDTO userDTO) {
         final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new ValidationException("Current user login not found"));
 //        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.getEmail());
 //        if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {

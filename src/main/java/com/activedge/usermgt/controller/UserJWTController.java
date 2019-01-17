@@ -1,8 +1,10 @@
 package com.activedge.usermgt.controller;
 
-import com.activedge.usermgt.model.dto.NewUserDTO;
+import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +15,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * Controller to authenticate users.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class UserJWTController {
 
 //    private final TokenProviderer tokenProvider;
@@ -30,8 +33,8 @@ public class UserJWTController {
 //        this.authenticationManager = authenticationManager;
 //    }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody NewUserDTO loginVM) {
+    @PostMapping
+    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody JWTTokenRequest jwtTokenRequest) {
         return null;
 //        UsernamePasswordAuthenticationToken authenticationToken =
 //            new UsernamePasswordAuthenticationToken(loginVM.getUsername(), loginVM.getPassword());
@@ -49,21 +52,24 @@ public class UserJWTController {
     /**
      * Object to return as body in JWT Authentication.
      */
+    @Data
     static class JWTToken {
 
-        private String idToken;
+        private String status;
+        private String token;
 
-        JWTToken(String idToken) {
-            this.idToken = idToken;
-        }
+    }
+    /**
+     * Object to return as body in JWT Authentication.
+     */
+    @Data
+    static class JWTTokenRequest {
 
-        @JsonProperty("id_token")
-        String getIdToken() {
-            return idToken;
-        }
+        @ApiModelProperty(notes = "Staff username", required = true)
+        private String username;
 
-        void setIdToken(String idToken) {
-            this.idToken = idToken;
-        }
+        @ApiModelProperty(notes = "Staff password", required = true)
+        private String password;
+
     }
 }

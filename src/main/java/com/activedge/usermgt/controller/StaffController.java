@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.service.LdapUserService;
 import com.activedge.usermgt.service.StaffService;
@@ -55,7 +56,7 @@ public class StaffController {
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to save a {} : {}", ENTITY_NAME, staffDTO);
 
         if (errors.hasErrors()) {

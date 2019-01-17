@@ -46,11 +46,6 @@ public class StaffDTO implements Serializable {
     @Email(message = "Please enter a correct email address")
     private String email;
 
-    @ApiModelProperty(notes = "The staff password", required = true)
-    @NotNull(message = "Staff password is required.")
-    @JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-
     @ApiModelProperty(notes = "The staff account type", required = true, example = "MAKER")
     @NotNull(message = "Staff Maker or Checker role is required.")
     private MakerChecker maker_checker;
@@ -121,14 +116,6 @@ public class StaffDTO implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public MakerChecker getMaker_checker() {
         return maker_checker;
     }
@@ -182,7 +169,6 @@ public class StaffDTO implements Serializable {
             ", lastName='" + getLast_name() + "'" +
             ", phone='" + getPhone() + "'" +
             ", email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
             ", makerChecker='" + getMaker_checker() + "'" +
             ", hireDate='" + getHire_date() + "'" +
             ", group=" + getGroup_id() +

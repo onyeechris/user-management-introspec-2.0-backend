@@ -1,26 +1,8 @@
 package com.activedge.usermgt.service;
 
 
-import com.activedge.usermgt.config.Constants;
-import com.activedge.usermgt.model.Authority;
-import com.activedge.usermgt.model.User;
-import com.activedge.usermgt.model.dto.UserDTO;
-import com.activedge.usermgt.repository.AuthorityRepository;
-import com.activedge.usermgt.repository.LdapUserRepository;
-import com.activedge.usermgt.security.AuthoritiesConstants;
-import com.activedge.usermgt.security.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service class for managing users.
