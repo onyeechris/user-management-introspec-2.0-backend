@@ -1,7 +1,7 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.model.Group;
-import com.activedge.usermgt.model.dto.GroupsDTO;
+import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.model.mapper.GroupsMapper;
 import com.activedge.usermgt.repository.GroupsRepository;
 import org.slf4j.Logger;
@@ -35,14 +35,14 @@ public class GroupsServiceImpl implements GroupsService {
     /**
      * Save a groups.
      *
-     * @param groupsDTO the entity to save
+     * @param groupDTO the entity to save
      * @return the persisted entity
      */
     @Override
-    public GroupsDTO save(GroupsDTO groupsDTO) {
-        log.debug("Request to save Group : {}", groupsDTO);
+    public GroupDTO save(GroupDTO groupDTO) {
+        log.debug("Request to save Group : {}", groupDTO);
 
-        Group group = groupsMapper.toEntity(groupsDTO);
+        Group group = groupsMapper.toEntity(groupDTO);
         group = groupsRepository.save(group);
         return groupsMapper.toDto(group);
     }
@@ -55,7 +55,7 @@ public class GroupsServiceImpl implements GroupsService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<GroupsDTO> findAll(Pageable pageable) {
+    public Page<GroupDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Group");
         return groupsRepository.findAll(pageable)
             .map(groupsMapper::toDto);
@@ -66,7 +66,7 @@ public class GroupsServiceImpl implements GroupsService {
      *
      * @return the list of entities
      */
-    public Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable) {
+    public Page<GroupDTO> findAllWithEagerRelationships(Pageable pageable) {
         return groupsRepository.findAllWithEagerRelationships(pageable).map(groupsMapper::toDto);
     }
     
@@ -79,7 +79,7 @@ public class GroupsServiceImpl implements GroupsService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<GroupsDTO> findOne(Long id) {
+    public Optional<GroupDTO> findOne(Long id) {
         log.debug("Request to get Group : {}", id);
         return groupsRepository.findOneWithEagerRelationships(id)
             .map(groupsMapper::toDto);

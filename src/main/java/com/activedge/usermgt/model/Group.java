@@ -5,6 +5,7 @@ import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,9 +23,11 @@ public class Group implements Serializable {
     private Long id;
 
     @NotNull
+    @Size(min = 3)
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Size(min = 10)
     @Column(name = "description")
     private String description;
 

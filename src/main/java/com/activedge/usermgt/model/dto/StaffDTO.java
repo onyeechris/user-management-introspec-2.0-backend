@@ -19,15 +19,11 @@ import java.util.Objects;
  * A DTO for the Staff entity.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(description = "The Staff Entity")
+@ApiModel(description = "The Staff Transfer Entity")
 public class StaffDTO implements Serializable {
 
     @ApiModelProperty(notes = "The database generated staff ID")
     private Long id;
-
-    @Version
-    @ApiModelProperty(notes = "The auto-generated version of the staff")
-    private Integer version;
 
     @ApiModelProperty(notes = "The staff first name with maximum of 50 characters", required = true)
     @NotNull(message = "Staff firstname is required")
@@ -66,14 +62,6 @@ public class StaffDTO implements Serializable {
 
     public void setActivated(Boolean activated) {
         this.activated = activated;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     public Long getId() {

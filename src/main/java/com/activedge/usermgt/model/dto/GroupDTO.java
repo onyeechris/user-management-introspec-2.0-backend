@@ -1,5 +1,9 @@
 package com.activedge.usermgt.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -9,13 +13,20 @@ import java.util.Objects;
 /**
  * A DTO for the Group entity.
  */
-public class GroupsDTO implements Serializable {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "The Group Transfer Entity")
+public class GroupDTO implements Serializable {
 
+    @ApiModelProperty(notes = "The database generated group ID")
     private Long id;
 
+    @ApiModelProperty(notes = "The group name with minimum of 3 characters", required = true)
     @NotNull
+    @Size(min = 3, message = "group character length too short. Should be atleast 3 charaters")
     private String name;
 
+    @ApiModelProperty(notes = "The group description text")
+    @Size(min = 10, message = "group description length too short. Should be atleast 10 charaters")
     private String description;
 
     private Set<PermissionDTO> permissions = new HashSet<>();
@@ -61,11 +72,11 @@ public class GroupsDTO implements Serializable {
             return false;
         }
 
-        GroupsDTO groupsDTO = (GroupsDTO) o;
-        if (groupsDTO.getId() == null || getId() == null) {
+        GroupDTO groupDTO = (GroupDTO) o;
+        if (groupDTO.getId() == null || getId() == null) {
             return false;
         }
-        return Objects.equals(getId(), groupsDTO.getId());
+        return Objects.equals(getId(), groupDTO.getId());
     }
 
     @Override
@@ -75,7 +86,7 @@ public class GroupsDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "GroupsDTO{" +
+        return "GroupDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +

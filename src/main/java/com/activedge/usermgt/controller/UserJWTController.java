@@ -19,6 +19,8 @@ import java.util.Map;
 
 /**
  * Controller to authenticate users.
+ * This class is only added for documentation purposes
+ * @See com.activedge.usermgt.security.JwtUsernameAndPasswordAuthenticationFilter#61
  */
 @RestController
 @RequestMapping("/auth")
@@ -65,10 +67,10 @@ public class UserJWTController {
     @Data
     static class JWTTokenRequest {
 
-        @ApiModelProperty(notes = "Staff username", required = true)
+        @ApiModelProperty(notes = "Staff login username/email from ldap or local store", required = true)
         private String username;
 
-        @ApiModelProperty(notes = "Staff password", required = true)
+        @ApiModelProperty(notes = "Staff login password from ldap or local store", required = true)
         private String password;
 
     }

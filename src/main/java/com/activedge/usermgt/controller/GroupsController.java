@@ -2,8 +2,9 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
-import com.activedge.usermgt.model.dto.GroupsDTO;
+import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.service.GroupsService;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
+@Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group, once assigned to the group")
 public class GroupsController {
 
     private final Logger log = LoggerFactory.getLogger(GroupsController.class);
@@ -41,17 +43,17 @@ public class GroupsController {
     /**
      * POST  /groups : Create a new groups.
      *
-     * @param groupsDTO the groupsDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new groupsDTO, or with status 400 (Bad Request) if the groups has already an ID
+     * @param groupDTO the groupDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new groupDTO, or with status 400 (Bad Request) if the groups has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/groups")
-    public ResponseEntity<GroupsDTO> createGroups(@Valid @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
-        log.debug("REST request to save Group : {}", groupsDTO);
-        if (groupsDTO.getId() != null) {
+    @PostMapping("/"+ENTITY_NAME)
+    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO) throws URISyntaxException {
+        log.debug("REST request to save Group : {}", groupDTO);
+        if (groupDTO.getId() != null) {
             throw new ValidationException("A new groups cannot already have an ID");
         }
-        GroupsDTO result = groupsService.save(groupsDTO);
+        GroupDTO result = groupsService.save(groupDTO);
         return ResponseEntity.created(new URI("/api/groups/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -60,21 +62,21 @@ public class GroupsController {
     /**
      * PUT  /groups : Updates an existing groups.
      *
-     * @param groupsDTO the groupsDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated groupsDTO,
-     * or with status 400 (Bad Request) if the groupsDTO is not valid,
-     * or with status 500 (Internal Server Error) if the groupsDTO couldn't be updated
+     * @param groupDTO the groupDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated groupDTO,
+     * or with status 400 (Bad Request) if the groupDTO is not valid,
+     * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/groups")
-    public ResponseEntity<GroupsDTO> updateGroups(@Valid @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
-        log.debug("REST request to update Group : {}", groupsDTO);
-        if (groupsDTO.getId() == null) {
+    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO) throws URISyntaxException {
+        log.debug("REST request to update Group : {}", groupDTO);
+        if (groupDTO.getId() == null) {
             throw new ValidationException("Invalid id");
         }
-        GroupsDTO result = groupsService.save(groupsDTO);
+        GroupDTO result = groupsService.save(groupDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupsDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupDTO.getId().toString()))
             .body(result);
     }
 
@@ -86,9 +88,9 @@ public class GroupsController {
      * @return the ResponseEntity with status 200 (OK) and the list of groups in body
      */
     @GetMapping("/groups")
-    public ResponseEntity<List<GroupsDTO>> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<List<GroupDTO>> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Group");
-        Page<GroupsDTO> page;
+        Page<GroupDTO> page;
         if (eagerload) {
             page = groupsService.findAllWithEagerRelationships(pageable);
         } else {
@@ -105,9 +107,9 @@ public class GroupsController {
      * @return the ResponseEntity with status 200 (OK) and with body the groupsDTO, or with status 404 (Not Found)
      */
     @GetMapping("/groups/{id}")
-    public ResponseEntity<GroupsDTO> getGroups(@PathVariable Long id) {
+    public ResponseEntity<GroupDTO> getGroups(@PathVariable Long id) {
         log.debug("REST request to get Group : {}", id);
-        Optional<GroupsDTO> groupsDTO = groupsService.findOne(id);
+        Optional<GroupDTO> groupsDTO = groupsService.findOne(id);
 
         if (!groupsDTO.isPresent()) {
             throw new ValidationException("No user was found for id " + id);

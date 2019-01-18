@@ -2,18 +2,18 @@ package com.activedge.usermgt.model.mapper;
 
 
 import com.activedge.usermgt.model.Group;
-import com.activedge.usermgt.model.dto.GroupsDTO;
+import com.activedge.usermgt.model.dto.GroupDTO;
 import org.mapstruct.*;
 
 /**
- * Mapper for the entity Group and its DTO GroupsDTO.
+ * Mapper for the entity Group and its DTO GroupDTO.
  */
 @Mapper(componentModel = "spring", uses = {PermissionMapper.class})
-public interface GroupsMapper extends EntityMapper<GroupsDTO, Group> {
+public interface GroupsMapper extends EntityMapper<GroupDTO, Group> {
 
 
     @Mapping(target = "staff", ignore = true)
-    Group toEntity(GroupsDTO groupsDTO);
+    Group toEntity(GroupDTO groupDTO);
 
     default Group fromId(Long id) {
         if (id == null) {

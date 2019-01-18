@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller for managing the current user's account.
+ * This is class is currently of no significance
  */
 @RestController
 @RequestMapping("/api")
