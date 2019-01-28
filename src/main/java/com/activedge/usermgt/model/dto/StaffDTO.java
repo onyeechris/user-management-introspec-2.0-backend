@@ -1,23 +1,33 @@
 package com.activedge.usermgt.model.dto;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.activedge.usermgt.model.log.MakerItem;
+import com.activedge.usermgt.repository.redis.MakerItemRepository;
+import com.activedge.usermgt.service.SpringUtil;
+import com.activedge.usermgt.service.StaffService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import javax.persistence.Version;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * A DTO for the Staff entity.
  */
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Staff Transfer Entity")
 public class StaffDTO implements Serializable {
@@ -54,7 +64,12 @@ public class StaffDTO implements Serializable {
     @NotNull(message = "Staff access group is required.")
     private Long group_id;
 
+    @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
+
+    @ApiModelProperty(notes = "The redis reference number if available")
+    private String redis_key;
+
 
     public Boolean getActivated() {
         return activated;
@@ -126,6 +141,14 @@ public class StaffDTO implements Serializable {
 
     public void setGroup_id(Long group_id) {
         this.group_id = group_id;
+    }
+
+    public String getRedis_key() {
+        return redis_key;
+    }
+
+    public void setRedis_key(String redisKey) {
+        this.redis_key = redisKey;
     }
 
     @Override

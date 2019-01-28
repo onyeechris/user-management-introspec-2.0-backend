@@ -2,8 +2,11 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
+import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.service.PermissionService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,25 +14,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Permission.
  */
 @RestController
 @RequestMapping("/api")
+@Api(value="permission", description="Access Permission controller for assigning permissions to groups")
 public class PermissionController {
 
     private final Logger log = LoggerFactory.getLogger(PermissionController.class);
 
-    private static final String ENTITY_NAME = "permission";
+    private static final String ENTITY_NAME = "permissions";
 
     private final PermissionService permissionService;
 
@@ -44,14 +51,22 @@ public class PermissionController {
      * @return the ResponseEntity with status 201 (Created) and with body the new permissionDTO, or with status 400 (Bad Request) if the permission has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping("/permissions")
-    public ResponseEntity<PermissionDTO> createPermission(@RequestBody PermissionDTO permissionDTO) throws URISyntaxException {
-        log.debug("REST request to save Permission : {}", permissionDTO);
-        if (permissionDTO.getId() != null) {
-            throw new ValidationException("A new permission cannot already have an ID");
+    @PostMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Create a new "+ENTITY_NAME)
+    public ResponseEntity<PermissionDTO> createPermission(@Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException {
+        log.debug("REST request to save {} : {}", ENTITY_NAME, permissionDTO);
+
+        if (errors.hasErrors()) {
+            log.error("Error in creating new permission detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(", ")));
         }
+
+        permissionDTO.setId(null);
         PermissionDTO result = permissionService.save(permissionDTO);
-        return ResponseEntity.created(new URI("/api/permissions/" + result.getId()))
+
+        return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -65,13 +80,20 @@ public class PermissionController {
      * or with status 500 (Internal Server Error) if the permissionDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/permissions")
-    public ResponseEntity<PermissionDTO> updatePermission(@RequestBody PermissionDTO permissionDTO) throws URISyntaxException {
+    @PutMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
+    public ResponseEntity<PermissionDTO> updatePermission(@Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException {
         log.debug("REST request to update Permission : {}", permissionDTO);
-        if (permissionDTO.getId() == null) {
-            throw new ValidationException("Invalid id");
+
+        if (errors.hasErrors() || permissionDTO.getId() == null) {
+            log.error("Error in creating new user detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
         }
+
         PermissionDTO result = permissionService.save(permissionDTO);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, permissionDTO.getId().toString()))
             .body(result);
@@ -83,12 +105,16 @@ public class PermissionController {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of permissions in body
      */
-    @GetMapping("/permissions")
-    public ResponseEntity<List<PermissionDTO>> getAllPermissions(Pageable pageable) {
+    @GetMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
+    public ResponseEntity<ResponseWrapper> getAllPermissions(Pageable pageable) {
         log.debug("REST request to get a page of Permissions");
+
         Page<PermissionDTO> page = permissionService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/permissions");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
+
+        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
     }
 
     /**
@@ -97,13 +123,14 @@ public class PermissionController {
      * @param id the id of the permissionDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the permissionDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/permissions/{id}")
+    @GetMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<PermissionDTO> getPermission(@PathVariable Long id) {
         log.debug("REST request to get Permission : {}", id);
         Optional<PermissionDTO> permissionDTO = permissionService.findOne(id);
 
         if (!permissionDTO.isPresent()) {
-            throw new ValidationException("No user was found for id " + id);
+            throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
         HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/permissions/" + id);
@@ -117,7 +144,8 @@ public class PermissionController {
      * @param id the id of the permissionDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
-    @DeleteMapping("/permissions/{id}")
+    @DeleteMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
         log.debug("REST request to delete Permission : {}", id);
         permissionService.delete(id);

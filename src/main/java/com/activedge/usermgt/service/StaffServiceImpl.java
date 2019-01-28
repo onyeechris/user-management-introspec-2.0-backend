@@ -3,6 +3,7 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.model.enumeration.Notification;
@@ -55,42 +56,57 @@ public class StaffServiceImpl implements StaffService {
     public StaffDTO save(StaffDTO staffDTO) throws ValidatorException {
         String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
 
-        log.info("Request to save Staff: {} by User: {}", staffDTO, currentUserPosition);
+        log.info("Updating Staff: {} by User: {}", staffDTO, currentUserPosition);
 
         Staff staff = staffMapper.toEntity(staffDTO);
-        if(staff.getId() == null) {
 //            if(!currentUserPosition.equals(MakerChecker.MAKER))
 //                throw new ValidatorException(Notification.UNAUTHORIZED_ACCOUNT);
-            // new user, set default authority, and encode password
-            Set<Authority> authorities = new HashSet<>();
-            Authority authority = new Authority();
-            authority.setName(AuthoritiesConstants.USER);
-            authorities.add(authority);
-            staff.setAuthorities(authorities);
-            staff.setPassword(encoder.encode(staff.getPassword()));
-        } else {
-//            if(!currentUserPosition.equals(MakerChecker.MAKER))
-//                throw new ValidatorException(Notification.UNAUTHORIZED_ACCOUNT);
-            // get previous record and update appropriately
-            Staff s = staffMapper.toEntity(this.findOne(staff.getId()).get());
-            log.debug("Updating Staff...{}", staff.getId());
-            s.setFirstName(staff.getFirstName() == null ? s.getFirstName() : staff.getFirstName());
-            s.setLastName(staff.getLastName() == null ? s.getLastName() : staff.getLastName());
-            s.setPhone(staff.getPhone() == null ? s.getPhone() : staff.getPhone());
-            s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
-            s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
-            s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
-            s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
-            s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
-            s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
+        // get previous record and update appropriately
+        Staff s = staffMapper.toEntity(this.findOne(staff.getId()).get());
+        log.debug("Updating Staff...{}", staff.getId());
+        s.setFirstName(staff.getFirstName() == null ? s.getFirstName() : staff.getFirstName());
+        s.setLastName(staff.getLastName() == null ? s.getLastName() : staff.getLastName());
+        s.setPhone(staff.getPhone() == null ? s.getPhone() : staff.getPhone());
+        s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
+        s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
+        s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
+        s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
+        s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
+        s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
 //            if (false) { // check if item is closed
-                staff = s;
+        staff = s;
 //            } else if(false) { // check if this update requires a checker's action
 //                // serialize "s" for checker
 //            } else { // put the update on pending status
 //
 //            }
-        }
+
+        staff = staffRepository.save(staff);
+
+        return staffMapper.toDto(staff);
+
+    }
+
+    @Override
+    public StaffDTO save(NewStaffDTO staffDTO) throws ValidatorException {
+        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
+
+        log.info("Saving Staff:{} by User:{}, Password:{}", staffDTO, currentUserPosition, staffDTO.getPassword());
+
+        Staff staff = staffMapper.toEntity(staffDTO);
+        staff.setPassword(staffDTO.getPassword());
+
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = new Authority();
+        Authority authority1 = new Authority();
+        authority.setName(AuthoritiesConstants.USER);
+        authority1.setName("ROLE_" + staff.getMakerChecker());
+        authorities.add(authority);
+        authorities.add(authority1);
+
+        staff.setAuthorities(authorities);
+        staff.setPassword(encoder.encode(staff.getPassword()));
+        staff.setActivated(false);
 
         staff = staffRepository.save(staff);
 

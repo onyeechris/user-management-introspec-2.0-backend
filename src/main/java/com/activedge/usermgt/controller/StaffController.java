@@ -5,12 +5,16 @@ import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.log.MakerItem;
+import com.activedge.usermgt.repository.redis.MakerItemRepository;
+import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.LdapUserService;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +28,8 @@ import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,10 +43,11 @@ public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
 
-    private static final String ENTITY_NAME = "staff";
+    private static final String ENTITY_NAME = "staffs";
 
     private final StaffService staffService;
     private final LdapUserService ldapUserService;
+
 
     public StaffController(StaffService staffService, LdapUserService ldapUserService) {
         this.staffService = staffService;
@@ -57,7 +64,7 @@ public class StaffController {
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
     public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
-        log.debug("REST request to save a {} : {}", ENTITY_NAME, staffDTO);
+        log.info("---REST request to save a {} : {}, token: {}", ENTITY_NAME, staffDTO, SecurityUtils.getCurrentUserLogin());
 
         if (errors.hasErrors()) {
             log.error("Error in creating new user detected...\n{}", errors.getAllErrors());
@@ -111,8 +118,8 @@ public class StaffController {
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaff(Pageable pageable) {
-
         log.debug("REST request to get a page of "+ENTITY_NAME);
+
         Page<StaffDTO> page = staffService.findAll(pageable);
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);

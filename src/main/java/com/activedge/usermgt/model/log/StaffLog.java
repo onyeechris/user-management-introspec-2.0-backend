@@ -51,4 +51,5 @@ public class StaffLog {
         this.staffContent = staff.toString();
         this.action = action;
     }
+
 }

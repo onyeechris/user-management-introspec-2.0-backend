@@ -9,7 +9,7 @@ import org.mapstruct.*;
  * Mapper for the entity Group and its DTO GroupDTO.
  */
 @Mapper(componentModel = "spring", uses = {PermissionMapper.class})
-public interface GroupsMapper extends EntityMapper<GroupDTO, Group> {
+public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
 
 
     @Mapping(target = "staff", ignore = true)

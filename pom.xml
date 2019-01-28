@@ -23,6 +23,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<mapstruct.version>1.2.0.Final</mapstruct.version>
+        <jedis.version>2.9.0</jedis.version>
+        <embedded-redis.version>0.6</embedded-redis.version>
+        <nosqlunit.version>0.10.0</nosqlunit.version>
 	</properties>
 
 	<dependencies>
@@ -44,11 +47,6 @@
             <artifactId>spring-data-ldap</artifactId>
             <!--<version>1.0.6.RELEASE</version>-->
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.data</groupId>-->
-            <!--<artifactId>spring-data-jpa</artifactId>-->
-            <!--<version>1.11.9.RELEASE</version>-->
-        <!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -103,6 +101,23 @@
 			<artifactId>hibernate-envers</artifactId>
 		</dependency>
 
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.caryyu</groupId>
+            <artifactId>spring-embedded-redis-server</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
+            <type>jar</type>
+        </dependency>
+
         <!-- documentation -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -121,7 +136,7 @@
             <version>2.9.2</version>
         </dependency>
 
-		<dependency>
+        <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>

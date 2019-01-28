@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GroupsRepository extends JpaRepository<Group, Long> {
+public interface GroupRepository extends JpaRepository<Group, Long> {
 
     @Query(value = "select distinct groups from Group groups left join fetch groups.permissions",
             countQuery = "select count(distinct groups) from Group groups")

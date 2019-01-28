@@ -2,9 +2,11 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
+import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.GroupDTO;
-import com.activedge.usermgt.service.GroupsService;
+import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,25 +22,25 @@ import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Group.
  */
 @RestController
 @RequestMapping("/api")
-@Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group, once assigned to the group")
-public class GroupsController {
+@Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group.")
+public class GroupController {
 
-    private final Logger log = LoggerFactory.getLogger(GroupsController.class);
+    private final Logger log = LoggerFactory.getLogger(GroupController.class);
 
     private static final String ENTITY_NAME = "groups";
 
-    private final GroupsService groupsService;
+    private final GroupService groupService;
 
-    public GroupsController(GroupsService groupsService) {
-        this.groupsService = groupsService;
+    public GroupController(GroupService groupService) {
+        this.groupService = groupService;
     }
 
     /**
@@ -48,13 +51,21 @@ public class GroupsController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/"+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO) throws URISyntaxException {
-        log.debug("REST request to save Group : {}", groupDTO);
-        if (groupDTO.getId() != null) {
-            throw new ValidationException("A new groups cannot already have an ID");
+    @ApiOperation(value = "Create a new "+ENTITY_NAME)
+    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException {
+        log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
+
+        if (errors.hasErrors()) {
+            log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(", ")));
         }
-        GroupDTO result = groupsService.save(groupDTO);
-        return ResponseEntity.created(new URI("/api/groups/" + result.getId()))
+
+        groupDTO.setId(null);
+        GroupDTO result = groupService.save(groupDTO);
+
+        return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -68,13 +79,20 @@ public class GroupsController {
      * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/groups")
-    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO) throws URISyntaxException {
-        log.debug("REST request to update Group : {}", groupDTO);
-        if (groupDTO.getId() == null) {
-            throw new ValidationException("Invalid id");
+    @PutMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
+    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException {
+        log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
+
+        if (errors.hasErrors() || groupDTO.getId() == null) {
+            log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
         }
-        GroupDTO result = groupsService.save(groupDTO);
+
+        GroupDTO result = groupService.save(groupDTO);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupDTO.getId().toString()))
             .body(result);
@@ -87,17 +105,21 @@ public class GroupsController {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
      * @return the ResponseEntity with status 200 (OK) and the list of groups in body
      */
-    @GetMapping("/groups")
-    public ResponseEntity<List<GroupDTO>> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    @GetMapping("/"+ENTITY_NAME)
+    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
+    public ResponseEntity<ResponseWrapper> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Group");
         Page<GroupDTO> page;
+
         if (eagerload) {
-            page = groupsService.findAllWithEagerRelationships(pageable);
+            page = groupService.findAllWithEagerRelationships(pageable);
         } else {
-            page = groupsService.findAll(pageable);
+            page = groupService.findAll(pageable);
         }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/groups?eagerload=%b", eagerload));
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+
+        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
     }
 
     /**
@@ -106,16 +128,17 @@ public class GroupsController {
      * @param id the id of the groupsDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the groupsDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/groups/{id}")
+    @GetMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<GroupDTO> getGroups(@PathVariable Long id) {
         log.debug("REST request to get Group : {}", id);
-        Optional<GroupDTO> groupsDTO = groupsService.findOne(id);
+        Optional<GroupDTO> groupsDTO = groupService.findOne(id);
 
         if (!groupsDTO.isPresent()) {
-            throw new ValidationException("No user was found for id " + id);
+            throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/groups/" + id);
+        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/"+ENTITY_NAME+"/" + id);
 
         return new ResponseEntity<>(groupsDTO.get(), headers, HttpStatus.OK);
     }
@@ -126,10 +149,11 @@ public class GroupsController {
      * @param id the id of the groupsDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
-    @DeleteMapping("/groups/{id}")
+    @DeleteMapping("/"+ENTITY_NAME+"/{id}")
+    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteGroups(@PathVariable Long id) {
-        log.debug("REST request to delete Group : {}", id);
-        groupsService.delete(id);
+        log.debug("REST request to delete GROUP : {}", id);
+        groupService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

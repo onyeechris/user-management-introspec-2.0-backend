@@ -20,6 +20,8 @@ public class Group implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
+//    @GeneratedValue(strategy = GenerationType.TABLE, generator = "tableGenerator")
+//    @TableGenerator(name = "tableGenerator", initialValue = 3)
     private Long id;
 
     @NotNull

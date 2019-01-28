@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Service Interface for managing Group.
  */
-public interface GroupsService {
+public interface GroupService {
 
     /**
      * Save a groups.

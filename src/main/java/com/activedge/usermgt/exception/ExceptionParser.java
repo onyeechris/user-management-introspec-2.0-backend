@@ -28,19 +28,42 @@ public class ExceptionParser {
 		log.info("...caught validation exception...");
 
 		Map<String, Object> errors = new HashMap<>();
-		errors.put("status", HttpStatus.BAD_REQUEST.toString());
+		errors.put("status", HttpStatus.BAD_REQUEST.value());
 		errors.put("message", ve.getMessage().isEmpty() ? "Missing Object ID" : Arrays.asList(ve.getMessage().split("\\s*,\\s*")));
 
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
  
+	}
+
+	@ExceptionHandler(java.lang.RuntimeException.class)
+	public @ResponseBody Object handleActivityRequiredException(java.lang.RuntimeException ar, HttpServletRequest request) {
+		log.info("...caught action required exception...");
+
+		Throwable t = ar.getCause();
+
+        ar.printStackTrace();
+
+		if(t instanceof ActivityRequiredException) {
+            Map<String, Object> errors = new HashMap<>();
+            errors.put("status", HttpStatus.ACCEPTED.value());
+            errors.put("message", ar.getLocalizedMessage());
+            return new ResponseEntity<>(errors, HttpStatus.ACCEPTED);
+        } else {
+            Map<String, Object> errors = new HashMap<>();
+            errors.put("status", HttpStatus.BAD_REQUEST.value());
+            errors.put("message", ar.getMessage());
+
+            return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
 	}
 	
 	@ExceptionHandler(Exception.class)
 	public @ResponseBody Object handleGeneralException(HttpServletRequest request, Exception e) throws Exception {
 		log.info("...caught undefined exception...");
 
-		Map<String, String> errors = new HashMap<>();
-		errors.put("status", HttpStatus.BAD_REQUEST.toString());
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("status", HttpStatus.BAD_REQUEST.value());
 		errors.put("message", e.getMessage());
 
 		e.printStackTrace();

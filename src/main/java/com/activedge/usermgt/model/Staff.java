@@ -65,6 +65,12 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 //    @ColumnDefault("1")
     private Boolean activated = false;
 
+    @Column(nullable = true)
+    private Boolean authorized = false;
+
+    @Transient
+    private String redisKey;
+
 //    private boolean open;
 //    private Long openedBy;
 //    private Long closedBy;
@@ -76,6 +82,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
     @BatchSize(size = 10)
     private Set<Authority> authorities = new HashSet<>();
+
+
 
     @ManyToOne
 //    @JsonIgnoreProperties("staff")
@@ -210,6 +218,22 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.activated = activated;
     }
 
+    public Boolean isAuthorized() {
+        return authorized;
+    }
+
+    public void setAuthorized(Boolean authorize) {
+        this.authorized = authorize;
+    }
+
+    public String getRedisKey() {
+        return redisKey;
+    }
+
+    public void setRedisKey(String redisKey) {
+        this.redisKey = redisKey;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -241,6 +265,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
                 ", password='" + getPassword() + "'" +
                 ", makerChecker='" + getMakerChecker() + "'" +
                 ", Authorities='" + getAuthorities() + "'" +
+                ", RedisKey='" + getRedisKey() + "'" +
                 ", hireDate='" + getHireDate() + "'" +
                 "}";
     }

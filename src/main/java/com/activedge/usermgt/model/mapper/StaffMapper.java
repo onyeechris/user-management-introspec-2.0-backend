@@ -8,7 +8,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity Staff and its DTO StaffDTO.
  */
-@Mapper(componentModel = "spring", uses = {GroupsMapper.class})
+@Mapper(componentModel = "spring", uses = {GroupMapper.class})
 public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
     @Mapping(source = "group.id", target = "group_id")
@@ -16,6 +16,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "lastName", target = "last_name")
     @Mapping(source = "hireDate", target = "hire_date")
     @Mapping(source = "makerChecker", target = "maker_checker")
+    @Mapping(source = "redisKey", target = "redis_key")
     StaffDTO toDto(Staff staff);
 
     @Mapping(source = "group_id", target = "group")
@@ -23,6 +24,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "last_name", target = "lastName")
     @Mapping(source = "hire_date", target = "hireDate")
     @Mapping(source = "maker_checker", target = "makerChecker")
+    @Mapping(source = "redis_key", target = "redisKey")
     Staff toEntity(StaffDTO staffDTO);
 
     default Staff fromId(Long id) {

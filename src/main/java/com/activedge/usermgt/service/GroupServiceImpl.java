@@ -2,8 +2,8 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.dto.GroupDTO;
-import com.activedge.usermgt.model.mapper.GroupsMapper;
-import com.activedge.usermgt.repository.GroupsRepository;
+import com.activedge.usermgt.model.mapper.GroupMapper;
+import com.activedge.usermgt.repository.GroupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,17 +19,17 @@ import java.util.Optional;
  */
 @Service
 @Transactional
-public class GroupsServiceImpl implements GroupsService {
+public class GroupServiceImpl implements GroupService {
 
-    private final Logger log = LoggerFactory.getLogger(GroupsServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(GroupServiceImpl.class);
 
-    private final GroupsRepository groupsRepository;
+    private final GroupRepository groupRepository;
 
-    private final GroupsMapper groupsMapper;
+    private final GroupMapper groupMapper;
 
-    public GroupsServiceImpl(GroupsRepository groupsRepository, GroupsMapper groupsMapper) {
-        this.groupsRepository = groupsRepository;
-        this.groupsMapper = groupsMapper;
+    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper) {
+        this.groupRepository = groupRepository;
+        this.groupMapper = groupMapper;
     }
 
     /**
@@ -42,9 +42,22 @@ public class GroupsServiceImpl implements GroupsService {
     public GroupDTO save(GroupDTO groupDTO) {
         log.debug("Request to save Group : {}", groupDTO);
 
-        Group group = groupsMapper.toEntity(groupDTO);
-        group = groupsRepository.save(group);
-        return groupsMapper.toDto(group);
+        Group group = groupMapper.toEntity(groupDTO);
+
+        if(group.getId() == null) {
+            group.setStaff(null);
+            group.setPermissions(null);
+        } else {
+            Group g = groupMapper.toEntity(this.findOne(group.getId()).get());
+            log.debug("Updating Group...{}", group.getId());
+            g.setName(group.getName() == null ? g.getName() : group.getName());
+            g.setDescription(group.getDescription() == null ? g.getDescription() : group.getDescription());
+            group = g;
+        }
+
+        group = groupRepository.save(group);
+
+        return groupMapper.toDto(group);
     }
 
     /**
@@ -57,8 +70,8 @@ public class GroupsServiceImpl implements GroupsService {
     @Transactional(readOnly = true)
     public Page<GroupDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Group");
-        return groupsRepository.findAll(pageable)
-            .map(groupsMapper::toDto);
+        return groupRepository.findAll(pageable)
+            .map(groupMapper::toDto);
     }
 
     /**
@@ -67,7 +80,7 @@ public class GroupsServiceImpl implements GroupsService {
      * @return the list of entities
      */
     public Page<GroupDTO> findAllWithEagerRelationships(Pageable pageable) {
-        return groupsRepository.findAllWithEagerRelationships(pageable).map(groupsMapper::toDto);
+        return groupRepository.findAllWithEagerRelationships(pageable).map(groupMapper::toDto);
     }
     
 
@@ -81,8 +94,8 @@ public class GroupsServiceImpl implements GroupsService {
     @Transactional(readOnly = true)
     public Optional<GroupDTO> findOne(Long id) {
         log.debug("Request to get Group : {}", id);
-        return groupsRepository.findOneWithEagerRelationships(id)
-            .map(groupsMapper::toDto);
+        return groupRepository.findOneWithEagerRelationships(id)
+            .map(groupMapper::toDto);
     }
 
     /**
@@ -93,6 +106,6 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Group : {}", id);
-        groupsRepository.deleteById(id);
+        groupRepository.deleteById(id);
     }
 }

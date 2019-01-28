@@ -163,7 +163,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         newUser.setAuthorities(authorities);
         // assign new user group
         Group group = new Group();
-        group.setId(3L);
+        group.setId(0L);
         newUser.setGroup(group);
 
         staffRepository.save(newUser);

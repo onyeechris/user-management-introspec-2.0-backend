@@ -26,6 +26,12 @@ spring:
                 lob:
                   non_contextual_creation: true
               ddl-auto: create
+
+  redis:
+    host: localhost
+    port: 6379
+    embedded: true
+
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
@@ -35,7 +41,7 @@ spring:
       hikari:
           auto-commit: false
       initialization-mode: always
-      data: classpath:groups.sql, classpath:staff.sql, classpath:authorities.sql, classpath:staff_authorities.sql
+      data: classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql
 
   ldap:
 
@@ -70,3 +76,8 @@ logging:
         SQL: DEBUG
 #    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
+
+#  using for JavaSE:  java -Dspring.redis.embedded=true
+makerChecker:
+  enabled: true
+

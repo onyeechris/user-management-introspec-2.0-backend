@@ -43,7 +43,17 @@ public class PermissionServiceImpl implements PermissionService {
         log.debug("Request to save Permission : {}", permissionDTO);
 
         Permission permission = permissionMapper.toEntity(permissionDTO);
+        if(permission.getId() == null) {
+            permission.setGrps(null);
+        } else {
+            Permission p = permissionMapper.toEntity(this.findOne(permission.getId()).get());
+            log.debug("Updating Permission...{}", permission.getId());
+            p.setAction(permission.getAction() == null ? p.getAction() : permission.getAction());
+            p.setDescription(permission.getDescription() == null ? p.getDescription() : permission.getDescription());
+            permission = p;
+        }
         permission = permissionRepository.save(permission);
+
         return permissionMapper.toDto(permission);
     }
 
