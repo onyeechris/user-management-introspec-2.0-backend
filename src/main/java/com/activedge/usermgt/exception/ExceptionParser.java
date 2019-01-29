@@ -35,32 +35,31 @@ public class ExceptionParser {
  
 	}
 
-	@ExceptionHandler(java.lang.RuntimeException.class)
+	@ExceptionHandler(value
+            = { java.lang.RuntimeException.class, ActivityRequiredException.class })
 	public @ResponseBody Object handleActivityRequiredException(java.lang.RuntimeException ar, HttpServletRequest request) {
 		log.info("...caught action required exception...");
+        Throwable t = ar.getCause();
 
-		Throwable t = ar.getCause();
+        Map<String, Object> errors = new HashMap<>();
 
-        ar.printStackTrace();
-
-		if(t instanceof ActivityRequiredException) {
-            Map<String, Object> errors = new HashMap<>();
+        if(t instanceof ActivityRequiredException) {
             errors.put("status", HttpStatus.ACCEPTED.value());
             errors.put("message", ar.getLocalizedMessage());
             return new ResponseEntity<>(errors, HttpStatus.ACCEPTED);
-        } else {
-            Map<String, Object> errors = new HashMap<>();
+        } else if(t instanceof ValidationException) {
             errors.put("status", HttpStatus.BAD_REQUEST.value());
-            errors.put("message", ar.getMessage());
+            errors.put("message", t.getMessage());
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        };
 
-            return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
 	
-	@ExceptionHandler(Exception.class)
+	@ExceptionHandler(value={javax.persistence.RollbackException.class, Exception.class})
 	public @ResponseBody Object handleGeneralException(HttpServletRequest request, Exception e) throws Exception {
-		log.info("...caught undefined exception...");
+		log.info("...caught generic exception...");
 
 		Map<String, Object> errors = new HashMap<>();
 		errors.put("status", HttpStatus.BAD_REQUEST.value());

@@ -7,6 +7,7 @@ import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.model.enumeration.Notification;
+import com.activedge.usermgt.model.log.MakerItem;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.security.AuthoritiesConstants;
@@ -54,32 +55,29 @@ public class StaffServiceImpl implements StaffService {
      */
     @Override
     public StaffDTO save(StaffDTO staffDTO) throws ValidatorException {
-        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
+//        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
 
-        log.info("Updating Staff: {} by User: {}", staffDTO, currentUserPosition);
-
+        log.info("Updating Staff: {}", staffDTO);
         Staff staff = staffMapper.toEntity(staffDTO);
-//            if(!currentUserPosition.equals(MakerChecker.MAKER))
-//                throw new ValidatorException(Notification.UNAUTHORIZED_ACCOUNT);
-        // get previous record and update appropriately
-        Staff s = staffMapper.toEntity(this.findOne(staff.getId()).get());
-        log.debug("Updating Staff...{}", staff.getId());
-        s.setFirstName(staff.getFirstName() == null ? s.getFirstName() : staff.getFirstName());
-        s.setLastName(staff.getLastName() == null ? s.getLastName() : staff.getLastName());
-        s.setPhone(staff.getPhone() == null ? s.getPhone() : staff.getPhone());
-        s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
-        s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
-        s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
-        s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
-        s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
-        s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
-//            if (false) { // check if item is closed
-        staff = s;
-//            } else if(false) { // check if this update requires a checker's action
-//                // serialize "s" for checker
-//            } else { // put the update on pending status
-//
-//            }
+
+        // self update
+        if(staffDTO.getRedis_key() == null) {
+            Staff s = this.findById(staff.getId()).get();
+
+            s.setFirstName(staff.getFirstName() == null ? s.getFirstName() : staff.getFirstName());
+            s.setLastName(staff.getLastName() == null ? s.getLastName() : staff.getLastName());
+            s.setPhone(staff.getPhone() == null ? s.getPhone() : staff.getPhone());
+            s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
+            s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
+            s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
+            s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
+            s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
+            s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
+            staff = s;
+            log.info("Updating Staff...{}", staff);
+        } else {
+            staff.setId(null);
+        }
 
         staff = staffRepository.save(staff);
 
@@ -99,8 +97,8 @@ public class StaffServiceImpl implements StaffService {
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
         Authority authority1 = new Authority();
-        authority.setName(AuthoritiesConstants.USER);
-        authority1.setName("ROLE_" + staff.getMakerChecker());
+        authority.setName(staff.getMakerChecker().equals(MakerChecker.NONE) ? AuthoritiesConstants.USER : AuthoritiesConstants.ADMIN);
+        authority1.setName((staff.getMakerChecker().equals(MakerChecker.NONE) ? AuthoritiesConstants.USER : staff.getMakerChecker().toString()));
         authorities.add(authority);
         authorities.add(authority1);
 
@@ -140,6 +138,18 @@ public class StaffServiceImpl implements StaffService {
         log.debug("Request to get Staff : {}", id);
         return staffRepository.findById(id)
             .map(staffMapper::toDto);
+    }
+
+    /**
+     * Get one staff by id.
+     *
+     * @param id the id of the entity
+     * @return the entity
+     */
+    @Transactional(readOnly = true)
+    public Optional<Staff> findById(Long id) {
+        log.debug("Request to get Staff : {}", id);
+        return staffRepository.findOneWithAuthoritiesById(id);
     }
 
     /**

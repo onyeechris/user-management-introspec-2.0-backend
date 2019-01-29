@@ -30,11 +30,4 @@ public class MakerItem {
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ssS")
     private LocalDateTime at;
 
-    public String getMaker() {
-        return maker;
-    }
-
-    public void setMaker(String maker) {
-        this.maker = maker;
-    }
 }

@@ -23,10 +23,10 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     Optional<Staff> findOneByEmailIgnoreCase(String email);
 //
 //    Optional<User> findOneByLogin(String login);
-//
-//    @EntityGraph(attributePaths = "authorities")
-//    Optional<User> findOneWithAuthoritiesById(Long id);
-//
+
+    @EntityGraph(attributePaths = {"authorities"})
+    Optional<Staff> findOneWithAuthoritiesById(Long id);
+
 //    @EntityGraph(attributePaths = "authorities")
 //    Optional<User> findOneWithAuthoritiesByLogin(String login);
 

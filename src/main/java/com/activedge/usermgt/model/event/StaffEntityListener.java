@@ -23,9 +23,11 @@ import javax.persistence.PreUpdate;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.activedge.usermgt.model.enumeration.Action.DELETED;
@@ -46,8 +48,7 @@ public class StaffEntityListener {
     private Boolean mc_enabled;
 
     @PrePersist
-    public void prePersist(Staff target) throws ActivityRequiredException, JsonProcessingException {
-        perform(target, INSERTED);
+    public void prePersist(Staff target) throws ActivityRequiredException, JsonProcessingException, IOException {
 
         if(mc_enabled) {
             if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER") && !target.isAuthorized()) {
@@ -55,7 +56,10 @@ public class StaffEntityListener {
 
                 throw new ActivityRequiredException("CREATE staff still pending. CHECKER action required!");
             } else if(SecurityUtils.isCurrentUserInRole("ROLE_CHECKER") && target.getRedisKey() != null && target.getRedisKey().matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
-                if(makerItemRepository.findById(target.getRedisKey()).isPresent()) {
+                Optional<MakerItem> makerItem = makerItemRepository.findById(target.getRedisKey());
+                if(makerItem.isPresent()) {
+                    Staff staff = mapper.readValue(makerItem.get().getPayload(), Staff.class);
+                    target.setPassword(staff.getPassword());
                     makerItemRepository.deleteById(target.getRedisKey());
                     target.setRedisKey(null);
                 } else {
@@ -66,18 +70,22 @@ public class StaffEntityListener {
             }
         }
 
+        perform(target, INSERTED);
+
     }
 
     @PreUpdate
-    public void preUpdate(Staff target) throws JsonProcessingException, ActivityRequiredException {
-        perform(target, UPDATED);
+    public void preUpdate(Staff target) throws JsonProcessingException, ActivityRequiredException, IOException {
 
         if(mc_enabled) {
             if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER") && target.getRedisKey() == null) {
+                log.info("adding update staff to log...{}", target);
                 add2queue("UPDATE STAFF", target);
                 throw new ActivityRequiredException("UPDATE staff still pending. CHECKER action required!");
             } else if (SecurityUtils.isCurrentUserInRole("ROLE_CHECKER") && target.getRedisKey() != null && target.getRedisKey().matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
-                if(makerItemRepository.findById(target.getRedisKey()).isPresent()) {
+                log.info("checking... update staff to log...{}", target);
+                Optional<MakerItem> makerItem = makerItemRepository.findById(target.getRedisKey());
+                if(makerItem.isPresent()) {
                     makerItemRepository.deleteById(target.getRedisKey());
                     target.setRedisKey(null);
                 } else {
@@ -87,6 +95,8 @@ public class StaffEntityListener {
                 throw new ValidationException("Oops! you don't have the ROLE(CHECKER) to UPDATE a transaction.");
             }
         }
+
+        perform(target, UPDATED);
 
     }
 
@@ -104,7 +114,7 @@ public class StaffEntityListener {
 
     private void add2queue(String action, Object obj) throws JsonProcessingException {
         MakerItem makerItem = getMakerItem();
-        makerItem.setId(UUID.randomUUID().toString()+":"+SecurityUtils.getCurrentUserLogin().get());
+        makerItem.setId(UUID.randomUUID().toString());
         makerItem.setAction(action);
         makerItem.setPayload(getMapper().writeValueAsString(obj)); // //JSON from String to Object: Staff obj = mapper.readValue(jsonInString, Staff.class);
         makerItem.setMaker(SecurityUtils.getCurrentUserLogin().get());

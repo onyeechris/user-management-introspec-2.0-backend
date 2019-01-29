@@ -1,5 +1,5 @@
 package com.activedge.usermgt.model.enumeration;
 
 public enum MakerChecker {
-    MAKER, CHECKER
+    MAKER, CHECKER, NONE
 }

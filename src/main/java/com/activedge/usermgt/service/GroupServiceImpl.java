@@ -71,9 +71,7 @@ public class GroupServiceImpl implements GroupService {
             } else {
                 // delete permission attached to entity
                 for(PermissionDTO p: groupDTO.getPermissions()) {
-                    System.out.println("For " + p);
                     if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
-                        System.out.println("Removing... " + p);
                         g.getPermissions().remove(permissionMapper.toEntity(p));
                     }
                 }

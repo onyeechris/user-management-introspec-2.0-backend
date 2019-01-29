@@ -152,9 +152,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         newUser.setFirstName(ldapUser.getUsername().split(" ")[0]);
         newUser.setLastName(ldapUser.getUsername().split(" ")[1]);
         newUser.setEmail(ldapUser.getUserid().toLowerCase() + "@default.com");
-        newUser.setMakerChecker(MakerChecker.MAKER);
-        // new user is not active
-        newUser.setActivated(false);
+        newUser.setMakerChecker(MakerChecker.NONE);
+        // new user is active
+        newUser.setActivated(true);
         // new user gets registration key
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
