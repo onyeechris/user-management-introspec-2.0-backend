@@ -7,6 +7,8 @@ import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -63,7 +65,7 @@ public class GroupController {
         }
 
         groupDTO.setId(null);
-        GroupDTO result = groupService.save(groupDTO);
+        GroupDTO result = groupService.save(groupDTO, 1);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -79,9 +81,9 @@ public class GroupController {
      * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/"+ENTITY_NAME)
+    @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException {
+    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors() || groupDTO.getId() == null) {
@@ -91,7 +93,7 @@ public class GroupController {
                     .collect(Collectors.joining(",")));
         }
 
-        GroupDTO result = groupService.save(groupDTO);
+        GroupDTO result = groupService.save(groupDTO, flag);
 
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupDTO.getId().toString()))

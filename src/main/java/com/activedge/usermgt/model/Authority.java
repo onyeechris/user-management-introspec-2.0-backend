@@ -17,7 +17,7 @@ public class Authority implements Serializable {
     @NotNull
     @Size(max = 50)
     @Id
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String name;
 
     public String getName() {

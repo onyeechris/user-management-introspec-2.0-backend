@@ -23,13 +23,13 @@ public class Permission implements Serializable {
 
     @NotNull
     @Size(min = 3)
-    @Column(name = "action")
+    @Column(name = "action", unique = true)
     private String action;
 
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "permissions")
+    @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     @JsonIgnore
     private Set<Group> grps = new HashSet<>();
 

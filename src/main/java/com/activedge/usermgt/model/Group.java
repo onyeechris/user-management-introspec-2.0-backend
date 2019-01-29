@@ -1,6 +1,7 @@
 package com.activedge.usermgt.model;
 
 
+import org.hibernate.annotations.Cascade;
 import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ public class Group implements Serializable {
 
     @NotNull
     @Size(min = 3)
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Size(min = 10)
@@ -36,7 +37,7 @@ public class Group implements Serializable {
     @OneToMany(mappedBy = "group")
     private Set<Staff> staff = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "groups_permission",
             joinColumns = @JoinColumn(name = "groups_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "permissions_id", referencedColumnName = "id"))
@@ -152,6 +153,7 @@ public class Group implements Serializable {
                 "id=" + getId() +
                 ", name='" + getName() + "'" +
                 ", description='" + getDescription() + "'" +
+                ", permissions='" + getPermissions() + "'" +
                 "}";
     }
 }

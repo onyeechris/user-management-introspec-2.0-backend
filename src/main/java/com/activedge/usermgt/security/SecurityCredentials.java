@@ -57,7 +57,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // handle an authorized attempts
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {
-                    log.error("Error caught - Authentication failed for object {}", e.getMessage());
+                    log.error("Error caught - Authentication failed for object {}, path:{}", e.getMessage(), req.getRequestURI());
                     rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 })
                 .and()

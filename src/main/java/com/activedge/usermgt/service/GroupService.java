@@ -16,9 +16,10 @@ public interface GroupService {
      * Save a groups.
      *
      * @param groupDTO the entity to save
+     * @param flag to either delete or append attached permissions
      * @return the persisted entity
      */
-    GroupDTO save(GroupDTO groupDTO);
+    GroupDTO save(GroupDTO groupDTO, int flag);
 
     /**
      * Get all the groups.

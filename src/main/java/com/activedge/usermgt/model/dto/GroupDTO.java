@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ public class GroupDTO implements Serializable {
     @Size(min = 10, message = "group description length too short. Should be atleast 10 charaters")
     private String description;
 
+    @Valid
     private Set<PermissionDTO> permissions = new HashSet<>();
 
     public Long getId() {
@@ -90,6 +92,7 @@ public class GroupDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
+            ", permissions='" + getPermissions() + "'" +
             "}";
     }
 }
