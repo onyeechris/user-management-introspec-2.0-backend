@@ -18,6 +18,12 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 //@EnableRedisRepositories(basePackages = "com.activedge.usermgt.repository.redis")
 public class RedisConfig {
 
+    @Bean
+    public RedisServerConfiguration redisServerConfiguration() {
+        return new RedisServerConfiguration();
+    }
+
+    /*
     private RedisServer redisServer;
 
     @Value("${spring.redis.port}")
@@ -33,5 +39,6 @@ public class RedisConfig {
     public void stopRedis() {
         redisServer.stop();
     }
+    */
 
 }
