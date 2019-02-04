@@ -65,15 +65,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 //    @ColumnDefault("1")
     private Boolean activated = false;
 
-    @Column(nullable = true)
-    private Boolean authorized = false;
-
     @Transient
     private String redisKey;
-
-//    private boolean open;
-//    private Long openedBy;
-//    private Long closedBy;
 
     @ManyToMany
     @JoinTable(
@@ -216,14 +209,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     public void setActivated(Boolean activated) {
         this.activated = activated;
-    }
-
-    public Boolean isAuthorized() {
-        return authorized;
-    }
-
-    public void setAuthorized(Boolean authorize) {
-        this.authorized = authorize;
     }
 
     public String getRedisKey() {

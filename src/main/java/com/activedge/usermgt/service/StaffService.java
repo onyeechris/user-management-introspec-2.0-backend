@@ -5,7 +5,6 @@ import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sun.security.validator.ValidatorException;
 
 import java.util.Optional;
 
@@ -20,7 +19,7 @@ public interface StaffService {
      * @param staffDTO the entity to save
      * @return the persisted entity
      */
-    StaffDTO save(StaffDTO staffDTO) throws ValidatorException;
+    StaffDTO save(StaffDTO staffDTO);
 
     /**
      * Save a new staff.
@@ -28,7 +27,7 @@ public interface StaffService {
      * @param staffDTO the entity to save
      * @return the persisted entity
      */
-    StaffDTO save(NewStaffDTO staffDTO) throws ValidatorException;
+    StaffDTO save(NewStaffDTO staffDTO);
 
     /**
      * Get all the staff.

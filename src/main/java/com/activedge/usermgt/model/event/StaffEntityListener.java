@@ -51,7 +51,7 @@ public class StaffEntityListener {
     public void prePersist(Staff target) throws ActivityRequiredException, JsonProcessingException, IOException {
 
         if(mc_enabled) {
-            if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER") && !target.isAuthorized()) {
+            if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER")) {
                 add2queue("CREATE STAFF", target);
 
                 throw new ActivityRequiredException("CREATE staff still pending. CHECKER action required!");
@@ -89,7 +89,7 @@ public class StaffEntityListener {
                     makerItemRepository.deleteById(target.getRedisKey());
                     target.setRedisKey(null);
                 } else {
-                    throw new ValidationException("Oops! no pending record found for ref[" + target.getRedisKey() +"]");
+                    throw new ValidationException("Oops! no pending record found for ref[" + target.getRedisKey() + "]");
                 }
             } else {
                 throw new ValidationException("Oops! you don't have the ROLE(CHECKER) to UPDATE a transaction.");

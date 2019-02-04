@@ -2,16 +2,13 @@ package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
 import com.activedge.usermgt.repository.StaffRepository;
-import com.activedge.usermgt.security.JwtTokenAuthenticationFilter;
 import com.activedge.usermgt.service.LdapUserService;
-import com.sun.jndi.ldap.LdapClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

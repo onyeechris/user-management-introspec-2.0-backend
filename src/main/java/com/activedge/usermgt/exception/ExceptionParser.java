@@ -35,8 +35,9 @@ public class ExceptionParser {
  
 	}
 
-	@ExceptionHandler(value
-            = { java.lang.RuntimeException.class, ActivityRequiredException.class })
+//	@ExceptionHandler(value
+//            = { java.lang.RuntimeException.class, ActivityRequiredException.class }
+	@ExceptionHandler(java.lang.RuntimeException.class)
 	public @ResponseBody Object handleActivityRequiredException(java.lang.RuntimeException ar, HttpServletRequest request) {
 		log.info("...caught action required exception...");
         Throwable t = ar.getCause();
@@ -57,8 +58,8 @@ public class ExceptionParser {
 
 	}
 	
-	@ExceptionHandler(value={javax.persistence.RollbackException.class, Exception.class})
-	public @ResponseBody Object handleGeneralException(HttpServletRequest request, Exception e) throws Exception {
+	@ExceptionHandler(Exception.class)
+	public @ResponseBody Object handleGeneralException(Exception e, HttpServletRequest request) throws Exception {
 		log.info("...caught generic exception...");
 
 		Map<String, Object> errors = new HashMap<>();

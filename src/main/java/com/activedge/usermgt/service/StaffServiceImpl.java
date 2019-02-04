@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.security.validator.ValidatorException;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public class StaffServiceImpl implements StaffService {
      * @return the persisted entity
      */
     @Override
-    public StaffDTO save(StaffDTO staffDTO) throws ValidatorException {
+    public StaffDTO save(StaffDTO staffDTO) {
 //        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
 
         log.info("Updating Staff: {}", staffDTO);
@@ -86,7 +85,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public StaffDTO save(NewStaffDTO staffDTO) throws ValidatorException {
+    public StaffDTO save(NewStaffDTO staffDTO) {
         String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getMakerChecker().name();
 
         log.info("Saving Staff:{} by User:{}, Password:{}", staffDTO, currentUserPosition, staffDTO.getPassword());
