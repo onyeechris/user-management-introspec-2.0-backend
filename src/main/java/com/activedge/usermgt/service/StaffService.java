@@ -1,8 +1,10 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,7 +21,7 @@ public interface StaffService {
      * @param staffDTO the entity to save
      * @return the persisted entity
      */
-    StaffDTO save(StaffDTO staffDTO);
+    StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
 
     /**
      * Save a new staff.
@@ -27,7 +29,7 @@ public interface StaffService {
      * @param staffDTO the entity to save
      * @return the persisted entity
      */
-    StaffDTO save(NewStaffDTO staffDTO);
+    StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException;
 
     /**
      * Get all the staff.

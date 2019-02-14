@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified by and created,
@@ -25,25 +26,41 @@ public abstract class AbstractAuditingEntity<U> implements Serializable {
 
     protected static final long serialVersionUID = 1L;
 
-    @CreatedBy
     @Column(name = "created_by", nullable = false, length = 50, updatable = false)
     @JsonIgnore
     protected String createdBy;
 
-    @CreatedDate
+    @CreatedBy
+    @Column(name = "approved_by", nullable = false, length = 50, updatable = false)
+    @JsonIgnore
+    protected String approvedBy;
+
     @Column(name = "created_date", nullable = false, updatable = false)
     @JsonIgnore
-//    @Temporal(TemporalType.TIMESTAMP)
-    protected Instant createdDate = Instant.now();
+    protected LocalDateTime createdDate = LocalDateTime.now();
 
-    @LastModifiedBy
+    @CreatedDate
+    @Column(name = "approved_date", nullable = false, updatable = false)
+    @JsonIgnore
+//    @Temporal(TemporalType.TIMESTAMP)
+    protected Instant approvedDate = Instant.now();
+
     @Column(name = "last_modified_by", length = 50)
     @JsonIgnore
     protected U lastModifiedBy;
 
-    @LastModifiedDate
+    @LastModifiedBy
+    @Column(name = "last_modified_approved_by", length = 50)
+    @JsonIgnore
+    protected U lastModifiedApprovedBy;
+
     @Column(name = "last_modified_date")
     @JsonIgnore
-    protected Instant lastModifiedDate = Instant.now();
+    protected LocalDateTime lastModifiedDate = LocalDateTime.now();
+
+    @LastModifiedDate
+    @Column(name = "last_modified_approved_date")
+    @JsonIgnore
+    protected Instant lastModifiedApprovedDate = Instant.now();
 
 }

@@ -68,6 +68,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
 
+            System.out.println("makersecret Password is " + this.encoder.encode("makersecret"));
+            System.out.println("checkersecret Password is " + this.encoder.encode("checkersecret"));
+            System.out.println("sysdev Password is " + this.encoder.encode("sysdevsecret"));
+
             // Create auth object (contains credentials) which will be used by auth manager
             UsernamePasswordAuthenticationToken daoAuthToken = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(), creds.getPassword(), Collections.emptyList());

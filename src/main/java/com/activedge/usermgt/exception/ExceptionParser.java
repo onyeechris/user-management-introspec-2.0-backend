@@ -35,26 +35,25 @@ public class ExceptionParser {
  
 	}
 
-//	@ExceptionHandler(value
-//            = { java.lang.RuntimeException.class, ActivityRequiredException.class }
-	@ExceptionHandler(java.lang.RuntimeException.class)
-	public @ResponseBody Object handleActivityRequiredException(java.lang.RuntimeException ar, HttpServletRequest request) {
+	@ExceptionHandler(ActivityRequiredException.class)
+	public @ResponseBody Object handleActivityRequiredException(ActivityRequiredException ar, HttpServletRequest request) {
 		log.info("...caught action required exception...");
-        Throwable t = ar.getCause();
+//        Throwable t = ar.getCause();
+        ar.printStackTrace();
 
         Map<String, Object> errors = new HashMap<>();
 
-        if(t instanceof ActivityRequiredException) {
+//        if(t instanceof ActivityRequiredException) {
             errors.put("status", HttpStatus.ACCEPTED.value());
-            errors.put("message", ar.getLocalizedMessage());
+            errors.put("message", ar.getMessage());
             return new ResponseEntity<>(errors, HttpStatus.ACCEPTED);
-        } else if(t instanceof ValidationException) {
-            errors.put("status", HttpStatus.BAD_REQUEST.value());
-            errors.put("message", t.getMessage());
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        };
+//        } else if(t instanceof ValidationException) {
+//            errors.put("status", HttpStatus.BAD_REQUEST.value());
+//            errors.put("message", t.getMessage());
+//            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+//        };
 
-		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+//		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
 	

@@ -60,18 +60,27 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
                 .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(staffRepository, authenticationManager(), jwtConfig, ldapUserService, encoder))
+
                 // Add a filter to check token for secured resource
                 .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
+
+                .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
                 .antMatchers("/api/permissions/**").hasRole("INTROSPEC-SYSDEV")
-                .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
-                .antMatchers("/api/groups/**").hasRole("INTROSPEC-SYSADMIN")
-                .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("INTROSPEC-SYSADMIN", "INTROSPEC-SYSDEV")
-                .antMatchers("/api/staff/**").hasRole("INTROSPEC-SYSADMIN")
+
+                .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.POST, "/api/groups/**").hasRole("MAKER")
+                .antMatchers("/api/groups/**").hasAnyRole("CHECKER", "MAKER")
+
+                .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.POST, "/api/staff/**").hasRole("MAKER")
+                .antMatchers("/api/staff/**").hasAnyRole("CHECKER", "MAKER")
+
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
+
                 // any other requests must be authenticated
                 .anyRequest().authenticated().and().cors();
 

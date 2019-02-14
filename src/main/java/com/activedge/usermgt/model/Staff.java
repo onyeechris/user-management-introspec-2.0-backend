@@ -5,6 +5,7 @@ import com.activedge.usermgt.model.event.StaffEntityListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -21,13 +22,13 @@ import java.util.Set;
 @Entity
 @Table(name = "staff")
 @EntityListeners(StaffEntityListener.class)
+@SequenceGenerator(name = "tabGenerator", initialValue = 4, allocationSize = 50)
 public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tabGenerator")
     private Long id;
 
     @NotNull
@@ -250,6 +251,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
                 ", password='" + getPassword() + "'" +
                 ", makerChecker='" + getMakerChecker() + "'" +
                 ", Authorities='" + getAuthorities() + "'" +
+                ", Group='" + getGroup() + "'" +
                 ", RedisKey='" + getRedisKey() + "'" +
                 ", hireDate='" + getHireDate() + "'" +
                 "}";

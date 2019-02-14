@@ -25,6 +25,7 @@ public class MakerItem {
     private String id;
     private String action;
     private String payload;
+    private String raw;
     @Indexed
     private String maker;
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ssS")

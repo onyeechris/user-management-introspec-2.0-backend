@@ -5,7 +5,6 @@ import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.enumeration.Action;
 import com.activedge.usermgt.model.log.MakerItem;
 import com.activedge.usermgt.model.log.StaffLog;
-import com.activedge.usermgt.repository.StaffLogRepository;
 import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.BeanUtil;
@@ -14,25 +13,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.transaction.Transactional;
-import javax.validation.ValidationException;
-
 import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-import static com.activedge.usermgt.model.enumeration.Action.DELETED;
-import static com.activedge.usermgt.model.enumeration.Action.INSERTED;
-import static com.activedge.usermgt.model.enumeration.Action.UPDATED;
+import static com.activedge.usermgt.model.enumeration.Action.*;
 import static javax.transaction.Transactional.TxType.MANDATORY;
 
 @Slf4j
@@ -49,7 +38,8 @@ public class StaffEntityListener {
 
     @PrePersist
     public void prePersist(Staff target) throws ActivityRequiredException, JsonProcessingException, IOException {
-
+        System.out.println("...@PrePersist");
+        /*
         if(mc_enabled) {
             if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER")) {
                 add2queue("CREATE STAFF", target);
@@ -59,24 +49,35 @@ public class StaffEntityListener {
                 Optional<MakerItem> makerItem = makerItemRepository.findById(target.getRedisKey());
                 if(makerItem.isPresent()) {
                     Staff staff = mapper.readValue(makerItem.get().getPayload(), Staff.class);
-                    target.setPassword(staff.getPassword());
-                    makerItemRepository.deleteById(target.getRedisKey());
-                    target.setRedisKey(null);
+                    Set<Authority> authorities = staff.getAuthorities();
+                    Group group = staff.getGroup();
+                    group.setPermissions(null);
+                    group.setStaff(null);
+                    System.out.println("Authorities: " + authorities + " Group: " + group);
+                    staff.setAuthorities(authorities);
+                    staff.setGroup(group);
+//                    target.setPassword(staff.getPassword());
+                    target = staff;
+                    System.out.println("maker is ... " + makerItem.get().getMaker());
+                    target.setCreatedBy(makerItem.get().getMaker());
+                    makerItemRepository.deleteById(makerItem.get().getId());
+//                    target.setRedisKey(null);
                 } else {
-                    throw new ValidationException("Oops! no pending record found for ref[" + target.getRedisKey() +"]");
+                    throw new ValidationException("Oops! no pending/todo record found for ref[" + target.getRedisKey() +"]");
                 }
             } else {
                 throw new ValidationException("Oops! you don't have the ROLE(MAKER) to create a transaction.");
             }
         }
-
+        */
         perform(target, INSERTED);
 
     }
 
     @PreUpdate
     public void preUpdate(Staff target) throws JsonProcessingException, ActivityRequiredException, IOException {
-
+        System.out.println("...@PreUpdate");
+        /*
         if(mc_enabled) {
             if(SecurityUtils.isCurrentUserInRole("ROLE_MAKER") && target.getRedisKey() == null) {
                 log.info("adding update staff to log...{}", target);
@@ -95,48 +96,26 @@ public class StaffEntityListener {
                 throw new ValidationException("Oops! you don't have the ROLE(CHECKER) to UPDATE a transaction.");
             }
         }
+        */
 
         perform(target, UPDATED);
 
     }
 
     @PreRemove
-    public void preRemove(Staff target) {
-        System.out.println("...In preRemove()");
+    public void preRemove(Staff target) throws ActivityRequiredException {
+        System.out.println("...@preRemove()");
+        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
+            throw new ActivityRequiredException("Only Supervisors can delete!");
+        }
         perform(target, DELETED);
     }
 
     @Transactional(MANDATORY)
     public void perform(Staff target, Action action) {
+        log.info("About to save staff ... {}", target);
         EntityManager entityManager = BeanUtil.getBean(EntityManager.class);
         entityManager.persist(new StaffLog(target, action));
-    }
-
-    private void add2queue(String action, Object obj) throws JsonProcessingException {
-        MakerItem makerItem = getMakerItem();
-        makerItem.setId(UUID.randomUUID().toString());
-        makerItem.setAction(action);
-        makerItem.setPayload(getMapper().writeValueAsString(obj)); // //JSON from String to Object: Staff obj = mapper.readValue(jsonInString, Staff.class);
-        makerItem.setMaker(SecurityUtils.getCurrentUserLogin().get());
-        makerItem.setAt(java.time.LocalDateTime.now());
-        makerItemRepository.save(makerItem);
-
-        log.info("Redis ref: {}", makerItem);
-
-    }
-
-    private static MakerItem getMakerItem() {
-        if(makerItem == null) {
-            makerItem = new MakerItem();
-        }
-        return makerItem;
-    }
-
-    private static ObjectMapper getMapper() {
-        if(mapper == null) {
-            mapper = new ObjectMapper();
-        }
-        return mapper;
     }
 
 }
