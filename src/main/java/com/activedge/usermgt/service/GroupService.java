@@ -1,7 +1,9 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.dto.GroupDTO;
+import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,7 +21,7 @@ public interface GroupService {
      * @param flag to either delete or append attached permissions
      * @return the persisted entity
      */
-    GroupDTO save(GroupDTO groupDTO, int flag);
+    GroupDTO save(GroupDTO groupDTO, int flag) throws NotFoundException, ActivityRequiredException;
 
     /**
      * Get all the groups.

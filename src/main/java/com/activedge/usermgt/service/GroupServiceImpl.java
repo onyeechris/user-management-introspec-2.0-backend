@@ -1,5 +1,6 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.GroupDTO;
@@ -7,7 +8,11 @@ import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.repository.GroupRepository;
+import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.util.Lambda;
+import com.activedge.usermgt.util.facade.GroupSpy;
+import com.activedge.usermgt.util.facade.Spy;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +35,16 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
 
+    private MakerItemRepository makerItemRepository;
+
     private final GroupMapper groupMapper;
     private final PermissionMapper permissionMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper) {
+    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, MakerItemRepository makerItemRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
+        this.makerItemRepository = makerItemRepository;
     }
 
     /**
@@ -46,7 +54,7 @@ public class GroupServiceImpl implements GroupService {
      * @return the persisted entity
      */
     @Override
-    public GroupDTO save(GroupDTO groupDTO, int flag) {
+    public GroupDTO save(GroupDTO groupDTO, int flag) throws NotFoundException, ActivityRequiredException {
 //        Group group = groupMapper.toEntity(groupDTO);
         log.info("Request to save Group : {}", groupDTO);
         Group g;
@@ -55,9 +63,7 @@ public class GroupServiceImpl implements GroupService {
         if(groupDTO.getId() != null) {
             Optional<Group> group = this.findById(groupDTO.getId());
 
-            if(!group.isPresent()) try { // recheck
-                throw new ClassNotFoundException("No Id["+groupDTO.getId()+"] found !");
-            } catch (ClassNotFoundException e) { }
+            if(!group.isPresent()) throw new NotFoundException("No Id["+groupDTO.getId()+"] found !");
 
             g = group.get();
 
@@ -77,7 +83,15 @@ public class GroupServiceImpl implements GroupService {
                 }
                 groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
             }
+            log.info("Updating group... {}", groupDTO);
+        } else {
+            // create new group
+            groupDTO.setPermissions(new HashSet<>());
+            log.info("Saving group... {}", groupDTO);
         }
+
+        Spy spyGroupObj = new GroupSpy(groupMapper.toEntity(groupDTO), this.makerItemRepository);
+        spyGroupObj.checkModel();
 
         g = groupRepository.save(groupMapper.toEntity(groupDTO));
 

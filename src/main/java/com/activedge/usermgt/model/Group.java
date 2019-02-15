@@ -1,9 +1,6 @@
 package com.activedge.usermgt.model;
 
 
-import org.hibernate.annotations.Cascade;
-import org.springframework.data.repository.cdi.Eager;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -14,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "groups")
-public class Group implements Serializable {
+public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,6 +40,9 @@ public class Group implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "permissions_id", referencedColumnName = "id"))
     private Set<Permission> permissions = new HashSet<>();
 
+    @Transient
+    private String redisKey;
+
     public Long getId() {
         return id;
     }
@@ -58,6 +58,14 @@ public class Group implements Serializable {
     public Group name(String name) {
         this.name = name;
         return this;
+    }
+
+    public String getRedisKey() {
+        return redisKey;
+    }
+
+    public void setRedisKey(String redisKey) {
+        this.redisKey = redisKey;
     }
 
     public void setName(String name) {

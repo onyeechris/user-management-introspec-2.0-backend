@@ -1,5 +1,5 @@
-insert into groups(id, name, description)
-values(0, 'INTROSPEC-DEFAULT', 'This group exposes priviledges for default users.');
+insert into groups(id, name, description, created_by, approved_by, created_date, approved_date)
+values(0, 'INTROSPEC-DEFAULT', 'This group exposes priviledges for default users.', 'default', '2019-01-09', '2019-01-09', '2019-01-09');
 --
 -- insert into groups(id, name, description)
 -- values(2, 'INTROSPEC-SYSADMIN', 'This group exposes ALL priviledges except adding endpoints to Super Admins.');

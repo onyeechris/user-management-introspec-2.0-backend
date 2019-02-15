@@ -33,6 +33,9 @@ public class GroupDTO implements Serializable {
     @Valid
     private Set<PermissionDTO> permissions = new HashSet<>();
 
+    @ApiModelProperty(notes = "The redis reference number if available")
+    private String redis_key;
+
     public Long getId() {
         return id;
     }
@@ -63,6 +66,14 @@ public class GroupDTO implements Serializable {
 
     public void setPermissions(Set<PermissionDTO> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getRedis_key() {
+        return redis_key;
+    }
+
+    public void setRedis_key(String redis_key) {
+        this.redis_key = redis_key;
     }
 
     @Override

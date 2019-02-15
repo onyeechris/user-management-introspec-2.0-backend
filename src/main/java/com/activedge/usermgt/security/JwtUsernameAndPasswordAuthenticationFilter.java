@@ -68,10 +68,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
 
-            System.out.println("makersecret Password is " + this.encoder.encode("makersecret"));
-            System.out.println("checkersecret Password is " + this.encoder.encode("checkersecret"));
-            System.out.println("sysdev Password is " + this.encoder.encode("sysdevsecret"));
-
             // Create auth object (contains credentials) which will be used by auth manager
             UsernamePasswordAuthenticationToken daoAuthToken = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(), creds.getPassword(), Collections.emptyList());
@@ -194,6 +190,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             out = response.getWriter();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+            response.setHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorization, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers");
             out.print(json);
             out.flush();
         } catch (IOException e) {

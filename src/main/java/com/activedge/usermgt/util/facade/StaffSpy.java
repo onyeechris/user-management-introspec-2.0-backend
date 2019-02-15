@@ -27,14 +27,14 @@ public class StaffSpy extends Spy implements RedisQueue {
 
     @Override
     void logRequest() throws ActivityRequiredException {
-        log.info("Logging request...");
+        log.info("Logging staff request...");
         add2Queue("STAFF", this.staff);
         throw new ActivityRequiredException("Staff request still pending. CHECKER action required!");
     }
 
     @Override
     void approveRequest() {
-        log.info("Approving request... {}", this.staff);
+        log.info("Approving staff request... {}", this.staff);
         if(this.staff.getRedisKey() != null && this.staff.getRedisKey().matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
             Optional<MakerItem> makerItem = makerItemRepository.findById(this.staff.getRedisKey());
             if(makerItem.isPresent()) {

@@ -11,8 +11,11 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses = {PermissionMapper.class})
 public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
 
+    @Mapping(source = "redisKey", target = "redis_key")
+    GroupDTO toDto(Group group);
 
     @Mapping(target = "staff", ignore = true)
+    @Mapping(source = "redis_key", target = "redisKey")
     Group toEntity(GroupDTO groupDTO);
 
     default Group fromId(Long id) {

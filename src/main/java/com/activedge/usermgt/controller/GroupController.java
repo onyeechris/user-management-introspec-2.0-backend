@@ -3,12 +3,14 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -54,7 +56,7 @@ public class GroupController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException {
+    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors()) {
@@ -83,7 +85,7 @@ public class GroupController {
      */
     @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException {
+    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors() || groupDTO.getId() == null) {
