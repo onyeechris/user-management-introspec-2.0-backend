@@ -28,8 +28,9 @@ public class GroupSpy extends Spy implements RedisQueue {
 
     @Override
     void logRequest() throws ActivityRequiredException {
-        log.info("Logging group request...");
-        add2Queue("GROUP", this.group);
+        log.info("Logging group request..." + this.group);
+        String action = this.group.getId() != null ? "UPDATE GROUP" : "CREATE GROUP";
+        add2Queue(action, this.group);
         throw new ActivityRequiredException("Group request still pending. CHECKER action required!");
     }
 

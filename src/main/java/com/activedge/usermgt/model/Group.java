@@ -1,6 +1,8 @@
 package com.activedge.usermgt.model;
 
 
+import com.activedge.usermgt.model.event.GroupEntityListener;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "groups")
+@EntityListeners(GroupEntityListener.class)
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;

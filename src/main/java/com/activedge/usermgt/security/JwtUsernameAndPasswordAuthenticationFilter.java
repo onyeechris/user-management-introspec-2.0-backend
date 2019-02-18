@@ -125,6 +125,11 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     public String generateToken(Authentication auth, Staff staff) {
         Long now = System.currentTimeMillis();
 
+        System.out.println("Staff permissions: --- " + staff.getGroup().getPermissions()
+                .stream()
+                .map(permission -> permission.getAction())
+                .collect(Collectors.joining(",")));
+
         return Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.
@@ -134,7 +139,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .claim("permissions", staff.getGroup().getPermissions()
                         .stream()
                         .map(permission -> permission.getAction())
-                        .collect(Collectors.joining(",")))
+                        .collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())

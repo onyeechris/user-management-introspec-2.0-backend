@@ -67,7 +67,7 @@ public class GroupController {
         }
 
         groupDTO.setId(null);
-        GroupDTO result = groupService.save(groupDTO, 1);
+        GroupDTO result = groupService.save(groupDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -98,7 +98,7 @@ public class GroupController {
         GroupDTO result = groupService.save(groupDTO, flag);
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 

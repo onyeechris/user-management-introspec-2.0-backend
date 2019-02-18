@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ValidationException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -60,7 +61,7 @@ public class GroupServiceImpl implements GroupService {
         Group g;
 
 
-        if(groupDTO.getId() != null) {
+        if(groupDTO.getRedis_key() == null) {
             Optional<Group> group = this.findById(groupDTO.getId());
 
             if(!group.isPresent()) throw new NotFoundException("No Id["+groupDTO.getId()+"] found !");
@@ -85,17 +86,51 @@ public class GroupServiceImpl implements GroupService {
             }
             log.info("Updating group... {}", groupDTO);
         } else {
-            // create new group
+//            Spy spyStaffObj = new StaffSpy(staff, this.makerItemRepository);
+//            spyStaffObj.checkModel();
+            // (approve) create new group
+            groupDTO.setId(null);
             groupDTO.setPermissions(new HashSet<>());
             log.info("Saving group... {}", groupDTO);
         }
 
-        Spy spyGroupObj = new GroupSpy(groupMapper.toEntity(groupDTO), this.makerItemRepository);
+        g = groupMapper.toEntity(groupDTO);
+
+        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
         spyGroupObj.checkModel();
 
-        g = groupRepository.save(groupMapper.toEntity(groupDTO));
+        // added for tests
+//        Group gg = groupMapper.toEntity(groupDTO);
+//        gg.setCreatedBy("test");
+//        gg.setCreatedDate(LocalDateTime.now());
 
-        return groupMapper.toDto(g);
+//        g = groupRepository.save(gg);
+
+        return groupMapper.toDto(groupRepository.save(g));
+    }
+
+    @Override
+    public GroupDTO save(GroupDTO groupDTO) throws NotFoundException, ActivityRequiredException {
+        log.info("Request to save Group : {}", groupDTO);
+
+        Group g;
+
+        // create new group
+        groupDTO.setPermissions(new HashSet<>());
+        log.info("Saving group... {}", groupDTO);
+        g = groupMapper.toEntity(groupDTO);
+
+        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
+        spyGroupObj.checkModel();
+
+        // added for tests
+//        Group gg = groupMapper.toEntity(groupDTO);
+//        gg.setCreatedBy("test");
+//        gg.setCreatedDate(LocalDateTime.now());
+
+//        g = groupRepository.save(gg);
+
+        return groupMapper.toDto(groupRepository.save(g));
     }
 
     /**

@@ -22,6 +22,7 @@ public interface GroupService {
      * @return the persisted entity
      */
     GroupDTO save(GroupDTO groupDTO, int flag) throws NotFoundException, ActivityRequiredException;
+    GroupDTO save(GroupDTO groupDTO) throws NotFoundException, ActivityRequiredException;
 
     /**
      * Get all the groups.
