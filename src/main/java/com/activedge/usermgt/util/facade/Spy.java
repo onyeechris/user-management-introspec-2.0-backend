@@ -4,6 +4,8 @@ import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.log.MakerItem;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +67,8 @@ public abstract class Spy {
     protected static ObjectMapper getMapper() {
         if(mapper == null) {
             mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         }
         return mapper;
     }

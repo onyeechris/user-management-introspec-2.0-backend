@@ -85,14 +85,12 @@ public class GroupServiceImpl implements GroupService {
                 groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
             }
             log.info("Updating group... {}", groupDTO);
-        } else {
-//            Spy spyStaffObj = new StaffSpy(staff, this.makerItemRepository);
-//            spyStaffObj.checkModel();
-            // (approve) create new group
-            groupDTO.setId(null);
-            groupDTO.setPermissions(new HashSet<>());
-            log.info("Saving group... {}", groupDTO);
         }
+//        else {
+//            groupDTO.setId(null);
+//            groupDTO.setPermissions(new HashSet<>());
+//            log.info("Saving group... {}", groupDTO);
+//        }
 
         g = groupMapper.toEntity(groupDTO);
 

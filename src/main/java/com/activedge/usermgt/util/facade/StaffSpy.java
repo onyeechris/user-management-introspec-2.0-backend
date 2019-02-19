@@ -27,8 +27,9 @@ public class StaffSpy extends Spy implements RedisQueue {
 
     @Override
     void logRequest() throws ActivityRequiredException {
-        log.info("Logging staff request...");
-        add2Queue("STAFF", this.staff);
+        log.info("Logging staff request...{}", this.staff);
+        String action = this.staff.getId() != null ? "UPDATE STAFF" : "CREATE STAFF";
+        add2Queue(action, this.staff);
         throw new ActivityRequiredException("Staff request still pending. CHECKER action required!");
     }
 
@@ -42,7 +43,7 @@ public class StaffSpy extends Spy implements RedisQueue {
                 try {
                     staf = getMapper().readValue(makerItem.get().getPayload(), Staff.class);
                 } catch (IOException e){e.printStackTrace();}
-
+                log.info("staf is {}", staf);
                 this.staff.setId(staf.getId());
                 this.staff.setFirstName(staf.getFirstName());
                 this.staff.setLastName(staf.getLastName());

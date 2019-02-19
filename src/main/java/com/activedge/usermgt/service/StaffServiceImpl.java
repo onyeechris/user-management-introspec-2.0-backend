@@ -118,7 +118,7 @@ public class StaffServiceImpl implements StaffService {
 
         staff.setAuthorities(authorities);
         staff.setPassword(encoder.encode(staff.getPassword()));
-        staff.setActivated(false);
+        staff.setActivated(true);
 
         // Check staff
         Spy spyStaffObj = new StaffSpy(staff, makerItemRepository);

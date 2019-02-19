@@ -43,6 +43,10 @@ spring:
       initialization-mode: always
       data: classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
 
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
   ldap:
 
     # Spring LDAP
@@ -80,4 +84,3 @@ logging:
 #  using for JavaSE:  java -Dspring.redis.embedded=true
 makerChecker:
   enabled: true
-
