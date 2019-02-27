@@ -344,6 +344,26 @@ class Groups extends Component {
   updateGroup = (flag) => {
     console.log(this.state.singleGroupData);
 
+    if (myCurrentPermissions) {
+      groupDataToUpdate.permissions = [];
+      console.log(groupDataToUpdate.permissions);
+      let permissionObject = {};
+      myCurrentPermissions.forEach(permission => {
+        this.state.permissionData.forEach(item => {
+          permissionObject = {};
+          if (permission === item.action) {
+            permissionObject = {
+              'id': item.id,
+              'action': permission,
+              'description': item.description
+            };
+            groupDataToUpdate.permissions.push(permissionObject);
+          }
+          console.log(groupDataToUpdate.permissions);
+        });
+      });
+    }
+
     groupDataToUpdate.id = this.state.singleGroupData.id;
     groupDataToUpdate.name = this.state.singleGroupData.name;
     groupDataToUpdate.description = this.state.singleGroupData.description;
@@ -425,29 +445,28 @@ class Groups extends Component {
     let { singleGroupData } = this.state;
     let { showAction } = this.state;
 
-    console.log(this.state.selected);
-    console.log(this.state.permissionData);
-    if (this.state.selected) {
-      groupDataToUpdate.permissions = [];
-      console.log(groupDataToUpdate.permissions);
-      let permissionObject = {};
-      myCurrentPermissions.forEach(permission => {
-        this.state.permissionData.forEach(item => {
-          permissionObject = {};
-          if (permission === item.action) {
-            permissionObject = {
-              'id': item.id,
-              'action': permission,
-              'description': item.description
-            };
-            groupDataToUpdate.permissions.push(permissionObject);
-          }
-          console.log(groupDataToUpdate.permissions);
-        });
-      });
-    }
+    console.log("THIS IS THE CURRENT VERSION : UPDATED 10PM.");
 
-    console.log(groupDataToUpdate);
+    // if (this.state.selected) {
+    //   groupDataToUpdate.permissions = [];
+    //   console.log(groupDataToUpdate.permissions);
+    //   let permissionObject = {};
+    //   myCurrentPermissions.forEach(permission => {
+    //     this.state.permissionData.forEach(item => {
+    //       permissionObject = {};
+    //       if (permission === item.action) {
+    //         permissionObject = {
+    //           'id': item.id,
+    //           'action': permission,
+    //           'description': item.description
+    //         };
+    //         groupDataToUpdate.permissions.push(permissionObject);
+    //       }
+    //       console.log(groupDataToUpdate.permissions);
+    //     });
+    //   });
+    // }
+
 
     return (
       <div className="animated fadeIn">

@@ -73,8 +73,9 @@ class Login extends Component {
   updateValue(field, event) {
     var userInfo = JSON.parse(JSON.stringify(this.state.userLogin));
     userInfo[field] = event.target.value;
-    this.setState({ userLogin: userInfo });
-    console.log(this.state.userLogin);
+    // this.setState({ userLogin: userInfo });
+    this.setState({ userLogin: userInfo }, e => console.log(this.state.userLogin));
+    // console.log(this.state.userLogin);
   }
 
   menuHome() {
