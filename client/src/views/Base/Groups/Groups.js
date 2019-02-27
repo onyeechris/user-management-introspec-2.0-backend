@@ -25,6 +25,7 @@ let groupDataToUpdate = {};
 
 let loadedPermissionsData = [];
 let loggedInUserRole = "";
+let myCurrentPermissions = [];
 class Groups extends Component {
 
   constructor(props) {
@@ -419,6 +420,8 @@ class Groups extends Component {
   render() {
     const groups = this.state.groupData ? this.state.groupData : {};
 
+    console.log(myCurrentPermissions);
+
     let { singleGroupData } = this.state;
     let { showAction } = this.state;
 
@@ -428,7 +431,7 @@ class Groups extends Component {
       groupDataToUpdate.permissions = [];
       console.log(groupDataToUpdate.permissions);
       let permissionObject = {};
-      this.state.selected.forEach(permission => {
+      myCurrentPermissions.forEach(permission => {
         this.state.permissionData.forEach(item => {
           permissionObject = {};
           if (permission === item.action) {
@@ -439,6 +442,7 @@ class Groups extends Component {
             };
             groupDataToUpdate.permissions.push(permissionObject);
           }
+          console.log(groupDataToUpdate.permissions);
         });
       });
     }
@@ -635,7 +639,8 @@ class Groups extends Component {
                         options={loadedPermissionsData[0]}
                         selected={this.state.selected}
                         onChange={(selected) => {
-                          this.setState({ selected });
+                          this.setState({ selected: selected });
+                          myCurrentPermissions = selected;
                         }}
                       />
                       <ModalFooter>
@@ -648,7 +653,8 @@ class Groups extends Component {
                         options={loadedPermissionsData[0]}
                         selected={this.state.selected}
                         onChange={(selected) => {
-                          this.setState({ selected });
+                          this.setState({ selected: selected });
+                          myCurrentPermissions = selected;
                         }}
                       />
                       <ModalFooter>
