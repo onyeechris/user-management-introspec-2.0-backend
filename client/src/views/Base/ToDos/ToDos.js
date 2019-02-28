@@ -229,7 +229,7 @@ class ToDos extends Component {
     let singleStaff = {};
     if (singleStaffData.payload) {
       let currentStaffData = JSON.parse(singleStaffData.payload);
-      singleStaff.activated = true; 
+      singleStaff.activated = true;
       singleStaff.group_id = currentStaffData.group.id;
       singleStaff.group_name = "";
       this.state.smallGroupData.forEach(group => {
@@ -296,7 +296,7 @@ class ToDos extends Component {
                       <th style={showAction}>Action</th>
                     </tr>
                   </thead>
-                  <tbody>{toDos.map((item, key) => {
+                  <tbody>{toDos ? toDos.map((item, key) => {
                     var dataPayload = JSON.parse(item.payload);
                     return (
                       <tr key={key}>
@@ -313,7 +313,7 @@ class ToDos extends Component {
                         </td>
                       </tr>
                     )
-                  })}
+                  }) : "List is Empty"}
                   </tbody>
                 </Table>
                 {/* <nav>

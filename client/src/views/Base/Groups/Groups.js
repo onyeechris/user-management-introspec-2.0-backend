@@ -22,6 +22,7 @@ import classnames from 'classnames';
 //   { value: 'seven', label: 'Set-up Products' },
 // ];
 let groupDataToUpdate = {};
+groupDataToUpdate.permissions = [];
 
 let loadedPermissionsData = [];
 let loggedInUserRole = "";
@@ -33,6 +34,7 @@ class Groups extends Component {
     this.state = {
       groupData: [],
       permissionData: [],
+      myOtherGroupObject: {},
       redirectToReferrer: false,
       redirectToMainMenu: false,
       modal: false,
@@ -79,7 +81,7 @@ class Groups extends Component {
     this.findGroup = this.findGroup.bind(this);
     this.findGroupView = this.findGroupView.bind(this);
     this.fetchGroups = this.fetchGroups.bind(this);
-    this.findPermissionPopulate = this.findPermissionPopulate.bind(this);
+    // this.findPermissionPopulate = this.findPermissionPopulate.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
     this.dropDowntoggle = this.dropDowntoggle.bind(this);
@@ -102,6 +104,12 @@ class Groups extends Component {
       axios.get(permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         console.log(response.data)
         this.setState({ permissionData: response.data.payload });
+        // loadedPermissionsData = [
+        //   response.data.payload.map((item) => {
+        //     console.log(JSON.stringify(item.id));
+        //     return ({ value: JSON.stringify(item.id), label: item.action })
+        //   })
+        // ];
         loadedPermissionsData = [
           response.data.payload.map((item) => {
             return ({ value: item.action, label: item.action })
@@ -208,42 +216,15 @@ class Groups extends Component {
     let apiUrl = 'groups';
     axios.get(this.state.baseUrl + apiUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data);
-        console.log("I fetched!");
+        // console.log(response.data);
+        // console.log("I fetched!");
         this.setState({ groupData: response.data.payload });
       }).catch(err => {
         console.log(err);
       })
   }
 
-  findGroup(groupId) {
-    let apiUrl = 'groups/' + groupId;
-    console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singleGroupData: response.data });
-        let resPermissions = response.data.permissions;
-        let perm = [];
-        resPermissions.forEach(permission => {
-          perm.push(permission.action);
-        })
-        console.log(perm);
-        this.setState({ selected: perm });
 
-        console.log(response.data);
-        console.log(this.state.selected);
-        // groupDataToUpdate = response.data;
-      }).then(this.toggleEdit())
-      .catch(err => {
-        // debugger;
-        console.log("Couldn't find single group data: " + err);
-      })
-  }
 
   findGroupView(groupId) {
     let apiUrl = 'groups/' + groupId;
@@ -296,26 +277,7 @@ class Groups extends Component {
       })
   }
 
-  findPermissionPopulate(permissionId) {
-    let apiUrl = 'permissions/' + permissionId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singlePermissionData: response.data });
-        // this.state.newGroupData.permissions.push(response.data);
-        // this.state.singleGroupData.permissions.push(response.data);
-        groupDataToUpdate.permissions.push(response.data);
-      })
-      .catch(err => {
-        console.log("Couldn't find single permission data, " + err);
-      })
-  }
+
 
 
   deleteGroup(groupId) {
@@ -341,63 +303,196 @@ class Groups extends Component {
     }
   }
 
+
+  // findPermissionPopulate(permissionId) {
+  //   let apiUrl = 'permissions/' + permissionId;
+  //   console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+  //   console.log(this.state.baseUrl + apiUrl);
+
+
+  //   const findPermission = () => {
+  //     axios.get(this.state.baseUrl + apiUrl,
+  //       {
+  //         headers: {
+  //           'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+  //         }
+  //       })
+  //       .then(response => {
+  //         this.setState({ singlePermissionData: response.data });
+  //         // this.state.newGroupData.permissions.push(response.data);
+  //         // this.state.singleGroupData.permissions.push(response.data);
+  //         groupDataToUpdate.permissions.push(response.data);
+  //         console.log(groupDataToUpdate);
+  //         // this.setState({ singleGroupData: groupDataToUpdate }, e => { console.log(this.state.singleGroupData) });
+  //         this.setState({ myOtherGroupObject: groupDataToUpdate }, e => { console.log(this.state.myOtherGroupObject); });
+  //         return response.data;
+  //       })
+  //       .catch(err => {
+  //         console.log("Couldn't find single permission data, " + err);
+  //       })
+
+
+  //   }
+
+  //   const getPermission = async () => {
+
+  //     try {
+  //       const response = await findPermission()
+  //       // debugger;
+  //       if (response) {
+  //         console.log(groupDataToUpdate);
+  //       }
+  //     }
+  //     catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+
+  //   getPermission();
+
+
+  //   // this.setState({ singleGroupData: groupDataToUpdate }, e => { console.log(this.state.singleGroupData) });
+  // }
+
+
+  findGroup(groupId) {
+    let apiUrl = 'groups/' + groupId;
+    // console.log(this.state.baseUrl + apiUrl);
+    axios.get(this.state.baseUrl + apiUrl,
+      {
+        headers: {
+          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+        }
+      })
+      .then(response => {
+        this.setState({ singleGroupData: response.data });
+        let resPermissions = response.data.permissions;
+        let perm = [];
+        resPermissions.forEach(permission => {
+          perm.push(permission.action);
+        })
+        console.log(perm);
+        console.log(this.state.singleGroupData);
+        this.setState({ selected: perm });
+        myCurrentPermissions = perm;
+
+      }).then(this.toggleEdit())
+      .catch(err => {
+        // debugger;
+        console.log("Couldn't find single group data: " + err);
+      })
+  }
+
   updateGroup = (flag) => {
     console.log(this.state.singleGroupData);
+    console.log(groupDataToUpdate);
 
-    if (myCurrentPermissions) {
-      groupDataToUpdate.permissions = [];
-      console.log(groupDataToUpdate.permissions);
-      let permissionObject = {};
-      myCurrentPermissions.forEach(permission => {
-        this.state.permissionData.forEach(item => {
-          permissionObject = {};
-          if (permission === item.action) {
-            permissionObject = {
-              'id': item.id,
-              'action': permission,
-              'description': item.description
-            };
-            groupDataToUpdate.permissions.push(permissionObject);
-          }
-          console.log(groupDataToUpdate.permissions);
+
+    // const populateObject = () => {
+    //   console.log(groupDataToUpdate.permissions);
+    //   console.log(myCurrentPermissions);
+    //   myCurrentPermissions.forEach(permission => {
+    //     this.findPermissionPopulate(permission);
+    //   });
+    // }
+
+    // debugger;
+
+    const populateMyPermissions = () => {
+
+      if (myCurrentPermissions) {
+        groupDataToUpdate.permissions = [];
+        console.log(groupDataToUpdate.permissions);
+        let permissionObject = {};
+        myCurrentPermissions.forEach(permission => {
+          this.state.permissionData.forEach(item => {
+            permissionObject = {};
+            if (permission === item.action) {
+              permissionObject = {
+                'id': item.id,
+                'action': permission,
+                'description': item.description
+              };
+              groupDataToUpdate.permissions.push(permissionObject);
+            }
+            console.log(groupDataToUpdate.permissions);
+
+          });
         });
-      });
+        groupDataToUpdate.id = this.state.singleGroupData.id;
+        groupDataToUpdate.name = this.state.singleGroupData.name;
+        groupDataToUpdate.description = this.state.singleGroupData.description;
+
+        return true;
+      }
+
+      console.log(groupDataToUpdate.permissions);
+
+
+
+
+
+
+      // console.log(groupDataToUpdate.permissions);
+
+    }
+    // console.log(groupDataToUpdate);
+    // console.log(this.state.singleGroupData);
+    // console.log(anotherGroupObject);
+    // console.log(this.state.myOtherGroupObject);
+
+
+    const updateTheGroup = () => {
+
+      if (groupDataToUpdate.name) {
+
+        let apiUrl = 'groups/';
+
+        console.log(this.state.baseUrl + apiUrl + flag);
+        console.log(groupDataToUpdate);
+        // debugger;
+        axios.put(this.state.baseUrl + apiUrl + flag,
+          // this.state.singleGroupData,
+          groupDataToUpdate,
+          {
+            headers: {
+              'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
+              'content-type': 'application/json'
+            }
+          })
+          .then(response => {
+            console.log(response);
+            console.log(groupDataToUpdate);
+            this.setState({ newCreatedGroup: groupDataToUpdate });
+          })
+          .catch(err => {
+            console.log("Could not update group record- " + err);
+            // debugger;
+          })
+        this.setState({ visibleUpdate: true });
+        this.toggleEdit();
+      } else {
+        this.setState({ formError: "The group must have a name." });
+      }
     }
 
-    groupDataToUpdate.id = this.state.singleGroupData.id;
-    groupDataToUpdate.name = this.state.singleGroupData.name;
-    groupDataToUpdate.description = this.state.singleGroupData.description;
 
-    if (groupDataToUpdate.name && groupDataToUpdate.description) {
+    const updateMyGroup = async () => {
 
-      let apiUrl = 'groups/';
-
-      console.log(this.state.baseUrl + apiUrl + flag);
-      console.log(groupDataToUpdate);
-      // debugger;
-      axios.put(this.state.baseUrl + apiUrl + flag,
-        groupDataToUpdate,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
-            'content-type': 'application/json'
-          }
-        })
-        .then(response => {
-          console.log(response);
-          this.setState({ newCreatedGroup: groupDataToUpdate });
-        })
-        .catch(err => {
-          console.log("Could not update group record- " + err);
-          // debugger;
-        })
-
-      this.setState({ visibleUpdate: true });
-      this.toggleEdit();
+      try {
+        const response = await populateMyPermissions()
+        // debugger;
+        if (response) {
+          updateTheGroup();
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
     }
-    else {
-      this.setState({ formError: "The group must have a name and a description." });
-    }
+
+    updateMyGroup();
+
   }
 
   onSearch(text) {
@@ -441,11 +536,12 @@ class Groups extends Component {
     const groups = this.state.groupData ? this.state.groupData : {};
 
     console.log(myCurrentPermissions);
+    // console.log(this.state.selected);
 
     let { singleGroupData } = this.state;
     let { showAction } = this.state;
 
-    console.log("THIS IS THE CURRENT VERSION : UPDATED 10PM.");
+    // console.log("THIS IS THE CURRENT VERSION : UPDATED 10PM.");
 
     // if (this.state.selected) {
     //   groupDataToUpdate.permissions = [];
@@ -615,7 +711,7 @@ class Groups extends Component {
                   </FormGroup>
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="description">Description <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="description">Description</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="description" name="description" placeholder="Enter Description" required
@@ -729,7 +825,7 @@ class Groups extends Component {
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="name">Name</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="name" name="name" placeholder="Enter Group Name" readOnly
