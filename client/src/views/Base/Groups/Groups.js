@@ -404,21 +404,21 @@ class Groups extends Component {
         groupDataToUpdate.permissions = [];
         console.log(groupDataToUpdate.permissions);
         let permissionObject = {};
-        myCurrentPermissions.forEach(permission => {
-          this.state.permissionData.forEach(item => {
-            permissionObject = {};
-            if (permission === item.action) {
-              permissionObject = {
-                'id': item.id,
-                'action': permission,
-                'description': item.description
-              };
-              groupDataToUpdate.permissions.push(permissionObject);
-            }
-            console.log(groupDataToUpdate.permissions);
+        // myCurrentPermissions.forEach(permission => {
+        //   this.state.permissionData.forEach(item => {
+        //     permissionObject = {};
+        //     if (permission === item.action) {
+        //       permissionObject = {
+        //         'id': item.id,
+        //         'action': permission,
+        //         'description': item.description
+        //       };
+        //       groupDataToUpdate.permissions.push(permissionObject);
+        //     }
+        //     console.log(groupDataToUpdate.permissions);
 
-          });
-        });
+        //   });
+        // });
         groupDataToUpdate.id = this.state.singleGroupData.id;
         groupDataToUpdate.name = this.state.singleGroupData.name;
         groupDataToUpdate.description = this.state.singleGroupData.description;
@@ -540,6 +540,24 @@ class Groups extends Component {
 
     let { singleGroupData } = this.state;
     let { showAction } = this.state;
+
+    let permissionObject = {};
+    groupDataToUpdate.permissions = [];
+    myCurrentPermissions.forEach(permission => {
+      this.state.permissionData.forEach(item => {
+        permissionObject = {};
+        if (permission === item.action) {
+          permissionObject = {
+            'id': item.id,
+            'action': permission,
+            'description': item.description
+          };
+          groupDataToUpdate.permissions.push(permissionObject);
+        }
+        console.log(groupDataToUpdate.permissions);
+
+      });
+    });
 
     // console.log("THIS IS THE CURRENT VERSION : UPDATED 10PM.");
 
