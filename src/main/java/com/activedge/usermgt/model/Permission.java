@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "permissions")
-@SequenceGenerator(name = "permGenerator", initialValue = 5, allocationSize = 50)
+@SequenceGenerator(name = "permGenerator", initialValue = 40, allocationSize = 50)
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -1,0 +1,6 @@
+{
+  "name": "Staffs",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Staffs.js"
+}
