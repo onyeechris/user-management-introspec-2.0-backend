@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Form, FormGroup, Input, Label, Alert } from 'reactstrap';
 import axios from 'axios';
+import Pagination2 from "react-js-pagination";
 
 let loggedInUser = "";
 
@@ -12,6 +13,9 @@ class Permissions extends Component {
     super(props);
     this.state = {
       permissionData: [],
+      permissionTableData: {},
+      itemsPerPage: '',
+      activePage: 1,
       modal: false,
       editModal: false,
       confirmModal: false,
@@ -43,17 +47,19 @@ class Permissions extends Component {
     this.fetchPermissions = this.fetchPermissions.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
+    this.changePageItem = this.changePageItem.bind(this);
   }
 
   componentDidMount() {
     if (typeof this.props.permission === 'undefined') {
 
       console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      let baseUrl = 'http://localhost:9100/api/permissions';
-      //let header = new Headers({ "Content-Type": "application/json", "Authorization": JSON.parse(sessionStorage.getItem("userData")).token });
-      axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+      let { baseUrl } = this.state;
+      let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
+      axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         console.log(response.data)
         this.setState({ permissionData: response.data.payload });
+        this.setState({ permissionTableData: response.data.meta });
       }).catch(err => {
         //debugger;
       })
@@ -67,6 +73,15 @@ class Permissions extends Component {
         this.setState({ showAction: visible });
       }
     }
+  }
+
+
+  handlePageChange = (pageNumber) => {
+    let pageNumberParam = pageNumber - 1;
+    this.fetchPermissionsPage(pageNumberParam);
+    this.setState({ activePage: pageNumber });
+    // this.props.fetchOffices(pageNumber);
+    // this.setState({activePage: pageNumber});
   }
 
 
@@ -236,7 +251,20 @@ class Permissions extends Component {
   }
 
   fetchPermissions() {
-    let permissionUrl = 'permissions';
+    let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
+    console.log(this.state.baseUrl + permissionUrl);
+    axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+      .then((response) => {
+        console.log(response.data.payload);
+        console.log("I fetched!");
+        this.setState({ permissionData: response.data.payload });
+      }).catch(err => {
+        //debugger;
+        console.log("Error fetching permissions");
+      })
+  }
+  fetchPermissionsPage(pageNumber) {
+    let permissionUrl = 'permissions?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
     console.log(this.state.baseUrl + permissionUrl);
     axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
@@ -250,6 +278,31 @@ class Permissions extends Component {
   }
 
 
+  changePageItem(numberOfItems) {
+    console.log("Your items per page: " + numberOfItems.target.value);
+
+    const updateStateVariable = () => {
+      this.setState({ itemsPerPage: numberOfItems.target.value });
+      return true;
+    }
+
+    //using an asynchronous function
+
+    const reloadTable = async () => {
+
+      try {
+        const response = await updateStateVariable();
+        if (response) {
+          this.fetchPermissions();
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    reloadTable();
+  }
 
 
 
@@ -268,6 +321,16 @@ class Permissions extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> All Permissions
+                <div className="pull-right">
+                  <select onChange={this.changePageItem.bind(this)} className="form-control">
+                    <option>No of Items</option>
+                    <option value="2">2</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
@@ -300,18 +363,15 @@ class Permissions extends Component {
                   })}
                   </tbody>
                 </Table>
-                {/* <nav>
-                  <Pagination>
-                    <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-                    <PaginationItem active>
-                      <PaginationLink tag="button">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-                  </Pagination>
-                </nav> */}
+                <nav>
+                  <Pagination2
+                    activePage={this.state.activePage}
+                    itemsCountPerPage={this.state.itemsPerPage}
+                    totalItemsCount={this.state.permissionTableData ? this.state.permissionTableData.totalElements : null}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange}
+                  />
+                </nav>
               </CardBody>
             </Card>
           </Col>

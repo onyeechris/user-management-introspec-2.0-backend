@@ -8,6 +8,8 @@ import 'flatpickr/dist/themes/material_green.css'
 import "react-datepicker/dist/react-datepicker.css";
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
+// var DataTable = require('react-data-components').DataTable;
+import Pagination2 from "react-js-pagination";
 
 let loggedInUserRole = "";
 class Staffs extends Component {
@@ -16,6 +18,9 @@ class Staffs extends Component {
     super(props);
     this.state = {
       staffData: [],
+      staffTableData: {},
+      itemsPerPage: '',
+      activePage: 1,
       redirectToReferrer: false,
       redirectToMainMenu: false,
       modal: false,
@@ -65,12 +70,15 @@ class Staffs extends Component {
     if (sessionStorage.getItem("userData")) {
       console.log(JSON.parse(sessionStorage.getItem("userData")).token);
 
-      let staffUrl = 'staffs';
+      let staffUrl = 'staffs?size=' + this.state.itemsPerPage;
       console.log(this.state.baseUrl + staffUrl);
       axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
         .then((response) => {
-          console.log(response.data.payload)
+          console.log(response.data.payload);
+          console.log(response.data.meta);
           this.setState({ staffData: response.data.payload });
+          this.setState({ staffTableData: response.data.meta });
+          this.setState({ itemsPerPage: response.data.meta.size });
         }).catch(err => {
           //debugger;
           console.log("Error fetching staffs");
@@ -99,6 +107,16 @@ class Staffs extends Component {
       this.setState({ showAction: makeVisible });
     }
   }
+
+
+  handlePageChange = (pageNumber) => {
+    let pageNumberParam = pageNumber - 1;
+    this.fetchStaffPage(pageNumberParam);
+    this.setState({ activePage: pageNumber });
+    // this.props.fetchOffices(pageNumber);
+    // this.setState({activePage: pageNumber});
+  }
+
 
   toggle() {
     this.setState({ formError: "" });
@@ -286,7 +304,20 @@ class Staffs extends Component {
   }
 
   fetchStaffs() {
-    let staffUrl = 'staffs';
+    let staffUrl = 'staffs?size=' + this.state.itemsPerPage;
+    console.log(this.state.baseUrl + staffUrl);
+    axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+      .then((response) => {
+        console.log(response.data.payload)
+        this.setState({ staffData: response.data.payload });
+      }).catch(err => {
+        //debugger;
+        console.log("Error fetching staffs");
+      })
+  }
+
+  fetchStaffPage(pageNumber) {
+    let staffUrl = 'staffs?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
     console.log(this.state.baseUrl + staffUrl);
     axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
@@ -320,13 +351,29 @@ class Staffs extends Component {
       return itemGroupName;
     }
 
-    const staff = this.state.staffData;
+    let staff = this.state.staffData;
     const staffGroup = this.state.groupData;
     const singleStaff = this.state.singleStaffData;
     // if (singleStaff.first_name) {
     //   console.log(singleStaff.first_name);
     //   console.log(singleStaff);
     // }
+
+    // var columns = [
+    //   { title: 'ID', prop: 'id' },
+    //   { title: 'First Name', prop: 'first_ame' },
+    //   { title: 'Email', prop: 'email' },
+    //   { title: 'Role', prop: 'role' },
+    //   { title: 'Group', prop: 'group' },
+    //   { title: 'Action', prop: 'action' }
+    // ];
+
+    // var data = [
+    //   { name: 'name value', city: 'city value', address: 'address value', phone: 'phone value' }
+    //   // It also supports arrays
+    //   // [ 'name value', 'city value', 'address value', 'phone value' ]
+    // ];
+
     return (
 
       <div className="animated fadeIn">
@@ -373,6 +420,15 @@ class Staffs extends Component {
                   })}
                   </tbody>
                 </Table>
+                <nav>
+                  <Pagination2
+                    activePage={this.state.activePage}
+                    itemsCountPerPage={this.state.itemsPerPage}
+                    totalItemsCount={this.state.staffTableData ? this.state.staffTableData.totalElements : null}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange}
+                  />
+                </nav>
                 {/* <nav>
                   <Pagination>
                     <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
@@ -389,6 +445,24 @@ class Staffs extends Component {
             </Card>
           </Col>
         </Row>
+
+        {/* <DataTable
+          keys="name"
+          columns={columns}
+          initialData={data}
+          initialPageLength={5}
+          initialSortBy={{ prop: 'city', order: 'descending' }}
+        /> */}
+
+        {/* <DataTable
+      className="container"
+      keys="id"
+      columns={columns}
+      initialData={data}
+      initialPageLength={5}
+      initialSortBy={{ prop: 'city', order: 'descending' }}
+      pageLengthOptions={[ 5, 20, 50 ]}
+    /> */}
 
         <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Staff</Button>
 
