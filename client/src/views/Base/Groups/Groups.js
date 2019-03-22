@@ -591,6 +591,9 @@ class Groups extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> All Groups
+                <div className="pull-right">
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create Group</Button>
+                </div>
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
@@ -639,7 +642,7 @@ class Groups extends Component {
             </Card>
           </Col>
         </Row>
-        <Button onClick={this.toggle} className="mr-1" style={showAction}>Create Group</Button>
+
 
 
 

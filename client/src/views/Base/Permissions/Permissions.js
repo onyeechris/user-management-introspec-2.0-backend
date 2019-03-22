@@ -14,7 +14,7 @@ class Permissions extends Component {
     this.state = {
       permissionData: [],
       permissionTableData: {},
-      itemsPerPage: '',
+      itemsPerPage: 10,
       activePage: 1,
       modal: false,
       editModal: false,
@@ -322,9 +322,14 @@ class Permissions extends Component {
               <CardHeader>
                 <i className="fa fa-align-justify"></i> All Permissions
                 <div className="pull-right">
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Permission</Button>
+                </div>
+                <div className="pull-right" style={showAction}>
+                  &nbsp; &nbsp;
+                </div>
+                <div className="pull-right">
                   <select onChange={this.changePageItem.bind(this)} className="form-control">
-                    <option>No of Items</option>
-                    <option value="2">2</option>
+                    <option value="10">No of Items: 10</option>
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -378,7 +383,7 @@ class Permissions extends Component {
         </Row>
 
 
-        <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Permission</Button>
+
 
         {/* Create Permission Modal */}
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>

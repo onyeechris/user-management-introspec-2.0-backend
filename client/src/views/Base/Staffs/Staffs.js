@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Form, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
-// import DatePicker from "react-datepicker";
+import DatePicker from "react-datepicker";
 // import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/material_green.css'
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,7 +19,7 @@ class Staffs extends Component {
     this.state = {
       staffData: [],
       staffTableData: {},
-      itemsPerPage: '',
+      itemsPerPage: 20,
       activePage: 1,
       redirectToReferrer: false,
       redirectToMainMenu: false,
@@ -63,6 +63,7 @@ class Staffs extends Component {
     this.fetchStaffs = this.fetchStaffs.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
+    this.changePageItem = this.changePageItem.bind(this);
   }
 
   componentDidMount() {
@@ -111,7 +112,7 @@ class Staffs extends Component {
 
   handlePageChange = (pageNumber) => {
     let pageNumberParam = pageNumber - 1;
-    this.fetchStaffPage(pageNumberParam);
+    this.fetchStaffsPage(pageNumberParam);
     this.setState({ activePage: pageNumber });
     // this.props.fetchOffices(pageNumber);
     // this.setState({activePage: pageNumber});
@@ -316,7 +317,7 @@ class Staffs extends Component {
       })
   }
 
-  fetchStaffPage(pageNumber) {
+  fetchStaffsPage(pageNumber) {
     let staffUrl = 'staffs?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
     console.log(this.state.baseUrl + staffUrl);
     axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
@@ -328,6 +329,37 @@ class Staffs extends Component {
         console.log("Error fetching staffs");
       })
   }
+
+
+
+  changePageItem(numberOfItems) {
+    console.log("Your items per page: " + numberOfItems.target.value);
+
+    const updateStateVariable = () => {
+      this.setState({ itemsPerPage: numberOfItems.target.value });
+      return true;
+    }
+
+    //using an asynchronous function
+
+    const reloadTable = async () => {
+
+      try {
+        const response = await updateStateVariable();
+        if (response) {
+          this.fetchStaffs();
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    reloadTable();
+  }
+
+
+
 
 
 
@@ -383,6 +415,23 @@ class Staffs extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> All Staffs
+                <div className="pull-right">
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Staff</Button>
+                </div>
+                <div className="pull-right">
+                  &nbsp; &nbsp;
+                </div>
+                <div className="pull-right">
+                  <select onChange={this.changePageItem.bind(this)} className="form-control">
+                    <option value="20">No of Items</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
+
+
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
@@ -464,7 +513,9 @@ class Staffs extends Component {
       pageLengthOptions={[ 5, 20, 50 ]}
     /> */}
 
-        <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Staff</Button>
+
+
+
 
         {/* Create Staff Modal */}
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
