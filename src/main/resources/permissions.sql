@@ -40,7 +40,7 @@ insert into permissions(id, action, description) values(34, 'getProcessorSummary
 insert into permissions(id, action, description) values(35, 'createProcessorSummaryDefinition', '');
 insert into permissions(id, action, description) values(36, 'getProcessorSummaryDefinition', '');
 insert into permissions(id, action, description) values(37, 'editProcessorSummaryDefinition', '');
-insert into permissions(id, action, description) values(38, 'getProcessorSummaryDefinitions', '');
+---insert into permissions(id, action, description) values(38, 'getProcessorSummaryDefinitions', '');
 insert into permissions(id, action, description) values(39, 'getSummaryBatchesByParameters', '');
 insert into permissions(id, action, description) values(40, 'getSummaryDetailsByParameters', '');
 insert into permissions(id, action, description) values(41, 'getAllAccounts', '');
@@ -119,5 +119,7 @@ insert into permissions(id, action, description) values(113, 'createAccountBatch
 insert into permissions(id, action, description) values(114, 'updateAccountBatch', '');
 insert into permissions(id, action, description) values(115, 'approveAccountBatch', '');
 insert into permissions(id, action, description) values(116, 'getAllManualAccountBatches', '');
+insert into permissions(id, action, description) values(117, 'approvePost', '');
+insert into permissions(id, action, description) values(118, 'approveExceptionPost', '');
 
 COMMIT;
