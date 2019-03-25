@@ -1,22 +1,51 @@
 -- Settlement Endpoints Permissions
-insert into permissions(id, action, description) values(1, 'CREATE-ACCOUNT', 'creating account endpoint');
-insert into permissions(id, action, description) values(2, 'POST-ACCOUNT', 'endpoint for posting to core banking');
+insert into permissions
+    (id, action, description)
+values(1, 'CREATE-ACCOUNT', 'creating account endpoint');
+insert into permissions
+    (id, action, description)
+values(2, 'POST-ACCOUNT', 'endpoint for posting to core banking');
 
 -- ATMRecon Endpoints Permissions
-insert into permissions(id, action, description) values(3, 'VIEW-JOURNAL', 'creating ATM branch endpoint');
-insert into permissions(id, action, description) values(4, 'VIEW-OFFICE', '');
-insert into permissions(id, action, description) values(5, 'CREATE-OFFICE', '');
-insert into permissions(id, action, description) values(6, 'DELETE-OFFICE', '');
-insert into permissions(id, action, description) values(7, 'VIEW-TERMINAL', '');
-insert into permissions(id, action, description) values(8, 'CREATE-TERMINAL', '');
-insert into permissions(id, action, description) values(9, 'DELETE-TERMINAL', '');
-insert into permissions(id, action, description) values(10, 'UPDATE-TERMINAL', '');
-insert into permissions(id, action, description) values(11, 'VIEW-TERMINAL-BRAND', '');
-insert into permissions(id, action, description) values(12, 'CREATE-TERMINAL-BRAND', '');
-insert into permissions(id, action, description) values(13, 'DELETE-TERMINAL-BRAND', '');
-insert into permissions(id, action, description) values(14, 'UPDATE-TERMINAL-BRAND', '');
+insert into permissions
+    (id, action, description)
+values(3, 'VIEW-JOURNAL', 'creating ATM branch endpoint');
+insert into permissions
+    (id, action, description)
+values(4, 'VIEW-OFFICE', '');
+insert into permissions
+    (id, action, description)
+values(5, 'CREATE-OFFICE', '');
+insert into permissions
+    (id, action, description)
+values(6, 'DELETE-OFFICE', '');
+insert into permissions
+    (id, action, description)
+values(7, 'VIEW-TERMINAL', '');
+insert into permissions
+    (id, action, description)
+values(8, 'CREATE-TERMINAL', '');
+insert into permissions
+    (id, action, description)
+values(9, 'DELETE-TERMINAL', '');
+insert into permissions
+    (id, action, description)
+values(10, 'UPDATE-TERMINAL', '');
+insert into permissions
+    (id, action, description)
+values(11, 'VIEW-TERMINAL-BRAND', '');
+insert into permissions
+    (id, action, description)
+values(12, 'CREATE-TERMINAL-BRAND', '');
+insert into permissions
+    (id, action, description)
+values(13, 'DELETE-TERMINAL-BRAND', '');
+insert into permissions
+    (id, action, description)
+values(14, 'UPDATE-TERMINAL-BRAND', '');
 
 -- SettlementApp Endpoints Permission
+<<<<<<< HEAD
 insert into permissions(id, action, description) values(15, 'getAllProcessors', '');
 insert into permissions(id, action, description) values(16, 'getAllProcessorsByDateRange', '');
 insert into permissions(id, action, description) values(17, 'createProcessor', '');

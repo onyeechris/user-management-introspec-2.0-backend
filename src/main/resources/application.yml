@@ -29,15 +29,15 @@ spring:
 
   redis:
     host: localhost
-    port: 6389
+    port: 6379
     embedded: true
 
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
       url: jdbc:postgresql://localhost:5432/usermgt
-      username: devuser
-      password: pass123
+      username: postgres
+      password: passadmin
       hikari:
           auto-commit: false
       initialization-mode: always

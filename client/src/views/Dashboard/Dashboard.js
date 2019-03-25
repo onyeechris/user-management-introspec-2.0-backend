@@ -534,7 +534,7 @@ class Dashboard extends Component {
       let { baseUrl } = this.state;
 
       //Group Data
-      let groupUrl = 'groups';
+      let groupUrl = 'groups?size=1000';
       axios.get(baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         this.setState({ groupData: response.data.payload });
       }).catch(err => {
@@ -543,7 +543,7 @@ class Dashboard extends Component {
 
 
       //Permission Data
-      let permissionUrl = 'permissions';
+      let permissionUrl = 'permissions?size=1000';
       axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         this.setState({ permissionData: response.data.payload });
       }).catch(err => {
@@ -552,7 +552,7 @@ class Dashboard extends Component {
 
 
       //ToDo Data
-      let todoUrl = 'todos';
+      let todoUrl = 'todos?size=1000';
       axios.get(baseUrl + todoUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         this.setState({ toDoData: response.data.payload });
       }).catch(err => {
@@ -561,7 +561,7 @@ class Dashboard extends Component {
 
 
       //Staff Data
-      let staffUrl = 'staffs';
+      let staffUrl = 'staffs?size=1000';
       axios.get(baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
         .then((response) => {
           this.setState({ staffData: response.data.payload });

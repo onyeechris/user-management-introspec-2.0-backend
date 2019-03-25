@@ -91,8 +91,9 @@ class Groups extends Component {
     if (typeof this.props.group === 'undefined') {
 
       console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      let baseUrl = 'http://localhost:9100/api/groups';
-      axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+      let baseUrl = this.state.baseUrl;
+      let groupUrl = 'groups'
+      axios.get(baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         console.log(response.data)
         this.setState({ groupData: response.data.payload });
       }).catch(err => {
@@ -100,8 +101,8 @@ class Groups extends Component {
       })
 
 
-      let permissionUrl = 'http://localhost:9100/api/permissions';
-      axios.get(permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+      let permissionUrl = 'permissions?size=1000';
+      axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
         console.log(response.data)
         this.setState({ permissionData: response.data.payload });
         // loadedPermissionsData = [
@@ -403,7 +404,7 @@ class Groups extends Component {
       if (myCurrentPermissions) {
         groupDataToUpdate.permissions = [];
         console.log(groupDataToUpdate.permissions);
-        let permissionObject = {};
+        // let permissionObject = {};
         // myCurrentPermissions.forEach(permission => {
         //   this.state.permissionData.forEach(item => {
         //     permissionObject = {};
@@ -590,6 +591,9 @@ class Groups extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> All Groups
+                <div className="pull-right">
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create Group</Button>
+                </div>
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
@@ -638,7 +642,7 @@ class Groups extends Component {
             </Card>
           </Col>
         </Row>
-        <Button onClick={this.toggle} className="mr-1" style={showAction}>Create Group</Button>
+
 
 
 

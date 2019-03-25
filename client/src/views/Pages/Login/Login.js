@@ -114,9 +114,22 @@ class Login extends Component {
     return (
       <div className="app flex-row align-items-center">
         <div style={topMenu}>
-          Introspec | <a href="/home" className="menuLink" onClick={this.menuHome}> User Management</a>
+          Introspec User Management
         </div>
         <Container>
+          <Row className="justify-content-center">
+            <div md="8">
+              <img
+                src={"../../assets/img/introspec-logo.png"}
+                alt="Introspec Logo"
+                style={{ width: "270px" }}
+              />
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+          </Row>
           <Row className="justify-content-center">
             <Col md="8">
               <CardGroup>
