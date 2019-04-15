@@ -39,38 +39,38 @@ class LoginApp extends Component {
 
 
     login(event) {
-        // console.log(this.state.userLogin);
+        // //console.log(this.state.userLogin);
         // if (this.state.userLogin.username && this.state.userLogin.password) {
         //     this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
         //         let responseJSON = result;
-        //         console.log(responseJSON);
+        //         //console.log(responseJSON);
         //         if (responseJSON.token) {
         //             sessionStorage.setItem("userData", JSON.stringify(responseJSON));
         //             this.setState({ redirectToReferrer: true });
         //         } else {
-        //             console.log("Login error");
+        //             //console.log("Login error");
         //         }
         //     });
         // }
 
         event.preventDefault();
-        console.log(this.state.userLogin);
+        // //console.log(this.state.userLogin);
         if (this.state.userLogin.username && this.state.userLogin.password) {
-        axios.post('http://localhost:9100/auth',
-            this.state.userLogin,
-        )
-            .then(response => {
-                console.log(response.data);
-                // sessionStorage.setItem("userData", JSON.stringify(response.data));
-                sessionStorage.setItem("extUserData", JSON.stringify(response.data));
-                console.log(sessionStorage.getItem("extUserData"));
-                this.setState({ redirectToReferrer: true });
-            })
-            .catch(err => {
+            axios.post('http://localhost:9100/auth',
+                this.state.userLogin,
+            )
+                .then(response => {
+                    //console.log(response.data);
+                    // sessionStorage.setItem("userData", JSON.stringify(response.data));
+                    sessionStorage.setItem("extUserData", JSON.stringify(response.data));
+                    //console.log(sessionStorage.getItem("extUserData"));
+                    this.setState({ redirectToReferrer: true });
+                })
+                .catch(err => {
 
-                this.setState({ loginError: "Username or password incorrect!" });
-                // debugger;
-            })
+                    this.setState({ loginError: "Username or password incorrect!" });
+                    // debugger;
+                })
         } else {
             this.setState({ loginError: "Please fill both fields!" });
         }
@@ -84,13 +84,13 @@ class LoginApp extends Component {
         var userInfo = JSON.parse(JSON.stringify(this.state.userLogin));
         userInfo[field] = event.target.value;
         this.setState({ userLogin: userInfo });
-        console.log(this.state.userLogin);
+        //console.log(this.state.userLogin);
     }
 
     redirectUser() {
 
         this.setState({ redirectToUrl: true });
-        console.log("Redirecting... should have gone by now");
+        //console.log("Redirecting... should have gone by now");
     }
 
     render() {
@@ -115,22 +115,22 @@ class LoginApp extends Component {
             // return <Redirect to={"/appredirect"} />;
             const redirectUrl = sessionStorage.getItem("redirectUrl");
             const myToken = JSON.parse(sessionStorage.getItem("extUserData")).token;
-            console.log(myToken);
+            //console.log(myToken);
 
             // Encypt Token
             let ciphertext = CryptoJS.AES.encrypt(myToken, 'introspecAppToken').toString();
-            console.log("Encrypted:" + ciphertext);
+            //console.log("Encrypted:" + ciphertext);
 
             // let ciphertext2 = "U2FsdGVkX19YHifcv0u4sdb4KL7QnqdopTE3urv4FxXqWhyfdkJ8ErczlIT4VSCensA1PYsSTxG01sRR5Ztk9fsqokfALqkXVKLtsLpB3Not83BR6S3yz8gpXGRIqrLMX0qjOxXNAJHJn43JnZsRH2mc6CJE8wu6h1OcXADUqx+xpL2Y1i65K3WeodZwxzvTEOeyc0KWWD7b+TkEUmgD4Jgc49+rfuRVaXdg11hAhbCXycx8fi+rsmdNqWSTqu2posW5l1gfKK67SAGByk/VRZ+vbn5zGPrz/fsEVKR3nwYcYps9U0gMhnQBAFb45oQYn7M5Czxy0qpKvwNXMhfqunzPUMwIrHPBiMGxERG4Lix4C070tRMhcVLv9een9acn";
 
             // Decrypt
-            let bytes = CryptoJS.AES.decrypt(ciphertext, 'introspecAppToken');
-            let decryptedToken = bytes.toString(CryptoJS.enc.Utf8);
+            //let bytes = CryptoJS.AES.decrypt(ciphertext, 'introspecAppToken');
+            //let decryptedToken = bytes.toString(CryptoJS.enc.Utf8);
 
-            console.log("Decrypted:" + decryptedToken); // 'my token'
+            //console.log("Decrypted:" + decryptedToken); // 'my token'
 
             const urlParam = "?var=" + ciphertext;
-            console.log(redirectUrl + urlParam);
+            //console.log(redirectUrl + urlParam);
             window.location.href = redirectUrl + urlParam;
             // return <Redirect to={redirectUrl + urlParam} />;
         }
@@ -188,7 +188,7 @@ class LoginApp extends Component {
                                                 <Col xs="12">
                                                     <Button
                                                         color="primary"
-                                                        type = "submit"
+                                                        type="submit"
                                                         className="px-4"
                                                         onClick={this.login}
                                                     >

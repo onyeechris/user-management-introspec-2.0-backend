@@ -211,11 +211,11 @@ export default {
     //   url: "/notifications",
     //   icon: "icon-bell",
     //   children: [
-    // {
-    //   name: "Alerts",
-    //   url: "/notifications/alerts",
-    //   icon: "icon-bell"
-    // },
+    //     {
+    //       name: "Alerts",
+    //       url: "/notifications/alerts",
+    //       icon: "icon-bell"
+    //     },
     //     {
     //       name: "Badges",
     //       url: "/notifications/badges",

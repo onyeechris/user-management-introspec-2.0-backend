@@ -53,11 +53,11 @@ class Permissions extends Component {
   componentDidMount() {
     if (typeof this.props.permission === 'undefined') {
 
-      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
       let { baseUrl } = this.state;
       let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
       axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        console.log(response.data)
+        //console.log(response.data)
         this.setState({ permissionData: response.data.payload });
         this.setState({ permissionTableData: response.data.meta });
       }).catch(err => {
@@ -65,7 +65,7 @@ class Permissions extends Component {
       })
 
       loggedInUser = sessionStorage.getItem("loggedInUser");
-      console.log(loggedInUser);
+      //console.log(loggedInUser);
       if (loggedInUser.toLowerCase().includes("sysdev")) {
         let visible = {
           "display": "block"
@@ -80,8 +80,6 @@ class Permissions extends Component {
     let pageNumberParam = pageNumber - 1;
     this.fetchPermissionsPage(pageNumberParam);
     this.setState({ activePage: pageNumber });
-    // this.props.fetchOffices(pageNumber);
-    // this.setState({activePage: pageNumber});
   }
 
 
@@ -118,18 +116,18 @@ class Permissions extends Component {
     var newPermissionInfo = JSON.parse(JSON.stringify(this.state.newPermissionData));
     newPermissionInfo[field] = event.target.value;
     this.setState({ newPermissionData: newPermissionInfo });
-    console.log(this.state.newPermissionData);
+    //console.log(this.state.newPermissionData);
   }
 
   readUpdateValue(field, event) {
     var newPermissionInfo = JSON.parse(JSON.stringify(this.state.singlePermissionData));
     newPermissionInfo[field] = event.target.value;
     this.setState({ singlePermissionData: newPermissionInfo });
-    console.log(this.state.singlePermissionData);
+    //console.log(this.state.singlePermissionData);
   }
 
   createPermission() {
-    console.log(this.state.newPermissionData);
+    //console.log(this.state.newPermissionData);
     let { newPermissionData } = this.state;
 
     if (newPermissionData.action && newPermissionData.description) {
@@ -148,7 +146,7 @@ class Permissions extends Component {
           this.setState({ visible: true });
         })
         .catch(err => {
-          console.log(err);
+          //console.log(err);
           // debugger;
         })
 
@@ -161,8 +159,8 @@ class Permissions extends Component {
 
   findPermission(permissionId) {
     let apiUrl = 'permissions/' + permissionId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
+    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -175,14 +173,14 @@ class Permissions extends Component {
       }).then(this.toggleEdit())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single permission: " + err);
+        //console.log("Couldn't find single permission: " + err);
       })
   }
 
   findPermissionDelete(permissionId) {
     let apiUrl = 'permissions/' + permissionId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
+    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -195,12 +193,12 @@ class Permissions extends Component {
       }).then(this.toggleConfirm())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single permission: " + err);
+        //console.log("Couldn't find single permission: " + err);
       })
   }
 
   updatePermission() {
-    console.log(this.state.singlePermissionData);
+    //console.log(this.state.singlePermissionData);
     let { singlePermissionData } = this.state;
 
     if (singlePermissionData.action && singlePermissionData.description) {
@@ -217,7 +215,7 @@ class Permissions extends Component {
           this.setState({ visibleUpdate: true });
         })
         .catch(err => {
-          console.log("Could not update permission record ");
+          //console.log("Could not update permission record ");
           // debugger;
         })
       this.fetchPermissions();
@@ -231,7 +229,7 @@ class Permissions extends Component {
   deletePermission(permissionId) {
     if (permissionId > 0) {
       let apiUrl = 'permissions/' + permissionId;
-      console.log(this.state.baseUrl + apiUrl);
+      //console.log(this.state.baseUrl + apiUrl);
       axios.delete(this.state.baseUrl + apiUrl,
         {
           headers: {
@@ -239,11 +237,11 @@ class Permissions extends Component {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           this.fetchPermissions();
         })
         .catch(err => {
-          console.log("Could not delete permission record: " + err);
+          //console.log("Could not delete permission record: " + err);
           // debugger;
         })
       this.toggleConfirm();
@@ -252,34 +250,34 @@ class Permissions extends Component {
 
   fetchPermissions() {
     let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
-    console.log(this.state.baseUrl + permissionUrl);
+    //console.log(this.state.baseUrl + permissionUrl);
     axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data.payload);
-        console.log("I fetched!");
+        //console.log(response.data.payload);
+        //console.log("I fetched!");
         this.setState({ permissionData: response.data.payload });
       }).catch(err => {
         //debugger;
-        console.log("Error fetching permissions");
+        //console.log("Error fetching permissions");
       })
   }
   fetchPermissionsPage(pageNumber) {
     let permissionUrl = 'permissions?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
-    console.log(this.state.baseUrl + permissionUrl);
+    //console.log(this.state.baseUrl + permissionUrl);
     axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data.payload);
-        console.log("I fetched!");
+        //console.log(response.data.payload);
+        //console.log("I fetched!");
         this.setState({ permissionData: response.data.payload });
       }).catch(err => {
         //debugger;
-        console.log("Error fetching permissions");
+        //console.log("Error fetching permissions");
       })
   }
 
 
   changePageItem(numberOfItems) {
-    console.log("Your items per page: " + numberOfItems.target.value);
+    //console.log("Your items per page: " + numberOfItems.target.value);
 
     const updateStateVariable = () => {
       this.setState({ itemsPerPage: numberOfItems.target.value });
@@ -297,7 +295,7 @@ class Permissions extends Component {
         }
       }
       catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     }
 

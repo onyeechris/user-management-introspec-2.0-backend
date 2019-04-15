@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardHeader, Col, Row, Table, Form, Alert } from 'reactstrap';
-import { Input, FormGroup, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import {
+  //Input, 
+  FormGroup, Label, Modal, ModalBody, ModalFooter, ModalHeader
+} from 'reactstrap';
 import axios from 'axios';
 
 let loggedInUserRole = "";
@@ -20,6 +23,7 @@ class ToDos extends Component {
       singleGroupData: {},
       entityData: {},
       currentRecord: {},
+      payloadAction: '',
       baseUrl: 'http://localhost:9100/api/',
       visible: false,
       showAction: {
@@ -40,30 +44,30 @@ class ToDos extends Component {
   componentDidMount() {
     if (typeof this.props.toDo === 'undefined') {
 
-      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
       let baseUrl = 'http://localhost:9100/api/todos';
       axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
 
-        console.log(response.data);
+        //console.log(response.data);
         this.setState({ toDoData: response.data.payload });
-        console.log(JSON.parse(response.data.payload[0].payload));
+        //console.log(JSON.parse(response.data.payload[0].payload));
 
       }).catch(err => {
-        console.log("Couldn't fetch todo data, " + err);
+        //console.log("Couldn't fetch todo data, " + err);
       })
 
 
       let groupUrl = 'http://localhost:9100/api/groups';
       axios.get(groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        console.log(response.data)
+        //console.log(response.data)
         this.setState({ smallGroupData: response.data.payload });
       }).catch(err => {
-        console.log(err);
+        //console.log(err);
       })
 
 
       loggedInUserRole = sessionStorage.getItem("userRole");
-      console.log(loggedInUserRole);
+      //console.log(loggedInUserRole);
       if (loggedInUserRole.toLowerCase().includes("checker")) {
         let makeVisible = {
           "display": "block"
@@ -95,20 +99,20 @@ class ToDos extends Component {
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.singleStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ singleStaffData: newStaffInfo });
-    console.log(this.state.singleStaffData);
+    //console.log(this.state.singleStaffData);
   }
 
   readUpdateGroupValue(field, event) {
     var newGroupInfo = JSON.parse(JSON.stringify(this.state.singleGroupData));
     newGroupInfo[field] = event.target.value;
     this.setState({ singleGroupData: newGroupInfo });
-    console.log(this.state.singleGroupData);
+    //console.log(this.state.singleGroupData);
   }
 
   findStaff(staffId) {
     let apiUrl = 'staffs/' + staffId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
+    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -121,7 +125,7 @@ class ToDos extends Component {
       }).then(this.toggleEditStaff())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single staff: " + err);
+        //console.log("Couldn't find single staff: " + err);
       })
   }
 
@@ -129,19 +133,19 @@ class ToDos extends Component {
     var payloadData = JSON.parse(fieldData);
     this.setState({ singleStaffData: payloadData });
     this.setState({ currentRecord: payloadData });
-    console.log(this.state.singleStaffData);
+    //console.log(this.state.singleStaffData);
     this.toggleEditStaff();
   }
 
   updateStaff(singleStaff) {
     let currentStaffData = JSON.parse(singleStaff);
-    console.log(currentStaffData);
+    //console.log(currentStaffData);
     let apiUrl = 'staffs';
     var newStaffInfo = JSON.parse(JSON.stringify(currentStaffData));
-    console.log(newStaffInfo.activated);
+    //console.log(newStaffInfo.activated);
     this.setState({ singleStaffData: newStaffInfo });
-    console.log(this.state.singleStaffData);
-    console.log(newStaffInfo);
+    //console.log(this.state.singleStaffData);
+    //console.log(newStaffInfo);
     axios.put(this.state.baseUrl + apiUrl,
       newStaffInfo,
       {
@@ -150,19 +154,20 @@ class ToDos extends Component {
         }
       })
       .then(response => {
-        console.log(response);
+        //console.log(response);
         this.setState({ entityData: newStaffInfo });
         this.setState({ visible: true });
         this.fetchToDos();
       })
       .catch(err => {
-        let res = JSON.parse(JSON.stringify(err.response.data));
-        console.log("Server response status: " + res.status);
-        console.log("Server response message: " + res.message);
-        console.log("Could not update staff record: " + JSON.stringify(err.response.data));
+        //let res = JSON.parse(JSON.stringify(err.response.data));
+        //console.log("Server response status: " + res.status);
+        //console.log("Server response message: " + res.message);
+        //console.log("Could not update staff record: " + JSON.stringify(err.response.data));
         // debugger;
       })
     this.toggleEditStaff();
+    this.setState({ payloadAction: this.state.currentRecord.action });
   }
 
 
@@ -171,19 +176,19 @@ class ToDos extends Component {
     var payloadData = JSON.parse(fieldData);
     this.setState({ singleGroupData: payloadData });
     this.setState({ currentRecord: payloadData });
-    console.log(this.state.singleGroupData);
+    //console.log(this.state.singleGroupData);
     this.toggleEditGroup();
   }
 
   updateGroup(singleGroup) {
     let currentGroupData = JSON.parse(singleGroup);
-    console.log(currentGroupData);
+    //console.log(currentGroupData);
     let apiUrl = 'groups';
     var newGroupInfo = JSON.parse(JSON.stringify(currentGroupData));
-    console.log(newGroupInfo.activated);
+    //console.log(newGroupInfo.activated);
     this.setState({ singleGroupData: newGroupInfo });
-    console.log(this.state.singleGroupData);
-    console.log(newGroupInfo);
+    //console.log(this.state.singleGroupData);
+    //console.log(newGroupInfo);
     axios.put(this.state.baseUrl + apiUrl + "/1",
       newGroupInfo,
       {
@@ -197,27 +202,28 @@ class ToDos extends Component {
         this.fetchToDos();
       })
       .catch(err => {
-        console.log("Could not update group record " + err.status);
-        console.log("Could not update group record " + err.message);
-        let res = JSON.parse(JSON.stringify(err.response.data));
-        console.log("Server response status: " + res.status);
-        console.log("Server response message: " + res.message);
-        console.log("Could not update group record: " + JSON.stringify(err.response.data));
+        //console.log("Could not update group record " + err.status);
+        //console.log("Could not update group record " + err.message);
+        //let res = JSON.parse(JSON.stringify(err.response.data));
+        //console.log("Server response status: " + res.status);
+        //console.log("Server response message: " + res.message);
+        //console.log("Could not update group record: " + JSON.stringify(err.response.data));
         // debugger;
       })
     this.toggleEditGroup();
+    this.setState({ payloadAction: this.state.currentRecord.action });
   }
 
   fetchToDos() {
     let baseUrl = 'http://localhost:9100/api/todos';
     axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
 
-      console.log(response.data);
+      //console.log(response.data);
       this.setState({ toDoData: response.data.payload });
-      console.log(JSON.parse(response.data.payload[0].payload));
+      //console.log(JSON.parse(response.data.payload[0].payload));
 
     }).catch(err => {
-      console.log("Couldn't fetch todo data, " + err);
+      //console.log("Couldn't fetch todo data, " + err);
       //debugger;
     })
   }
@@ -247,9 +253,9 @@ class ToDos extends Component {
       singleStaff.id = 1;
       // singleStaff.hire_date = currentStaffData.hireDate.monthValue + "/" + currentStaffData.hireDate.dayOfMonth + "/" + currentStaffData.hireDate.year;
       singleStaff.hire_date = currentStaffData.hireDate;
-      console.log(currentStaffData.hireDate);
-      console.log(currentStaffData.password);
-      console.log(singleStaff);
+      //console.log(currentStaffData.hireDate);
+      //console.log(currentStaffData.password);
+      //console.log(singleStaff);
     }
 
     let { singleGroupData } = this.state;
@@ -266,7 +272,7 @@ class ToDos extends Component {
       singleGroup.name = currentGroupData.name;
       singleGroup.id = 1;
       singleGroup.description = currentGroupData.description;
-      console.log(singleGroup);
+      //console.log(singleGroup);
     }
 
     if (singleGroup.permissions.length > 0) {
@@ -283,7 +289,7 @@ class ToDos extends Component {
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  {this.state.currentRecord.action} <strong> {this.state.entityData.first_name ? this.state.entityData.first_name : this.state.entityData.name}</strong> successfully authorized.
+                  {this.state.payloadAction} <strong> {this.state.entityData.first_name ? this.state.entityData.first_name : this.state.entityData.name}</strong> successfully authorized.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
@@ -347,17 +353,13 @@ class ToDos extends Component {
                 <strong></strong> Staff details below
             </CardHeader>
               <CardBody>
-
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
-                  {/* <Input type="hidden" name="id" value={singleStaff.id} onChange={this.readUpdateStaffValue.bind(this, 'id')} /> */}
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="firstName">First Name</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="firstName" name="first_name" placeholder="Enter First Name"
-                        onChange={this.readUpdateStaffValue.bind(this, 'first_name')} value={singleStaff.first_name}
-                      />
+                      {singleStaff.first_name}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -365,9 +367,7 @@ class ToDos extends Component {
                       <Label htmlFor="lastName">Last Name</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="lastName" name="last_name" placeholder="Enter Last Name" required
-                        onChange={this.readUpdateStaffValue.bind(this, 'last_name')} value={singleStaff.last_name}
-                      />
+                      {singleStaff.last_name}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -375,9 +375,7 @@ class ToDos extends Component {
                       <Label htmlFor="email-input">Email</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="email" id="email-input" name="email" placeholder="Enter Email" autoComplete="email"
-                        onChange={this.readUpdateStaffValue.bind(this, 'email')} value={singleStaff.email}
-                      />
+                      {singleStaff.email}
                     </Col>
                   </FormGroup>
 
@@ -386,9 +384,7 @@ class ToDos extends Component {
                       <Label htmlFor="phone">Phone</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="phone" name="phone" placeholder="Enter Phone Number"
-                        onChange={this.readUpdateStaffValue.bind(this, 'phone')} value={singleStaff.phone}
-                      />
+                      {singleStaff.phone}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -396,10 +392,7 @@ class ToDos extends Component {
                       <Label htmlFor="date-hire">Hire Date</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="date-hire" name="hire_date" placeholder="Date MM/dd/yyyy"
-                        onChange={this.readUpdateStaffValue.bind(this, 'hire_date')}
-                        value={singleStaff.hire_date}
-                      />
+                      {singleStaff.hire_date}
                     </Col>
                   </FormGroup>
 
@@ -408,9 +401,7 @@ class ToDos extends Component {
                       <Label htmlFor="group-id">Group</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="group-id" name="group_id" placeholder="Staff Group"
-                        onChange={this.readUpdateStaffValue.bind(this, 'group_id')} value={singleStaff.group_name}
-                      />
+                      {singleStaff.group_name}
                     </Col>
                   </FormGroup>
 
@@ -419,10 +410,7 @@ class ToDos extends Component {
                       <Label htmlFor="maker-checker">Role</Label>
                     </Col>
                     <Col md="9">
-                      <Input type="text" id="maker-checker" name="maker_checker" placeholder="Role"
-                        onChange={this.readUpdateStaffValue.bind(this, 'maker_checker')} value={singleStaff.maker_checker}
-                      />
-
+                      {singleStaff.maker_checker}
                     </Col>
                   </FormGroup>
                   <ModalFooter>
@@ -432,9 +420,7 @@ class ToDos extends Component {
                 </Form>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
 
 
@@ -460,9 +446,7 @@ class ToDos extends Component {
                       <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="name" name="name" placeholder="Enter Group Name"
-                        onChange={this.readUpdateGroupValue.bind(this, 'name')} value={singleGroup.name}
-                      />
+                      {singleGroup.name}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -470,9 +454,7 @@ class ToDos extends Component {
                       <Label htmlFor="description">Description</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="description" name="description" placeholder="Enter Description" required
-                        onChange={this.readUpdateGroupValue.bind(this, 'description')} value={singleGroup.description}
-                      />
+                      {singleGroup.description}
                     </Col>
                   </FormGroup>
 

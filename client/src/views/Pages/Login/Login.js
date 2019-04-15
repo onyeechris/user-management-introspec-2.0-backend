@@ -38,26 +38,26 @@ class Login extends Component {
 
   login(event) {
     event.preventDefault();
-    console.log(this.state.userLogin);
+    // console.log(this.state.userLogin);
     if (this.state.userLogin.username && this.state.userLogin.password) {
 
       this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
 
         sessionStorage.setItem("userData", JSON.stringify(result));
         sessionStorage.setItem("loggedInUser", this.state.userLogin.username);
-        console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-        console.log(result);
+        // console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+        // console.log(result);
         this.setState({ redirectToReferrer: true });
 
         //decode the token
         let userData = jwtDecode(result.token);
-        console.log(userData);
-        console.log(userData.authorities[0]);
+        // console.log(userData);
+        // console.log(userData.authorities[0]);
         //save the role from the token to session storage
         sessionStorage.setItem("userRole", userData.authorities[0]);
         // console.log(sessionStorage.getItem("userRole"));
       }, error => {
-        console.log(error);
+        // console.log(error);
         this.setState({ loginError: "Username or password incorrect!" })
       }
       )
@@ -73,8 +73,8 @@ class Login extends Component {
   updateValue(field, event) {
     var userInfo = JSON.parse(JSON.stringify(this.state.userLogin));
     userInfo[field] = event.target.value;
-    // this.setState({ userLogin: userInfo });
-    this.setState({ userLogin: userInfo }, e => console.log(this.state.userLogin));
+    this.setState({ userLogin: userInfo });
+    // this.setState({ userLogin: userInfo }, e => console.log(this.state.userLogin));
     // console.log(this.state.userLogin);
   }
 

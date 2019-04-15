@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Form, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker";
 // import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/material_green.css'
 import "react-datepicker/dist/react-datepicker.css";
@@ -69,27 +69,27 @@ class Staffs extends Component {
   componentDidMount() {
 
     if (sessionStorage.getItem("userData")) {
-      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
 
       let staffUrl = 'staffs?size=' + this.state.itemsPerPage;
-      console.log(this.state.baseUrl + staffUrl);
+      //console.log(this.state.baseUrl + staffUrl);
       axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
         .then((response) => {
-          console.log(response.data.payload);
-          console.log(response.data.meta);
+          //console.log(response.data.payload);
+          //console.log(response.data.meta);
           this.setState({ staffData: response.data.payload });
           this.setState({ staffTableData: response.data.meta });
           this.setState({ itemsPerPage: response.data.meta.size });
         }).catch(err => {
           //debugger;
-          console.log("Error fetching staffs");
+          //console.log("Error fetching staffs");
         })
 
       let groupUrl = 'groups';
       axios.get(this.state.baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
         .then((response) => {
-          console.log(response.data);
-          console.log(response.data.payload);
+          //console.log(response.data);
+          //console.log(response.data.payload);
           this.setState({ groupData: response.data.payload });
         }).then(err => {
           //debugger;
@@ -100,7 +100,7 @@ class Staffs extends Component {
     }
 
     loggedInUserRole = sessionStorage.getItem("userRole");
-    console.log(loggedInUserRole);
+    //console.log(loggedInUserRole);
     if (loggedInUserRole.toLowerCase().includes("maker")) {
       let makeVisible = {
         "display": "block"
@@ -149,27 +149,21 @@ class Staffs extends Component {
     var dateField = JSON.parse(JSON.stringify(this.state.newStaffData));
     dateField.hire_date = field;
     this.setState({ newStaffData: dateField });
-    console.log(this.state.newStaffData);
   }
 
   updateValue(field, event) {
-    console.log('Field is ', field);
-    console.log('Event is ', event);
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ newStaffData: newStaffInfo });
-    console.log(this.state.newStaffData);
   }
 
   readUpdateValue(field, event) {
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.singleStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ singleStaffData: newStaffInfo });
-    console.log(this.state.singleStaffData);
   }
 
   createStaff() {
-    console.log(this.state.newStaffData);
     let { newStaffData } = this.state;
     //validation
     if (newStaffData.first_name
@@ -189,10 +183,9 @@ class Staffs extends Component {
         })
         .then(response => {
           this.setState({ newCreatedStaff: this.state.newStaffData });
-          console.log("Successfully created: " + this.state.newCreatedStaff);
         })
         .catch(err => {
-          console.log(err);
+          //console.log(err);
         })
 
       this.fetchStaffs();
@@ -206,8 +199,8 @@ class Staffs extends Component {
 
   findStaff(staffId) {
     let apiUrl = 'staffs/' + staffId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
+    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -220,14 +213,14 @@ class Staffs extends Component {
       }).then(this.toggleEdit())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single staff: " + err);
+        //console.log("Couldn't find single staff: " + err);
       })
   }
 
   findStaffDelete(staffId) {
     let apiUrl = 'staffs/' + staffId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
+    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -240,12 +233,11 @@ class Staffs extends Component {
       }).then(this.toggleConfirm())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single staff: " + err);
+        //console.log("Couldn't find single staff: " + err);
       })
   }
 
   updateStaff() {
-    console.log(this.state.singleStaffData);
     let { singleStaffData } = this.state;
     //validation
     if (singleStaffData.first_name
@@ -267,7 +259,6 @@ class Staffs extends Component {
           this.setState({ newCreatedStaff: this.state.singleStaffData });
         })
         .catch(err => {
-          console.log("Could not update staff record ");
           // debugger;
         })
 
@@ -283,7 +274,6 @@ class Staffs extends Component {
   deleteStaff(staffId) {
     if (staffId > 0) {
       let apiUrl = 'staffs/' + staffId;
-      console.log(this.state.baseUrl + apiUrl);
       axios.delete(this.state.baseUrl + apiUrl,
         {
           headers: {
@@ -291,7 +281,7 @@ class Staffs extends Component {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
         })
         .catch(err => {
           console.log("Could not delete staff record: " + err);
@@ -306,35 +296,32 @@ class Staffs extends Component {
 
   fetchStaffs() {
     let staffUrl = 'staffs?size=' + this.state.itemsPerPage;
-    console.log(this.state.baseUrl + staffUrl);
     axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data.payload)
         this.setState({ staffData: response.data.payload });
       }).catch(err => {
         //debugger;
-        console.log("Error fetching staffs");
       })
   }
 
   fetchStaffsPage(pageNumber) {
     let staffUrl = 'staffs?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
-    console.log(this.state.baseUrl + staffUrl);
+    //console.log(this.state.baseUrl + staffUrl);
     axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data.payload)
+        //console.log(response.data.payload)
         this.setState({ staffData: response.data.payload });
       }).catch(err => {
         //debugger;
-        console.log("Error fetching staffs");
+        //console.log("Error fetching staffs - " + err);
       })
   }
 
 
+  // Select number of items to display on table
 
   changePageItem(numberOfItems) {
-    console.log("Your items per page: " + numberOfItems.target.value);
-
+    //console.log("Your items per page: " + numberOfItems.target.value);
     const updateStateVariable = () => {
       this.setState({ itemsPerPage: numberOfItems.target.value });
       return true;
@@ -343,7 +330,6 @@ class Staffs extends Component {
     //using an asynchronous function
 
     const reloadTable = async () => {
-
       try {
         const response = await updateStateVariable();
         if (response) {
@@ -351,10 +337,9 @@ class Staffs extends Component {
         }
       }
       catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     }
-
     reloadTable();
   }
 
@@ -364,6 +349,7 @@ class Staffs extends Component {
 
 
   render() {
+
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/login"} />;
     }
@@ -372,11 +358,10 @@ class Staffs extends Component {
     let { showAction } = this.state;
 
     const showGroup = (groupID) => {
-      console.log("I ran! ");
       let itemGroupName = "";
       groupData.forEach(group => {
         if (groupID === group.id) {
-          console.log("There was a match!");
+          //console.log("There was a match!");
           itemGroupName = group.name;
         }
       })
@@ -386,30 +371,10 @@ class Staffs extends Component {
     let staff = this.state.staffData;
     const staffGroup = this.state.groupData;
     const singleStaff = this.state.singleStaffData;
-    // if (singleStaff.first_name) {
-    //   console.log(singleStaff.first_name);
-    //   console.log(singleStaff);
-    // }
-
-    // var columns = [
-    //   { title: 'ID', prop: 'id' },
-    //   { title: 'First Name', prop: 'first_ame' },
-    //   { title: 'Email', prop: 'email' },
-    //   { title: 'Role', prop: 'role' },
-    //   { title: 'Group', prop: 'group' },
-    //   { title: 'Action', prop: 'action' }
-    // ];
-
-    // var data = [
-    //   { name: 'name value', city: 'city value', address: 'address value', phone: 'phone value' }
-    //   // It also supports arrays
-    //   // [ 'name value', 'city value', 'address value', 'phone value' ]
-    // ];
 
     return (
 
       <div className="animated fadeIn">
-
         <Row>
           <Col>
             <Card>
@@ -430,14 +395,12 @@ class Staffs extends Component {
                     <option value="50">50</option>
                   </select>
                 </div>
-
-
               </CardHeader>
               <CardBody>
-                <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
+                <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
                   User <strong>{this.state.newCreatedStaff.first_name}</strong> has been created and submitted for activation.
                 </Alert>
-                <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
+                <Alert color="warning" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
                   Update request for user <strong>{this.state.newCreatedStaff.first_name}</strong> has been submitted for authorization.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
@@ -462,7 +425,6 @@ class Staffs extends Component {
                         <td style={showAction}>
                           <Button size="sm" color="primary" onClick={e => this.findStaff(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
                           <Button size="sm" color="danger" onClick={e => this.findStaffDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>
-
                         </td>
                       </tr>
                     )
@@ -478,40 +440,10 @@ class Staffs extends Component {
                     onChange={this.handlePageChange}
                   />
                 </nav>
-                {/* <nav>
-                  <Pagination>
-                    <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-                    <PaginationItem active>
-                      <PaginationLink tag="button">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-                  </Pagination>
-                </nav> */}
               </CardBody>
             </Card>
           </Col>
         </Row>
-
-        {/* <DataTable
-          keys="name"
-          columns={columns}
-          initialData={data}
-          initialPageLength={5}
-          initialSortBy={{ prop: 'city', order: 'descending' }}
-        /> */}
-
-        {/* <DataTable
-      className="container"
-      keys="id"
-      columns={columns}
-      initialData={data}
-      initialPageLength={5}
-      initialSortBy={{ prop: 'city', order: 'descending' }}
-      pageLengthOptions={[ 5, 20, 50 ]}
-    /> */}
 
 
 
@@ -526,7 +458,7 @@ class Staffs extends Component {
                 <strong></strong> Please fill the form below
               </CardHeader>
               <CardBody>
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
+                <Form action="" method="post" className="form-horizontal">
                   <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <FormGroup row>
                     <Col md="3">
@@ -601,7 +533,6 @@ class Staffs extends Component {
                       />
                     </Col>
                   </FormGroup>
-
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="select">Group  <span style={{ color: 'red' }}>*</span></Label>
@@ -614,11 +545,9 @@ class Staffs extends Component {
                             <option value={item.id} key={key}>{item.name}</option>
                           )
                         })}
-
                       </Input>
                     </Col>
                   </FormGroup>
-
                   <FormGroup row>
                     <Col md="3">
                       <Label>Role <span style={{ color: 'red' }}>*</span></Label>
@@ -645,9 +574,7 @@ class Staffs extends Component {
                 </Form>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
 
 
@@ -657,13 +584,11 @@ class Staffs extends Component {
         <Modal isOpen={this.state.editModal} toggle={this.toggleEdit} className={this.props.className}>
           <ModalHeader toggle={this.toggleEdit}>View and Update Staff</ModalHeader>
           <ModalBody>
-
             <Card>
               <CardHeader>
                 <strong></strong> Staff details below
               </CardHeader>
               <CardBody>
-
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
                   <Input type="hidden" name="id" value={singleStaff.id} onChange={this.readUpdateValue.bind(this, 'id')} />
                   <p style={{ color: 'red' }}>{this.state.formError}</p>
@@ -727,7 +652,6 @@ class Staffs extends Component {
                       />
                     </Col>
                   </FormGroup>
-
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="select">Group  <span style={{ color: 'red' }}>*</span></Label>
@@ -739,7 +663,6 @@ class Staffs extends Component {
                         {staffGroup.map(function (groupItem, groupKey) {
                           if (groupItem.id === singleStaff.group_id) {
                             return (
-
                               <option value={singleStaff.group_id} defaultValue>{groupItem.name}</option>
                             )
                           } else {
@@ -748,11 +671,9 @@ class Staffs extends Component {
                             )
                           }
                         })}
-
                       </Input>
                     </Col>
                   </FormGroup>
-
                   <FormGroup row>
                     <Col md="3">
                       <Label>Role <span style={{ color: 'red' }}>*</span></Label>
@@ -774,9 +695,7 @@ class Staffs extends Component {
                 </Form>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
 
 
@@ -789,25 +708,18 @@ class Staffs extends Component {
         <Modal isOpen={this.state.confirmModal} toggle={this.toggleConfirm} className={this.props.className}>
           <ModalHeader toggle={this.toggleConfirm}>Confirm Delete</ModalHeader>
           <ModalBody>
-
             <Card>
-
               <CardBody>
-
                 <p>Are you sure you want to delete staff: {singleStaff.first_name}?</p>
-
                 <ModalFooter>
                   <Button color="primary" onClick={e => this.deleteStaff(singleStaff.id)}>Delete</Button>{' '}
                   <Button color="secondary" onClick={this.toggleConfirm}>Cancel</Button>
                 </ModalFooter>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
       </div>
-
     );
   }
 }
