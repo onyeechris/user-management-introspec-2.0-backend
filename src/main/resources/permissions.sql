@@ -45,7 +45,7 @@ insert into permissions
 values(14, 'UPDATE-TERMINAL-BRAND', '');
 
 -- SettlementApp Endpoints Permission
-<<<<<<< HEAD
+-- HEAD
 insert into permissions(id, action, description) values(15, 'getAllProcessors', '');
 insert into permissions(id, action, description) values(16, 'getAllProcessorsByDateRange', '');
 insert into permissions(id, action, description) values(17, 'createProcessor', '');

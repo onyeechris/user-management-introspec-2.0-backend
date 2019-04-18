@@ -11,6 +11,9 @@ import axios from 'axios';
 // var DataTable = require('react-data-components').DataTable;
 import Pagination2 from "react-js-pagination";
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 let loggedInUserRole = "";
 class Staffs extends Component {
 
@@ -50,6 +53,7 @@ class Staffs extends Component {
       showAction: {
         "display": "none"
       },
+      startDate: ''
     };
     this.toggle = this.toggle.bind(this);
     this.updateValue = this.updateValue.bind(this);
@@ -64,6 +68,7 @@ class Staffs extends Component {
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
     this.changePageItem = this.changePageItem.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -114,10 +119,16 @@ class Staffs extends Component {
     let pageNumberParam = pageNumber - 1;
     this.fetchStaffsPage(pageNumberParam);
     this.setState({ activePage: pageNumber });
-    // this.props.fetchOffices(pageNumber);
-    // this.setState({activePage: pageNumber});
   }
 
+  handleChange(hireDate) {
+    this.setState({ startDate: hireDate });
+    let formatted_date = (hireDate.getMonth() + 1) + "/" + hireDate.getDate() + "/" + hireDate.getFullYear()
+    var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
+    newStaffInfo.hire_date = formatted_date;
+    this.setState({ newStaffData: newStaffInfo });
+    console.log(newStaffInfo);
+  }
 
   toggle() {
     this.setState({ formError: "" });
@@ -145,16 +156,11 @@ class Staffs extends Component {
     this.setState({ visibleUpdate: false });
   }
 
-  dateUpdate = (field) => {
-    var dateField = JSON.parse(JSON.stringify(this.state.newStaffData));
-    dateField.hire_date = field;
-    this.setState({ newStaffData: dateField });
-  }
-
   updateValue(field, event) {
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ newStaffData: newStaffInfo });
+    console.log(newStaffInfo);
   }
 
   readUpdateValue(field, event) {
@@ -175,14 +181,14 @@ class Staffs extends Component {
 
       let staffUrl = 'staffs';
       axios.post(this.state.baseUrl + staffUrl,
-        this.state.newStaffData,
+        newStaffData,
         {
           headers: {
             'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
           }
         })
         .then(response => {
-          this.setState({ newCreatedStaff: this.state.newStaffData });
+          this.setState({ newCreatedStaff: newStaffData });
         })
         .catch(err => {
           //console.log(err);
@@ -516,21 +522,18 @@ class Staffs extends Component {
                       <Label htmlFor="date-hire">Hire Date <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
-                      {/* <DatePicker
-                        placeholderText="Click to select a date"
-                        todayButton={"Go To Today"}
-                        onChange={this.dateUpdate}
-                        dateFormat="yyyy/MM/dd"
-                      /> */}
-                      {/* <Input type="hidden" id="date-hire" name="hire_date" placeholder="Enter Date"
-                        onChange={this.updateValue.bind(this, 'hire_date')} value={this.state.newDate}
+
+                      <DatePicker
+                        selected={this.state.startDate}
+                        onChange={this.handleChange}
+                        className="form-control" placeholderText="Select Date"
+                        // dateFormat="LL"
+                        dateFormat="MM/dd/yyyy"
                       />
-                      <Flatpickr
-                        options={{ dateFormat: "m-d-Y" }}
-                        onChange={this.dateUpdate} /> */}
-                      <Input type="text" id="hire-date" name="hire_date" placeholder="Date MM/dd/yyyy"
+
+                      {/* <Input type="text" id="hire-date" name="hire_date" placeholder="Date MM/dd/yyyy"
                         onChange={this.updateValue.bind(this, 'hire_date')}
-                      />
+                      /> */}
                     </Col>
                   </FormGroup>
                   <FormGroup row>

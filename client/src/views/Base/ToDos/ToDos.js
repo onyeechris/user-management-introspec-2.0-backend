@@ -353,7 +353,7 @@ class ToDos extends Component {
                 <strong></strong> Staff details below
             </CardHeader>
               <CardBody>
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+                <Form action="" method="post" className="form-horizontal" >
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="firstName">First Name</Label>
@@ -439,11 +439,11 @@ class ToDos extends Component {
               </CardHeader>
               <CardBody>
 
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+                <Form action="" method="post" className="form-horizontal" >
                   {/* <Input type="hidden" name="id" value={singleGroup.id} onChange={this.readUpdateGroupValue.bind(this, 'id')} /> */}
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="name">Name</Label>
                     </Col>
                     <Col xs="12" md="9">
                       {singleGroup.name}
@@ -500,7 +500,7 @@ class ToDos extends Component {
 
 
                   <ModalFooter>
-                    <Button color="primary" onClick={e => this.updateGroup(JSON.stringify(singleGroup))}>Submit</Button>{' '}
+                    <Button color="primary" onClick={e => this.updateGroup(JSON.stringify(singleGroup))}>Authorize</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEditGroup}>Cancel</Button>
                   </ModalFooter>
                 </Form>
