@@ -1,11 +1,14 @@
+import {
+  BASE_URL
+} from './types';
+
 export const USER_FETCHED = 'USER_FETCHED';
 
 export function fetchUser(type, appUser) {
-  let baseUrl = 'http://localhost:9100/';
   return (dispatch) => {
     return new Promise((resolve, reject) => {
 
-      fetch(baseUrl + type, {
+      fetch(BASE_URL + type, {
         method: 'POST',
         body: JSON.stringify(appUser)
       })

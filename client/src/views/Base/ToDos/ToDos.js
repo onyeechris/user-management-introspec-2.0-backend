@@ -303,6 +303,7 @@ class ToDos extends Component {
                     </tr>
                   </thead>
                   <tbody>{toDos ? toDos.map((item, key) => {
+                    console.log(item);
                     var dataPayload = JSON.parse(item.payload);
                     return (
                       <tr key={key}>

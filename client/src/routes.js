@@ -44,7 +44,9 @@ const Staffs = React.lazy(() => import("./views/Base/Staffs"));
 const Permissions = React.lazy(() => import("./views/Base/Permissions"));
 const Accounts = React.lazy(() => import("./views/Base/Accounts"));
 const Groups = React.lazy(() => import("./views/Base/Groups"));
+const GroupView = React.lazy(() => import("./views/Base/Groups/GroupsView"));
 const ToDos = React.lazy(() => import("./views/Base/ToDos"));
+const Settings = React.lazy(() => import("./views/Base/Settings"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -73,15 +75,15 @@ const routes = [
   { path: "/base/tooltips", name: "Tooltips", component: Tooltips },
   { path: "/buttons", exact: true, name: "Buttons", component: Buttons },
   { path: "/buttons/buttons", name: "Buttons", component: Buttons },
-  { path: "/buttons/button-dropdowns",    name: "Button Dropdowns",    component: ButtonDropdowns  },
-  { path: "/buttons/button-groups",    name: "Button Groups",    component: ButtonGroups  },
-  { path: "/buttons/brand-buttons",    name: "Brand Buttons",    component: BrandButtons  },
+  { path: "/buttons/button-dropdowns", name: "Button Dropdowns", component: ButtonDropdowns },
+  { path: "/buttons/button-groups", name: "Button Groups", component: ButtonGroups },
+  { path: "/buttons/brand-buttons", name: "Brand Buttons", component: BrandButtons },
   { path: "/icons", exact: true, name: "Icons", component: CoreUIIcons },
   { path: "/icons/coreui-icons", name: "CoreUI Icons", component: CoreUIIcons },
   { path: "/icons/flags", name: "Flags", component: Flags },
   { path: "/icons/font-awesome", name: "Font Awesome", component: FontAwesome },
-  { path: "/icons/simple-line-icons",    name: "Simple Line Icons",    component: SimpleLineIcons  },
-  { path: "/notifications",    exact: true,    name: "Notifications",    component: Alerts  },
+  { path: "/icons/simple-line-icons", name: "Simple Line Icons", component: SimpleLineIcons },
+  { path: "/notifications", exact: true, name: "Notifications", component: Alerts },
   { path: "/notifications/alerts", name: "Alerts", component: Alerts },
   { path: "/notifications/badges", name: "Badges", component: Badges },
   { path: "/notifications/modals", name: "Modals", component: Modals },
@@ -92,8 +94,10 @@ const routes = [
   { path: "/staffs", name: "Staffs", component: Staffs },
   { path: "/permissions", name: "Permissions", component: Permissions },
   { path: "/accounts", name: "Accounts", component: Accounts },
-  { path: "/groups", name: "Groups", component: Groups },
+  { path: "/groups", exact: true, name: "Groups", component: Groups },
+  { path: "/groups/group_view", exact: true, name: "Group View", component: GroupView },
   { path: "/todos", name: "ToDos", component: ToDos },
+  { path: "/settings", name: "Settings", component: Settings },
 ];
 
 export default routes;

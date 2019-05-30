@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col,  Table } from 'reactstrap';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import {
-  Form, FormGroup, Input, Label, Alert,
+  Form, FormGroup, Input, Label, 
   //  ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu
   Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
@@ -10,6 +10,13 @@ import axios from 'axios';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import classnames from 'classnames';
+
+import GroupTable from './GroupTable';
+import GroupView from './GroupView';
+
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 // import { MultiSelectDropdown } from 'reusable-react-components';
 
 // const options = [
@@ -22,15 +29,24 @@ import classnames from 'classnames';
 //   { value: 'seven', label: 'Set-up Products' },
 // ];
 let groupDataToUpdate = {};
+groupDataToUpdate.permissions = [];
 
 let loadedPermissionsData = [];
+let loggedInUserRole = "";
+let myCurrentPermissions = [];
+let myStaticPermissions = [];
+let permissionsToDelete = [];
+let showPermissions = {};
+
 class Groups extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      currentView: 'table',
       groupData: [],
       permissionData: [],
+      myOtherGroupObject: {},
       redirectToReferrer: false,
       redirectToMainMenu: false,
       modal: false,
@@ -58,8 +74,17 @@ class Groups extends Component {
       newCreatedGroup: {},
       active: [],
       visible: false,
+      visibleUpdate: false,
       dropdownOpen: new Array(19).fill(false),
       activeTab: '1',
+      formError: "",
+      showAction: {
+        "display": "none"
+      },
+      hideField: {
+        "display": "none"
+      },
+      permissionsDeleteList: [],
     };
     this.toggle = this.toggle.bind(this);
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -72,28 +97,30 @@ class Groups extends Component {
     this.findGroup = this.findGroup.bind(this);
     this.findGroupView = this.findGroupView.bind(this);
     this.fetchGroups = this.fetchGroups.bind(this);
-    this.findPermissionPopulate = this.findPermissionPopulate.bind(this);
+    // this.findPermissionPopulate = this.findPermissionPopulate.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
-    this.dropDowntoggle = this.dropDowntoggle.bind(this);
+    this.onDismissUpdate = this.onDismissUpdate.bind(this);
+    this.readUpdatePermissions = this.readUpdatePermissions.bind(this);
+    // this.dropDowntoggle = this.dropDowntoggle.bind(this);
   }
 
   componentDidMount() {
     if (typeof this.props.group === 'undefined') {
 
-      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      let baseUrl = 'http://localhost:9100/api/groups';
-      axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        console.log(response.data)
+      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      let baseUrl = this.state.baseUrl;
+      let groupUrl = 'groups'
+      axios.get(baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+        //console.log(response.data)
         this.setState({ groupData: response.data.payload });
       }).catch(err => {
-        console.log(err);
-        //debugger;
+        //console.log(err);
       })
 
 
-      let permissionUrl = 'http://localhost:9100/api/permissions';
-      axios.get(permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        console.log(response.data)
+      let permissionUrl = 'permissions?size=1000';
+      axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+        //console.log(response.data)
         this.setState({ permissionData: response.data.payload });
         loadedPermissionsData = [
           response.data.payload.map((item) => {
@@ -101,22 +128,32 @@ class Groups extends Component {
           })
         ];
       }).catch(err => {
-        console.log(err);
-        //debugger;
+        //console.log(err);
       })
 
 
+      loggedInUserRole = sessionStorage.getItem("userRole");
+      //console.log(loggedInUserRole);
+      if (loggedInUserRole.toLowerCase().includes("maker")) {
+        let makeVisible = {
+          "display": "inline-block"
+        }
+        this.setState({ showAction: makeVisible });
+      }
     }
   }
 
   toggle() {
     this.fetchGroups();
+    this.setState({ formError: "" });
     this.setState({
       modal: !this.state.modal,
     });
   }
   toggleEdit() {
     this.fetchGroups();
+    this.setState({ formError: "" });
+    permissionsToDelete = [];
     this.setState({
       editModal: !this.state.editModal,
     });
@@ -138,88 +175,91 @@ class Groups extends Component {
   onDismiss() {
     this.setState({ visible: false });
   }
+  onDismissUpdate() {
+    this.setState({ visibleUpdate: false });
+  }
 
   updateValue(field, event) {
     var newGroupInfo = JSON.parse(JSON.stringify(this.state.newGroupData));
     newGroupInfo[field] = event.target.value;
     this.setState({ newGroupData: newGroupInfo });
-    console.log(this.state.newGroupData);
+    //console.log(this.state.newGroupData);
   }
 
   readUpdateValue(field, event) {
     var newGroupInfo = JSON.parse(JSON.stringify(this.state.singleGroupData));
     newGroupInfo[field] = event.target.value;
     this.setState({ singleGroupData: newGroupInfo });
-    console.log(this.state.singleGroupData);
+    //console.log(this.state.singleGroupData);
+  }
+
+  readUpdatePermissions(permission) {
+    console.log(permission.target.value);
+    permissionsToDelete.push(permission.target.value);
+    console.log(permissionsToDelete);
+  }
+
+  filterPermissions = (filterText) => {
+    let filterTextValue = filterText.target.value;
+    console.log(filterTextValue);
+    console.log(myStaticPermissions);
+    let newPermissionsArray = myStaticPermissions.filter(perms => {
+      return perms.toLowerCase().includes(filterTextValue.toLowerCase());
+    });
+    console.log(newPermissionsArray);
+    this.setState({ permissionsDeleteList: newPermissionsArray });
   }
 
   createGroup() {
-    console.log(this.state.newGroupData);
-    let apiUrl = 'groups';
+    //console.log(this.state.newGroupData);
+    let { newGroupData } = this.state;
+    if (newGroupData.name
+      && newGroupData.description) {
 
-    axios.post(this.state.baseUrl + apiUrl,
-      this.state.newGroupData,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ addedGroup: this.state.newGroupData });
-        console.log(this.state.newGroupData);
-        console.log(response);
-      })
-      .catch(err => {
-        // debugger;
-      })
-    this.setState({ visible: true });
-    this.toggle();
+
+      let apiUrl = 'groups';
+
+      axios.post(this.state.baseUrl + apiUrl,
+        this.state.newGroupData,
+        {
+          headers: {
+            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+          }
+        })
+        .then(response => {
+          this.setState({ addedGroup: this.state.newGroupData });
+          //console.log(this.state.newGroupData);
+          //console.log(response);
+        })
+        .catch(err => {
+          // debugger;
+        })
+      this.setState({ visible: true });
+      this.toggle();
+    }
+    else {
+      this.setState({ formError: "The group must have a name and a description." });
+    }
   }
 
   fetchGroups() {
     let apiUrl = 'groups';
     axios.get(this.state.baseUrl + apiUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        console.log(response.data);
-        console.log("I fetched!");
+        // //console.log(response.data);
+        // //console.log("I fetched!");
         this.setState({ groupData: response.data.payload });
       }).catch(err => {
-        console.log(err);
+        //console.log(err);
       })
   }
 
-  findGroup(groupId) {
-    let apiUrl = 'groups/' + groupId;
-    console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singleGroupData: response.data });
-        let resPermissions = response.data.permissions;
-        let perm = [];
-        resPermissions.forEach(permission => {
-          perm.push(permission.action);
-        })
-        console.log(perm);
-        this.setState({ selected: perm });
 
-        console.log(response.data);
-        console.log(this.state.selected);
-        // groupDataToUpdate = response.data;
-      }).then(this.toggleEdit())
-      .catch(err => {
-        // debugger;
-        console.log("Couldn't find single group data: " + err);
-      })
-  }
+
+  // Get specific group to view group Details
 
   findGroupView(groupId) {
     let apiUrl = 'groups/' + groupId;
-    console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -233,25 +273,24 @@ class Groups extends Component {
         resPermissions.forEach(permission => {
           perm.push(permission.action);
         })
-        console.log(perm);
         this.setState({ selected: perm });
         this.setState({ permissionData: response.data.permissions });
+        
 
-        console.log(response.data);
-        console.log(this.state.selected);
-
-        // groupDataToUpdate = response.data;
-      }).then(this.toggleView())
+      }).then(
+        // this.toggleView()
+        this.setState({currentView: 'view'})
+      )
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single group data: " + err);
       })
   }
 
+
+  // Get specific group details for deleting
+
   findGroupDelete(groupId) {
     let apiUrl = 'groups/' + groupId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -264,36 +303,15 @@ class Groups extends Component {
       }).then(this.toggleConfirm())
       .catch(err => {
         // debugger;
-        console.log("Couldn't find single group data: " + err);
       })
   }
 
-  findPermissionPopulate(permissionId) {
-    let apiUrl = 'permissions/' + permissionId;
-    console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singlePermissionData: response.data });
-        // this.state.newGroupData.permissions.push(response.data);
-        // this.state.singleGroupData.permissions.push(response.data);
-        groupDataToUpdate.permissions.push(response.data);
-      })
-      .catch(err => {
-        console.log("Couldn't find single permission data, " + err);
-      })
-  }
 
+  // Send group id to delete group
 
   deleteGroup(groupId) {
     if (groupId) {
       let apiUrl = 'groups/' + groupId;
-      console.log(this.state.baseUrl + apiUrl);
       axios.delete(this.state.baseUrl + apiUrl,
         {
           headers: {
@@ -301,51 +319,147 @@ class Groups extends Component {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
         }).then(
           this.toggleConfirm()
         )
         .catch(err => {
-          console.log("Could not delete group record: " + err);
           // debugger;
         })
 
     }
   }
 
-  updateGroup = (flag) => {
-    console.log(this.state.singleGroupData);
+  // Function to find specific group by ID
 
-    console.log(this.state.selected);
-    groupDataToUpdate.id = this.state.singleGroupData.id;
-    groupDataToUpdate.name = this.state.singleGroupData.name;
-    groupDataToUpdate.description = this.state.singleGroupData.description;
-
-
-    let apiUrl = 'groups/';
-
-    console.log(this.state.baseUrl + apiUrl + flag);
-    console.log(groupDataToUpdate);
-    // debugger;
-    axios.put(this.state.baseUrl + apiUrl + flag,
-      groupDataToUpdate,
+  findGroup(groupId) {
+    let apiUrl = 'groups/' + groupId;
+    axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
-          'content-type': 'application/json'
+          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
         }
       })
       .then(response => {
-        console.log(response);
-        this.setState({ newCreatedGroup: response });
-      })
+        this.setState({ singleGroupData: response.data });
+        let resPermissions = response.data.permissions;
+        let perm = [];
+
+        resPermissions.forEach(permission => {
+          perm.push(permission.action);
+        })
+
+        this.setState({ selected: perm });
+        this.setState({ permissionsDeleteList: perm });
+        myCurrentPermissions = perm;
+        myStaticPermissions = perm;
+
+        showPermissions = {
+          "display": "none"
+        };
+        if (myStaticPermissions.length > 0) {
+          showPermissions.display = "block"
+        }
+
+      }).then(this.toggleEdit())
       .catch(err => {
-        console.log("Could not update group record- " + err);
         // debugger;
       })
+  }
 
-    this.toggleEdit();
+  updateGroup = (flag) => {
 
+    const populateMyPermissions = () => {
+
+      if (myCurrentPermissions) {
+
+        groupDataToUpdate.id = this.state.singleGroupData.id;
+        groupDataToUpdate.name = this.state.singleGroupData.name;
+        groupDataToUpdate.description = this.state.singleGroupData.description;
+
+        if (flag === 1) {
+          groupDataToUpdate.permissions = [];
+          let permissionObject = {};
+
+          myCurrentPermissions.forEach(permission => {
+            this.state.permissionData.forEach(item => {
+              permissionObject = {};
+              if (permission === item.action) {
+                permissionObject = {
+                  'id': item.id,
+                  'action': permission,
+                  'description': item.description
+                };
+                groupDataToUpdate.permissions.push(permissionObject);
+              }
+            });
+          });
+        } else {
+          groupDataToUpdate.permissions = [];
+          let permissionObject = {};
+
+          permissionsToDelete.forEach(permission => {
+            this.state.permissionData.forEach(item => {
+              permissionObject = {};
+              if (permission === item.action) {
+                permissionObject = {
+                  'id': item.id,
+                  'action': permission,
+                  'description': item.description
+                };
+                groupDataToUpdate.permissions.push(permissionObject);
+              }
+            });
+          });
+          console.log("I got here");
+          console.log(groupDataToUpdate.permissions);
+        }
+
+        return true;
+      }
+    }
+
+    const updateTheGroup = () => {
+
+      if (groupDataToUpdate.name) {
+
+        let apiUrl = 'groups/';
+
+        axios.put(this.state.baseUrl + apiUrl + flag,
+          groupDataToUpdate,
+          {
+            headers: {
+              'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
+              'content-type': 'application/json'
+            }
+          })
+          .then(response => {
+            this.setState({ newCreatedGroup: groupDataToUpdate });
+            this.setState({ visibleUpdate: true });
+            this.toggleEdit();
+          })
+          .catch(err => {
+            //console.log("Could not update group record- " + err);
+            // debugger;
+          })
+      } else {
+        this.setState({ formError: "The group must have a name." });
+      }
+    }
+
+    const updateMyGroup = async () => {
+      try {
+        const response = await populateMyPermissions()
+        // debugger;
+        if (response) {
+          updateTheGroup();
+        }
+      }
+      catch (error) {
+        //console.log(error);
+      }
+    }
+    updateMyGroup();
   }
 
   onSearch(text) {
@@ -370,12 +484,12 @@ class Groups extends Component {
   }
 
 
-  dropDowntoggle(i) {
-    const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false); });
-    this.setState({
-      dropdownOpen: newArray,
-    });
-  }
+  // dropDowntoggle(i) {
+  //   const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false); });
+  //   this.setState({
+  //     dropdownOpen: newArray,
+  //   });
+  // }
 
   toggleTab(tab) {
     if (this.state.activeTab !== tab) {
@@ -386,86 +500,24 @@ class Groups extends Component {
   }
 
   render() {
-    const groups = this.state.groupData ? this.state.groupData : {};
-    let { singleGroupData } = this.state;
-
-    console.log(this.state.selected);
-    if (this.state.selected) {
-      groupDataToUpdate.permissions = [];
-      let permissionObject = {};
-      this.state.selected.forEach(permission => {
-        // console.log(permission.split("'").join(""));
-        // let currentPermission = permission.split("'").join("");
-        // this.findPermissionPopulate(currentPermission);
-
-        console.log(permission);
-        this.state.permissionData.forEach(item => {
-          if (permission === item.action) {
-            permissionObject = {
-              'id': item.id,
-              'action': permission,
-              'description': item.description
-            };
-            console.log(permissionObject);
-            groupDataToUpdate.permissions.push(permissionObject);
-          }
-        });
-      });
+    let checkboxStyle = {
+      "overflow-y": "scroll",
+      "height": "130px"
     }
+    // const groups = this.state.groupData ? this.state.groupData : {};
+
+    let { singleGroupData } = this.state;
+    // let { showAction } = this.state;
+
+
+
+
+
     return (
       <div className="animated fadeIn">
+        {this.state.currentView === 'table' ? <GroupTable /> : false}
+        {this.state.currentView === 'view' ? <GroupView /> : false}
 
-        <Row>
-          <Col>
-            <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify"></i> All Groups
-              </CardHeader>
-              <CardBody>
-                <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  Group <strong>{this.state.addedGroup.name}</strong> has been created and submitted for activation.
-                </Alert>
-                <Table hover bordered striped responsive size="sm">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>{groups.map((item, key) => {
-                    return (
-                      <tr key={key}>
-                        <td>{item.id}</td>
-                        <td>{item.name}</td>
-                        <td>{item.description}</td>
-                        <td>
-                          <Button size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                          <Button size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>{' '}
-                          <Button size="sm" color="secondary" onClick={e => this.findGroupView(item.id)}><i className="fa fa-note"></i> View</Button>{' '}
-                          {/* <ButtonDropdown className="mr-1" isOpen={this.state.dropdownOpen[key]} toggle={() => { this.dropDowntoggle(key); }}>
-                            <DropdownToggle caret color="secondary">
-                              Permissions
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem onClick={e => this.findGroupView(item.id)}>View</DropdownItem>
-                              <DropdownItem onClick={e => this.findGroup(item.id)}>Add</DropdownItem>
-                              <DropdownItem onClick={e => this.findGroup(item.id)}>Delete</DropdownItem>
-                            </DropdownMenu>
-                          </ButtonDropdown> */}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                  </tbody>
-                </Table>
-
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Button onClick={this.toggle} className="mr-1">Create Group</Button>
 
 
 
@@ -473,14 +525,13 @@ class Groups extends Component {
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create User Group</ModalHeader>
           <ModalBody>
-
             <Card>
               <CardHeader>
                 <strong></strong> Please fill the form below
               </CardHeader>
               <CardBody>
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
-
+                  <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
@@ -493,7 +544,7 @@ class Groups extends Component {
                   </FormGroup>
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="description">Description</Label>
+                      <Label htmlFor="description">Description <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="description" name="description" placeholder="Enter Last Name" required
@@ -501,17 +552,6 @@ class Groups extends Component {
                       />
                     </Col>
                   </FormGroup>
-                  {/* <br />
-
-                  <h5>Assign Permissions to Group: </h5>
-                  <br />
-                  <DualListBox
-                    options={loadedPermissionsData[0]}
-                    selected={this.state.selected}
-                    onChange={(selected) => {
-                      this.setState({ selected });
-                    }}
-                  /> */}
                   <ModalFooter>
                     <Button color="primary" onClick={this.createGroup}>Submit</Button>{' '}
                     <Button color="secondary" onClick={this.toggle}>Cancel</Button>
@@ -519,9 +559,7 @@ class Groups extends Component {
                 </Form>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
 
 
@@ -534,15 +572,14 @@ class Groups extends Component {
         <Modal isOpen={this.state.editModal} toggle={this.toggleEdit} className={this.props.className}>
           <ModalHeader toggle={this.toggleEdit}>View and Update Group</ModalHeader>
           <ModalBody>
-
             <Card>
               <CardHeader>
                 <strong></strong> Group details below
               </CardHeader>
               <CardBody>
-
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
                   {/* <Input type="hidden" name="id" value={singleGroupData.id} onChange={this.readUpdateValue.bind(this, 'id')} /> */}
+                  <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
@@ -573,33 +610,26 @@ class Groups extends Component {
                         onClick={() => { this.toggleTab('1'); }}
                       >
                         Add
-                </NavLink>
+                      </NavLink>
                     </NavItem>
-                    <NavItem>
+                    <NavItem style={showPermissions}>
                       <NavLink
                         className={classnames({ active: this.state.activeTab === '2' })}
                         onClick={() => { this.toggleTab('2'); }}
                       >
                         Delete
-                </NavLink>
+                      </NavLink>
                     </NavItem>
-                    {/* <NavItem>
-                      <NavLink
-                        className={classnames({ active: this.state.activeTab === '3' })}
-                        onClick={() => { this.toggleTab('3'); }}
-                      >
-                        Messages
-                </NavLink>
-                    </NavItem> */}
+
                   </Nav>
                   <TabContent activeTab={this.state.activeTab}>
                     <TabPane tabId="1">
-                      <DualListBox
+                      <DualListBox canFilter
                         options={loadedPermissionsData[0]}
                         selected={this.state.selected}
                         onChange={(selected) => {
-                          this.setState({ selected });
-                          this.setState({ newlySelected: selected });
+                          this.setState({ selected: selected });
+                          myCurrentPermissions = selected;
                         }}
                       />
                       <ModalFooter>
@@ -608,44 +638,54 @@ class Groups extends Component {
                       </ModalFooter>
                     </TabPane>
                     <TabPane tabId="2">
-                      <DualListBox
+                      {/* <DualListBox canFilter
                         options={loadedPermissionsData[0]}
                         selected={this.state.selected}
                         onChange={(selected) => {
-                          this.setState({ selected });
-                          this.setState({ newlySelected: selected });
+                          this.setState({ selected: selected });
+                          myCurrentPermissions = selected;
                         }}
-                      />
+                      /> */}
+                      <FormGroup row>
+                        <Col md="3"><Label>Checkboxes</Label></Col>
+                        <Col md="9">
+                          <Input type="text" placeholder="Filter Permissions"
+                            onChange={this.filterPermissions}
+                          /><br />
+                          <div style={checkboxStyle}>
+
+                            {this.state.permissionsDeleteList.map((item, key) => {
+                              return (
+                                // <tr key={key}>
+                                //   <td>{item.id}</td>
+                                //   <td>{item.name}</td>
+                                //   <td>{item.description}</td>
+                                //   <td>
+                                //     <Button style={showAction} size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
+                                //     <Button style={showAction} size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>{' '}
+                                //     <Button size="sm" color="secondary" onClick={e => this.findGroupView(item.id)}><i className="fa fa-note"></i> View</Button>{' '}
+                                //   </td>
+                                // </tr>
+                                <FormGroup check className="checkbox" key={key}>
+                                  <Input className="form-check-input" type="checkbox" id="checkbox1" name={item} value={item}
+                                    onChange={this.readUpdatePermissions} />
+                                  <Label check className="form-check-label" htmlFor="checkbox1">{item}</Label>
+                                </FormGroup>
+                              )
+                            })}
+                          </div>
+                        </Col>
+                      </FormGroup>
                       <ModalFooter>
                         <Button color="primary" onClick={e => this.updateGroup(0)}>Delete Permissions and Update</Button>{' '}
                         <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                       </ModalFooter>
                     </TabPane>
-                    {/* <TabPane tabId="3">
-                      <DualListBox
-                        options={loadedPermissionsData[0]}
-                        selected={this.state.selected}
-                        onChange={(selected) => {
-                          this.setState({ selected });
-                          this.setState({ newlySelected: selected });
-                        }}
-                      />
-                      <ModalFooter>
-                        <Button color="primary" onClick={e => this.updateGroup(1)}>Submit</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
-                      </ModalFooter>
-                    </TabPane> */}
                   </TabContent>
-
-
-
-
                 </Form>
               </CardBody>
             </Card>
-
           </ModalBody>
-
         </Modal>
 
 
@@ -669,12 +709,10 @@ class Groups extends Component {
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="name">Name</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="name" name="name" placeholder="Enter Group Name" readOnly
-                        onChange={this.readUpdateValue.bind(this, 'name')} value={singleGroupData.name}
-                      />
+                      {singleGroupData.name}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -682,15 +720,13 @@ class Groups extends Component {
                       <Label htmlFor="description">Description</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="description" name="description" placeholder="Enter Description" required readOnly
-                        onChange={this.readUpdateValue.bind(this, 'description')} value={singleGroupData.description}
-                      />
+                      {singleGroupData.description}
                     </Col>
                   </FormGroup>
                   <br />
-                  <h5>Group Permissions: </h5>
+                  <h5>Group Permissions: {this.state.permissionData.length > 0 ? this.state.permissionData.length : "None"}</h5>
 
-                  <Table hover bordered striped responsive size="sm">
+                  <Table hover bordered striped responsive size="sm" style={this.state.permissionData.length > 0 ? {} : this.state.hideField}>
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -758,4 +794,25 @@ class Groups extends Component {
   }
 }
 
-export default Groups;
+
+
+
+
+const mapStateToProps = (state) => {
+  console.log('State is ', state)
+  return {
+
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    // fetchBatchesSummary,
+    // postAllTransactions,
+    // postTransaction
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);
+
+// export default Groups;

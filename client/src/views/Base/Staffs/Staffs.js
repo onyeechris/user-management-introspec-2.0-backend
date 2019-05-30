@@ -14,6 +14,12 @@ import Pagination2 from "react-js-pagination";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchStaffs, fetchStaff, deleteStaff, createStaff, updateStaff } from '../../../actions/action_staff';
+
+import { FormattedMessage } from "react-intl";
+
 let loggedInUserRole = "";
 class Staffs extends Component {
 
@@ -53,7 +59,8 @@ class Staffs extends Component {
       showAction: {
         "display": "none"
       },
-      startDate: ''
+      startDate: '',
+      currentError: ''
     };
     this.toggle = this.toggle.bind(this);
     this.updateValue = this.updateValue.bind(this);
@@ -74,30 +81,37 @@ class Staffs extends Component {
   componentDidMount() {
 
     if (sessionStorage.getItem("userData")) {
-      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+      console.log(this.props);
+      console.log(this.state);
 
-      let staffUrl = 'staffs?size=' + this.state.itemsPerPage;
-      //console.log(this.state.baseUrl + staffUrl);
-      axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
-        .then((response) => {
-          //console.log(response.data.payload);
-          //console.log(response.data.meta);
-          this.setState({ staffData: response.data.payload });
-          this.setState({ staffTableData: response.data.meta });
-          this.setState({ itemsPerPage: response.data.meta.size });
-        }).catch(err => {
-          //debugger;
-          //console.log("Error fetching staffs");
-        })
+      let type = '?size=' + this.state.itemsPerPage;
+
+      this.props.fetchStaffs(type).then(result => {
+        this.setState({ staffData: result.data.payload });
+        this.setState({ staffTableData: result.data.meta });
+        this.setState({ itemsPerPage: result.data.meta.size });
+      }, error => {
+        console.log(error);
+        this.setState({ currentError: error });
+      }
+      )
+
+
+
+      // axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+      //   .then((response) => {
+      //     this.setState({ staffData: response.data.payload });
+      //     this.setState({ staffTableData: response.data.meta });
+      //     this.setState({ itemsPerPage: response.data.meta.size });
+      //   }).catch(err => {
+      //   })
 
       let groupUrl = 'groups';
       axios.get(this.state.baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
         .then((response) => {
-          //console.log(response.data);
-          //console.log(response.data.payload);
           this.setState({ groupData: response.data.payload });
         }).then(err => {
-          //debugger;
         })
 
     } else {
@@ -105,7 +119,6 @@ class Staffs extends Component {
     }
 
     loggedInUserRole = sessionStorage.getItem("userRole");
-    //console.log(loggedInUserRole);
     if (loggedInUserRole.toLowerCase().includes("maker")) {
       let makeVisible = {
         "display": "block"
@@ -123,7 +136,7 @@ class Staffs extends Component {
 
   handleChange(hireDate) {
     this.setState({ startDate: hireDate });
-    let formatted_date = (hireDate.getMonth() + 1) + "/" + hireDate.getDate() + "/" + hireDate.getFullYear()
+    let formatted_date = (("0" + (hireDate.getMonth() + 1)).slice(-2)) + "/" + ("0" + hireDate.getDate()).slice(-2) + "/" + hireDate.getFullYear()
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo.hire_date = formatted_date;
     this.setState({ newStaffData: newStaffInfo });
@@ -132,6 +145,7 @@ class Staffs extends Component {
 
   toggle() {
     this.setState({ formError: "" });
+    this.setState({ startDate: "" });
     this.setState({
       modal: !this.state.modal,
     });
@@ -139,11 +153,13 @@ class Staffs extends Component {
 
   toggleEdit() {
     this.setState({ formError: "" });
+    this.setState({ startDate: "" });
     this.setState({
       editModal: !this.state.editModal,
     });
   }
   toggleConfirm() {
+    this.setState({ formError: "" });
     this.setState({
       confirmModal: !this.state.confirmModal,
     });
@@ -160,7 +176,7 @@ class Staffs extends Component {
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ newStaffData: newStaffInfo });
-    console.log(newStaffInfo);
+    // console.log(newStaffInfo);
   }
 
   readUpdateValue(field, event) {
@@ -179,24 +195,56 @@ class Staffs extends Component {
       && newStaffData.hire_date
       && newStaffData.maker_checker) {
 
-      let staffUrl = 'staffs';
-      axios.post(this.state.baseUrl + staffUrl,
-        newStaffData,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-          }
-        })
-        .then(response => {
-          this.setState({ newCreatedStaff: newStaffData });
-        })
-        .catch(err => {
-          //console.log(err);
-        })
+      this.props.createStaff(newStaffData).then(result => {
+        this.setState({ newCreatedStaff: newStaffData });
+        this.setState({ visible: true });
+        this.toggle();
+      }, error => {
+        console.log(error);
+        this.setState({ formError: error });
+      }
+      )
 
-      this.fetchStaffs();
-      this.setState({ visible: true });
-      this.toggle();
+      // let staffUrl = 'staffs';
+      // axios.post(this.state.baseUrl + staffUrl,
+      //   newStaffData,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.setState({ newCreatedStaff: newStaffData });
+      //     this.fetchStaffs();
+      //     this.setState({ visible: true });
+      //     this.toggle();
+      //   })
+      //   .catch(err => {
+      //     console.log("Could not create record: " + err);
+      //     let res = JSON.parse(JSON.stringify(err.response.data));
+      //     console.log("Server response status: " + res.status);
+      //     console.log("Server response message: " + res.message);
+
+      //     let errMessage = '';
+      //     switch (res.status) {
+      //       case 401:
+      //         errMessage = "Unauthorized, login required!";
+      //         break;
+      //       case 403:
+      //         errMessage = "You don't have the permission to access this function!";
+      //         break;
+      //       case 404:
+      //         errMessage = "Sorry Page Not Found!";
+      //         break;
+      //       case 500:
+      //         errMessage = "Something went wrong, please try again.";
+      //         break;
+      //       default:
+      //         errMessage = "Sorry there was an error";
+      //     }
+      //     this.setState({ formError: errMessage });
+      //     //console.log(err);
+      //   })
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -204,23 +252,27 @@ class Staffs extends Component {
   }
 
   findStaff(staffId) {
-    let apiUrl = 'staffs/' + staffId;
-    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    //console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singleStaffData: response.data });
+    this.props.fetchStaff(staffId).then(result => {
+      this.setState({ singleStaffData: result.data });
+    }, error => {
+      this.setState({ formError: error });
+    }).then(this.toggleEdit());
 
-      }).then(this.toggleEdit())
-      .catch(err => {
-        // debugger;
-        //console.log("Couldn't find single staff: " + err);
-      })
+    // let apiUrl = 'staffs/' + staffId;
+    // axios.get(this.state.baseUrl + apiUrl,
+    //   {
+    //     headers: {
+    //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+    //     }
+    //   })
+    //   .then(response => {
+    //     this.setState({ singleStaffData: response.data });
+
+    //   }).then(this.toggleEdit())
+    //   .catch(err => {
+    //     // debugger;
+    //     //console.log("Couldn't find single staff: " + err);
+    //   })
   }
 
   findStaffDelete(staffId) {
@@ -245,32 +297,69 @@ class Staffs extends Component {
 
   updateStaff() {
     let { singleStaffData } = this.state;
+    console.log('Something happened here');
+    console.log(singleStaffData);
     //validation
     if (singleStaffData.first_name
-      && singleStaffData.password
+      // && singleStaffData.password
       && singleStaffData.email
-      && singleStaffData.group_id
+      // && singleStaffData.group_id
       && singleStaffData.hire_date
       && singleStaffData.maker_checker) {
 
-      let apiUrl = 'staffs';
-      axios.put(this.state.baseUrl + apiUrl,
-        this.state.singleStaffData,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-          }
-        })
-        .then(response => {
-          this.setState({ newCreatedStaff: this.state.singleStaffData });
-        })
-        .catch(err => {
-          // debugger;
-        })
+      console.log('Something eventually happened here');
+      this.props.updateStaff(this.state.singleStaffData).then(result => {
+        this.setState({ newCreatedStaff: this.state.singleStaffData });
+        this.setState({ visibleUpdate: true });
+        this.toggleEdit();
+      }, error => {
+        this.setState({ formError: error });
+      }
+      )
 
-      this.fetchStaffs();
-      this.setState({ visibleUpdate: true });
-      this.toggleEdit();
+
+      // let apiUrl = 'staffs';
+      // axios.put(this.state.baseUrl + apiUrl,
+      //   this.state.singleStaffData,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.setState({ newCreatedStaff: this.state.singleStaffData });
+      //     this.fetchStaffs();
+      //     this.setState({ visibleUpdate: true });
+      //     this.toggleEdit();
+      //   })
+      //   .catch(err => {
+      //     console.log("Could not update record: " + err);
+      //     let res = JSON.parse(JSON.stringify(err.response.data));
+      //     console.log("Server response status: " + res.status);
+      //     console.log("Server response message: " + res.message);
+
+      //     let errMessage = '';
+      //     switch (res.status) {
+      //       case 401:
+      //         errMessage = "Unauthorized, login required!";
+      //         break;
+      //       case 403:
+      //         errMessage = "You don't have the permission to access this function!";
+      //         break;
+      //       case 404:
+      //         errMessage = "Sorry Page Not Found!";
+      //         break;
+      //       case 500:
+      //         errMessage = "Something went wrong, please try again.";
+      //         break;
+      //       default:
+      //         errMessage = "Sorry there was an error";
+      //     }
+      //     this.setState({ formError: errMessage });
+      //     // debugger;
+      //   })
+
+
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -279,24 +368,58 @@ class Staffs extends Component {
 
   deleteStaff(staffId) {
     if (staffId > 0) {
-      let apiUrl = 'staffs/' + staffId;
-      axios.delete(this.state.baseUrl + apiUrl,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-          }
-        })
-        .then(response => {
-          //console.log(response);
-        })
-        .catch(err => {
-          console.log("Could not delete staff record: " + err);
-          let res = JSON.parse(JSON.stringify(err.response.data));
-          console.log("Server response status: " + res.status);
-          console.log("Server response message: " + res.message);
-          // debugger;
-        })
-      this.toggleConfirm()
+      this.props.deleteStaff(staffId).then(result => {
+        this.toggleConfirm()
+        console.log(result);
+      }, error => {
+        console.log("Could not delete staff record: " + error);
+        this.setState({ formError: error });
+      });
+
+      if (this.props.staffData.staffDeleteError) {
+        console.log(this.props.staffData.staffDeleteError);
+      }
+
+      // axios.delete(this.state.baseUrl + apiUrl,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.toggleConfirm()
+      //     console.log(response);
+      //   })
+      //   .catch(err => {
+      // console.log("Could not delete staff record: " + err);
+      // let res = JSON.parse(JSON.stringify(err.response.data));
+      // console.log("Server response status: " + res.status);
+      // console.log("Server response message: " + res.message);
+
+      //     let errMessage = '';
+      //     switch (res.status) {
+      //       case 400:
+      //         errMessage = "Error, bad request";
+      //         break;
+      //       case 401:
+      //         errMessage = "Unauthorized, login required!";
+      //         break;
+      //       case 403:
+      //         errMessage = "You don't have the permission to access this function!";
+      //         break;
+      //       case 404:
+      //         errMessage = "Sorry Page Not Found!";
+      //         break;
+      //       case 500:
+      //         errMessage = "Something went wrong, please try again.";
+      //         break;
+      //       default:
+      //         errMessage = "Sorry there was an error";
+      //     }
+      //     this.setState({ formError: errMessage });
+      //     // debugger;
+      //   })
+
     }
   }
 
@@ -334,7 +457,6 @@ class Staffs extends Component {
     }
 
     //using an asynchronous function
-
     const reloadTable = async () => {
       try {
         const response = await updateStateVariable();
@@ -378,6 +500,8 @@ class Staffs extends Component {
     const staffGroup = this.state.groupData;
     const singleStaff = this.state.singleStaffData;
 
+    console.log(this.props);
+
     return (
 
       <div className="animated fadeIn">
@@ -385,24 +509,13 @@ class Staffs extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> All Staffs
+                <i className="fa fa-align-justify"></i> <FormattedMessage id="AllStaffs" defaultMessage="All Staffs" />
                 <div className="pull-right">
-                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Staff</Button>
-                </div>
-                <div className="pull-right">
-                  &nbsp; &nbsp;
-                </div>
-                <div className="pull-right">
-                  <select onChange={this.changePageItem.bind(this)} className="form-control">
-                    <option value="20">No of Items</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                  </select>
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}><FormattedMessage id="Create New Staff" defaultMessage="Create New Staff" /></Button>
                 </div>
               </CardHeader>
               <CardBody>
+                <p style={{ color: 'red' }}>{this.state.currentError}</p>
                 <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
                   User <strong>{this.state.newCreatedStaff.first_name}</strong> has been created and submitted for activation.
                 </Alert>
@@ -412,12 +525,12 @@ class Staffs extends Component {
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>First Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th>Group</th>
-                      <th style={showAction}>Action</th>
+                      <th><FormattedMessage id="tableId" defaultMessage="ID" /></th>
+                      <th><FormattedMessage id="tableFirstName" defaultMessage="First Name" /></th>
+                      <th><FormattedMessage id="tableEmail" defaultMessage="Email" /></th>
+                      <th><FormattedMessage id="tableRoleName" defaultMessage="Role" /></th>
+                      <th><FormattedMessage id="tableGroupName" defaultMessage="Group" /></th>
+                      <th style={showAction}><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
                     </tr>
                   </thead>
                   <tbody>{staff.map((item, key) => {
@@ -446,6 +559,15 @@ class Staffs extends Component {
                     onChange={this.handlePageChange}
                   />
                 </nav>
+                <div className="pull-left">
+                  <select onChange={this.changePageItem.bind(this)} className="form-control">
+                    <option value="20">No of Items</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
               </CardBody>
             </Card>
           </Col>
@@ -512,7 +634,7 @@ class Staffs extends Component {
                       <Label htmlFor="phone">Phone</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="phone" name="phone" placeholder="Enter Phone Number"
+                      <Input type="number" size="11" id="phone" name="phone" placeholder="Enter Phone Number"
                         onChange={this.updateValue.bind(this, 'phone')}
                       />
                     </Col>
@@ -542,7 +664,7 @@ class Staffs extends Component {
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="select" name="group_id" id="select" onChange={this.updateValue.bind(this, 'group_id')}>
-                        <option value="0">Please select</option>
+                        <option value="">Please select</option>
                         {staffGroup.map(function (item, key) {
                           return (
                             <option value={item.id} key={key}>{item.name}</option>
@@ -713,6 +835,8 @@ class Staffs extends Component {
           <ModalBody>
             <Card>
               <CardBody>
+                <p style={{ color: 'red' }}>{this.state.formError}</p>
+
                 <p>Are you sure you want to delete staff: {singleStaff.first_name}?</p>
                 <ModalFooter>
                   <Button color="primary" onClick={e => this.deleteStaff(singleStaff.id)}>Delete</Button>{' '}
@@ -727,4 +851,22 @@ class Staffs extends Component {
   }
 }
 
-export default Staffs;
+const mapStateToProps = (state) => {
+  console.log('State is ', state)
+  return {
+    staffData: state.staff,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    fetchStaffs,
+    fetchStaff,
+    deleteStaff,
+    createStaff,
+    updateStaff
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Staffs);
+// export default Staffs;

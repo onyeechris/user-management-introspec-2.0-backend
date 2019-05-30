@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import { fetchStaff } from '../actions/action_login';
+import { fetchStaff } from '../actions/action_staff';
 import { bindActionCreators } from 'redux';
 
-import TableComponent from '../views/Base/Tables/Tables';
+import StaffComponent from '../views/Base/Staffs/Staffs';
 
 const mapStateToProps = state => {
     return {
@@ -16,6 +16,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     }
 }
 
-const Staff = connect(mapStateToProps, mapDispatchToProps)(TableComponent);
+const Staff = connect(mapStateToProps, mapDispatchToProps)(StaffComponent);
 
 export default Staff;

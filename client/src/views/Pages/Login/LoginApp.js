@@ -17,6 +17,7 @@ import {
 import axios from 'axios';
 // import CryptoJS from "react-native-crypto-js";
 import CryptoJS from "crypto-js";
+import { FormattedMessage } from "react-intl";
 
 
 class LoginApp extends Component {
@@ -143,7 +144,7 @@ class LoginApp extends Component {
         return (
             <div className="app flex-row align-items-center">
                 <div style={topMenu}>
-                    Introspec | <a href="/home" className="menuLink" onClick={this.menuHome}> User Sign In</a>
+                    Introspec | <a href="/home" className="menuLink" onClick={this.menuHome}> <FormattedMessage id="User Sign In" defaultMessage="User Sign In" /></a>
                 </div>
                 <Container>
                     <Row className="justify-content-center">
@@ -152,8 +153,8 @@ class LoginApp extends Component {
                                 <Card className="p-4">
                                     <CardBody>
                                         <form action="" method="post">
-                                            <h1>Login</h1>
-                                            <p className="text-muted">Sign In to your application</p>
+                                            <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
+                                            <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
                                                     <InputGroupText>
@@ -192,7 +193,7 @@ class LoginApp extends Component {
                                                         className="px-4"
                                                         onClick={this.login}
                                                     >
-                                                        Login
+                                                        <FormattedMessage id="Login" defaultMessage="Login" />
                                                     </Button> {' '}{' '}
                                                     <Button
                                                         color="secondary"
@@ -200,7 +201,7 @@ class LoginApp extends Component {
                                                         className="px-4"
                                                         onClick={this.redirectUser}
                                                     >
-                                                        Back
+                                                        <FormattedMessage id="Back" defaultMessage="Back" />
                                                     </Button>
                                                 </Col>
                                                 {/* <Col xs="6" className="text-right">

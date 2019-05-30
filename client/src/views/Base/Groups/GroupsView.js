@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import {
-  Form, FormGroup, Input, Label, Alert,
+  Form, FormGroup, Input, Label,
   //  ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu
   Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
@@ -10,38 +10,34 @@ import axios from 'axios';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import classnames from 'classnames';
-
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchGroup, fetchGroups, createGroup, deleteGroup, updateGroup } from '../../../actions/action_group';
-import { fetchPermissions } from '../../../actions/action_permission';
-// import { MultiSelectDropdown } from 'reusable-react-components';
+import { fetchGroup } from '../../../actions/action_group';
+import { Link } from "react-router-dom";
+import Pagination2 from "react-js-pagination";
 
-// const options = [
-//   { value: 'one', label: 'Create User' },
-//   { value: 'two', label: 'Activate User' },
-//   { value: 'three', label: 'Delete User' },
-//   { value: 'four', label: 'Create Processors' },
-//   { value: 'five', label: 'View Processors' },
-//   { value: 'six', label: 'Update Processors' },
-//   { value: 'seven', label: 'Set-up Products' },
-// ];
 let groupDataToUpdate = {};
 groupDataToUpdate.permissions = [];
-
 let loadedPermissionsData = [];
 let loggedInUserRole = "";
 let myCurrentPermissions = [];
 let myStaticPermissions = [];
 let permissionsToDelete = [];
 let showPermissions = {};
-class Groups extends Component {
+
+let firstPermissionsData = [];
+
+class GroupsView extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       groupData: [],
+      initialPermissionData: [],
+      itemsPerPage: 10,
+      activePage: 1,
       permissionData: [],
+      permissionTableData: {},
       myOtherGroupObject: {},
       redirectToReferrer: false,
       redirectToMainMenu: false,
@@ -93,38 +89,43 @@ class Groups extends Component {
     this.findGroup = this.findGroup.bind(this);
     this.findGroupView = this.findGroupView.bind(this);
     this.fetchGroups = this.fetchGroups.bind(this);
-    // this.findPermissionPopulate = this.findPermissionPopulate.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
     this.readUpdatePermissions = this.readUpdatePermissions.bind(this);
-    // this.dropDowntoggle = this.dropDowntoggle.bind(this);
+    this.changePageItem = this.changePageItem.bind(this);
   }
 
   componentDidMount() {
 
+    // let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
+    // axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+    //   //console.log(response.data)
+    //   this.setState({ permissionData: response.data.payload });
+    //   this.setState({ permissionTableData: response.data.meta });
+    //   loadedPermissionsData = [
+    //     response.data.payload.map((item) => {
+    //       return ({ value: item.action, label: item.action })
+    //     })
+    //   ];
+    // }).catch(err => {
+    //   //console.log(err);
+    // })
+
     console.log(this.props);
+    console.log(this.props.group);
+    console.log(this.props.groupData);
 
-    this.props.fetchGroups().then(result => {
-      this.setState({ groupData: result.data.payload });
-    }, error => {
-      console.log(error);
-      this.setState({ formError: error });
-    }
-    )
+    let singleViewGroupData = JSON.parse(sessionStorage.getItem("currentSingleGroupData"));
 
-    let permissionUrl = '?size=1000';
-    this.props.fetchPermissions(permissionUrl).then(result => {
-      this.setState({ permissionData: result.data.payload });
-      loadedPermissionsData = [
-        result.data.payload.map((item) => {
-          return ({ value: item.action, label: item.action })
-        })
-      ];
-    }, error => {
-      console.log(error);
-      this.setState({ formError: error });
-    }
-    )
+    console.log(singleViewGroupData);
+    this.setState({ singleGroupData: singleViewGroupData.data });
+    this.setState({ initialPermissionData: singleViewGroupData.data.permissions });
+    firstPermissionsData = singleViewGroupData.data.permissions;
+
+    let permData = firstPermissionsData.slice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
+
+    this.setState({ permissionData: permData });
+
 
     loggedInUserRole = sessionStorage.getItem("userRole");
     if (loggedInUserRole.toLowerCase().includes("maker")) {
@@ -133,7 +134,6 @@ class Groups extends Component {
       }
       this.setState({ showAction: makeVisible });
     }
-
   }
 
   toggle() {
@@ -172,6 +172,59 @@ class Groups extends Component {
     this.setState({ visibleUpdate: false });
   }
 
+  handlePageChange = (pageNumber) => {
+    console.log(pageNumber);
+    let permData = [];
+    const updateStateVariable = () => {
+      this.setState({ activePage: pageNumber });
+      firstPermissionsData = { ...this.state.initialPermissionData };
+      permData = firstPermissionsData.splice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
+      return true;
+    }
+
+    //using an asynchronous function
+    const reloadTable = async () => {
+      try {
+        const response = await updateStateVariable();
+        if (response) {
+          this.setState({ permissionData: permData });
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+    reloadTable();
+    // firstPermissionsData = this.state.initialPermissionData;
+    // let permData = firstPermissionsData.slice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
+    // this.setState({ permissionData: permData });
+  }
+
+  changePageItem(numberOfItems) {
+    console.log(numberOfItems.target.value);
+    let permData = [];
+    const updateStateVariable = () => {
+      this.setState({ itemsPerPage: numberOfItems.target.value });
+      firstPermissionsData = { ...this.state.initialPermissionData };
+      permData = firstPermissionsData.splice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
+      return true;
+    }
+
+    //using an asynchronous function
+    const reloadTable = async () => {
+      try {
+        const response = await updateStateVariable();
+        if (response) {
+          this.setState({ permissionData: permData });
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+    reloadTable();
+  }
+
   updateValue(field, event) {
     var newGroupInfo = JSON.parse(JSON.stringify(this.state.newGroupData));
     newGroupInfo[field] = event.target.value;
@@ -204,60 +257,53 @@ class Groups extends Component {
   }
 
   createGroup() {
+    //console.log(this.state.newGroupData);
     let { newGroupData } = this.state;
     if (newGroupData.name
       && newGroupData.description) {
 
-      this.props.createGroup(newGroupData).then(result => {
-        this.setState({ addedGroup: newGroupData });
-      }, error => {
-        console.log(error);
-        this.setState({ formError: error });
-      }
-      ).then(this.setState({ visible: true }))
 
-      // let apiUrl = 'groups';
+      let apiUrl = 'groups';
 
-      // axios.post(this.state.baseUrl + apiUrl,
-      //   newGroupData,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     this.setState({ addedGroup: newGroupData });
-      //     //console.log(this.state.newGroupData);
-      //     //console.log(response);
-      //   })
-      //   .catch(err => {
-      //     // debugger;
-      //     console.log("Could not create record: " + err);
-      //     let res = JSON.parse(JSON.stringify(err.response.data));
-      //     console.log("Server response status: " + res.status);
-      //     console.log("Server response message: " + res.message);
+      axios.post(this.state.baseUrl + apiUrl,
+        this.state.newGroupData,
+        {
+          headers: {
+            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+          }
+        })
+        .then(response => {
+          this.setState({ addedGroup: this.state.newGroupData });
+          //console.log(this.state.newGroupData);
+          //console.log(response);
+        })
+        .catch(err => {
+          // debugger;
+          console.log("Could not create record: " + err);
+          let res = JSON.parse(JSON.stringify(err.response.data));
+          console.log("Server response status: " + res.status);
+          console.log("Server response message: " + res.message);
 
-      //     let errMessage = '';
-      //     switch (res.status) {
-      //       case 401:
-      //         errMessage = "Unauthorized, login required!";
-      //         break;
-      //       case 403:
-      //         errMessage = "You don't have the permission to access this function!";
-      //         break;
-      //       case 404:
-      //         errMessage = "Sorry Page Not Found!";
-      //         break;
-      //       case 500:
-      //         errMessage = "Something went wrong, please try again.";
-      //         break;
-      //       default:
-      //         errMessage = "Sorry there was an error";
-      //     }
-      //     this.setState({ formError: errMessage });
-      //   })
-      // this.setState({ visible: true });
-
+          let errMessage = '';
+          switch (res.status) {
+            case 401:
+              errMessage = "Unauthorized, login required!";
+              break;
+            case 403:
+              errMessage = "You don't have the permission to access this function!";
+              break;
+            case 404:
+              errMessage = "Sorry Page Not Found!";
+              break;
+            case 500:
+              errMessage = "Something went wrong, please try again.";
+              break;
+            default:
+              errMessage = "Sorry there was an error";
+          }
+          this.setState({ formError: errMessage });
+        })
+      this.setState({ visible: true });
       this.toggle();
     }
     else {
@@ -282,44 +328,27 @@ class Groups extends Component {
   // Get specific group to view group Details
 
   findGroupView(groupId) {
-
-    this.props.fetchGroup(groupId).then(result => {
-      console.log(result);
-      this.setState({ singleGroupData: result.data });
-      let resPermissions = result.data.permissions;
-      let perm = [];
-      resPermissions.forEach(permission => {
-        perm.push(permission.action);
+    let apiUrl = 'groups/' + groupId;
+    axios.get(this.state.baseUrl + apiUrl,
+      {
+        headers: {
+          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+        }
       })
-      this.setState({ selected: perm });
-      this.setState({ permissionData: result.data.permissions });
-      sessionStorage.setItem("currentSingleGroupData", JSON.stringify(result));
-    }, error => {
-      console.log(error);
-    }
-    ).then(this.props.history.push('/groups/group_view'))
+      .then(response => {
+        this.setState({ singleGroupData: response.data });
+        let resPermissions = response.data.permissions;
+        let perm = [];
+        resPermissions.forEach(permission => {
+          perm.push(permission.action);
+        })
+        this.setState({ selected: perm });
+        this.setState({ permissionData: response.data.permissions });
 
-
-    // let apiUrl = 'groups/' + groupId;
-    // axios.get(this.state.baseUrl + apiUrl,
-    //   {
-    //     headers: {
-    //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-    //     }
-    //   })
-    //   .then(response => {
-    //     this.setState({ singleGroupData: response.data });
-    //     let resPermissions = response.data.permissions;
-    //     let perm = [];
-    //     resPermissions.forEach(permission => {
-    //       perm.push(permission.action);
-    //     })
-    //     this.setState({ selected: perm });
-    //     this.setState({ permissionData: response.data.permissions });
-
-    //   }).then(this.toggleView())
-    //   .catch(err => {
-    //   })
+      }).then(this.toggleView())
+      .catch(err => {
+        // debugger;
+      })
   }
 
 
@@ -335,6 +364,7 @@ class Groups extends Component {
       })
       .then(response => {
         this.setState({ singleGroupData: response.data });
+
       }).then(this.toggleConfirm())
       .catch(err => {
         // debugger;
@@ -346,49 +376,41 @@ class Groups extends Component {
 
   deleteGroup(groupId) {
     if (groupId || groupId === 0) {
-      this.props.deleteGroup(groupId).then(result => {
-        this.toggleConfirm();
-      }, error => {
-        console.log(error);
-        this.setState({ formError: error });
-      }
-      );
+      let apiUrl = 'groups/' + groupId;
+      axios.delete(this.state.baseUrl + apiUrl,
+        {
+          headers: {
+            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+          }
+        }).then(
+          this.toggleConfirm()
+        )
+        .catch(err => {
+          // debugger;
+          console.log("Could not delete record: " + err);
+          let res = JSON.parse(JSON.stringify(err.response.data));
+          console.log("Server response status: " + res.status);
+          console.log("Server response message: " + res.message);
 
-      // let apiUrl = 'groups/' + groupId;
-      // axios.delete(this.state.baseUrl + apiUrl,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   }).then(
-      //     this.toggleConfirm()
-      //   )
-      //   .catch(err => {
-      //     // debugger;
-      //     console.log("Could not delete record: " + err);
-      //     let res = JSON.parse(JSON.stringify(err.response.data));
-      //     console.log("Server response status: " + res.status);
-      //     console.log("Server response message: " + res.message);
-
-      //     let errMessage = '';
-      //     switch (res.status) {
-      //       case 401:
-      //         errMessage = "Unauthorized, login required!";
-      //         break;
-      //       case 403:
-      //         errMessage = "You don't have the permission to access this function!";
-      //         break;
-      //       case 404:
-      //         errMessage = "Sorry Page Not Found!";
-      //         break;
-      //       case 500:
-      //         errMessage = "Something went wrong, please try again.";
-      //         break;
-      //       default:
-      //         errMessage = "Sorry there was an error";
-      //     }
-      //     this.setState({ formError: errMessage });
-      //   })
+          let errMessage = '';
+          switch (res.status) {
+            case 401:
+              errMessage = "Unauthorized, login required!";
+              break;
+            case 403:
+              errMessage = "You don't have the permission to access this function!";
+              break;
+            case 404:
+              errMessage = "Sorry Page Not Found!";
+              break;
+            case 500:
+              errMessage = "Something went wrong, please try again.";
+              break;
+            default:
+              errMessage = "Sorry there was an error";
+          }
+          this.setState({ formError: errMessage });
+        })
 
     }
   }
@@ -485,59 +507,49 @@ class Groups extends Component {
     const updateTheGroup = () => {
 
       if (groupDataToUpdate.name) {
-        this.props.updateGroup(groupDataToUpdate, flag).then(result => {
-          this.setState({ newCreatedGroup: groupDataToUpdate });
-          this.setState({ visibleUpdate: true });
-        }, error => {
-          console.log(error);
-          this.setState({ formError: error });
-        }
-        ).then(this.toggleEdit());
 
+        let apiUrl = 'groups/';
 
+        axios.put(this.state.baseUrl + apiUrl + flag,
+          groupDataToUpdate,
+          {
+            headers: {
+              'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
+              'content-type': 'application/json'
+            }
+          })
+          .then(response => {
+            this.setState({ newCreatedGroup: groupDataToUpdate });
+            this.setState({ visibleUpdate: true });
+            this.toggleEdit();
+          })
+          .catch(err => {
+            //console.log("Could not update group record- " + err);
+            // debugger;
+            console.log("Could not update record: " + err);
+            let res = JSON.parse(JSON.stringify(err.response.data));
+            console.log("Server response status: " + res.status);
+            console.log("Server response message: " + res.message);
 
-        // let apiUrl = 'groups/';
-
-        // axios.put(this.state.baseUrl + apiUrl + flag,
-        //   groupDataToUpdate,
-        //   {
-        //     headers: {
-        //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
-        //       'content-type': 'application/json'
-        //     }
-        //   })
-        //   .then(response => {
-        //     this.setState({ newCreatedGroup: groupDataToUpdate });
-        //     this.setState({ visibleUpdate: true });
-        //     this.toggleEdit();
-        //   })
-        //   .catch(err => {
-        //     //console.log("Could not update group record- " + err);
-        //     // debugger;
-        //     console.log("Could not update record: " + err);
-        //     let res = JSON.parse(JSON.stringify(err.response.data));
-        //     console.log("Server response status: " + res.status);
-        //     console.log("Server response message: " + res.message);
-
-        //     let errMessage = '';
-        //     switch (res.status) {
-        //       case 401:
-        //         errMessage = "Unauthorized, login required!";
-        //         break;
-        //       case 403:
-        //         errMessage = "You don't have the permission to access this function!";
-        //         break;
-        //       case 404:
-        //         errMessage = "Sorry Page Not Found!";
-        //         break;
-        //       case 500:
-        //         errMessage = "Something went wrong, please try again.";
-        //         break;
-        //       default:
-        //         errMessage = "Sorry there was an error";
-        //     }
-        //     this.setState({ formError: errMessage });
-        //   })
+            let errMessage = '';
+            switch (res.status) {
+              case 401:
+                errMessage = "Unauthorized, login required!";
+                break;
+              case 403:
+                errMessage = "You don't have the permission to access this function!";
+                break;
+              case 404:
+                errMessage = "Sorry Page Not Found!";
+                break;
+              case 500:
+                errMessage = "Something went wrong, please try again.";
+                break;
+              default:
+                errMessage = "Sorry there was an error";
+            }
+            this.setState({ formError: errMessage });
+          })
       } else {
         this.setState({ formError: "The group must have a name." });
       }
@@ -597,61 +609,92 @@ class Groups extends Component {
 
   render() {
     let checkboxStyle = {
-      "overflowY": "scroll",
+      "overflow-y": "scroll",
       "height": "130px"
     }
-    const groups = this.state.groupData ? this.state.groupData : {};
-
     let { singleGroupData } = this.state;
-    let { showAction } = this.state;
 
-
-
-
+    console.log(this.state.initialPermissionData);
 
     return (
       <div className="animated fadeIn">
         <Row>
           <Col>
+            {/* <Link to='/groups'>
+              <Button className="mr-1">Back</Button>
+            </Link> */}
             <Card>
+
               <CardHeader>
-                <i className="fa fa-align-justify"></i> All Groups
-                <div className="pull-right">
-                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create Group</Button>
-                </div>
+                <Link to='/groups'>
+                  <i className="fa fa-arrow-left"></i> Back
+                {/* {this.props.group.groupFetched.data.name} */}
+                </Link>
               </CardHeader>
               <CardBody>
-                <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  Group <strong>{this.state.addedGroup.name}</strong> has been created and submitted for activation.
-                </Alert>
-                <Alert color="info" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  Update request for group <strong>{this.state.newCreatedGroup.name}</strong> has been submitted for authorization.
-                </Alert>
-                <Table hover bordered striped responsive size="sm">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>{groups.map((item, key) => {
-                    return (
-                      <tr key={key}>
-                        <td>{item.id}</td>
-                        <td>{item.name}</td>
-                        <td>{item.description}</td>
-                        <td>
-                          <Button style={showAction} size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                          <Button style={showAction} size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>{' '}
-                          <Button size="sm" color="secondary" onClick={e => this.findGroupView(item.id)}><i className="fa fa-note"></i> View</Button>{' '}
-                        </td>
+                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="name"><strong>Name</strong></Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      {singleGroupData.name}
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="description"><strong>Description</strong></Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      {singleGroupData.description}
+                    </Col>
+                  </FormGroup>
+                  <br />
+                  <h5>Group Permissions: {this.state.initialPermissionData.length > 0 ? this.state.initialPermissionData.length : "None"}</h5>
+
+                  <Table hover bordered striped responsive size="sm" style={this.state.permissionData.length > 0 ? {} : this.state.hideField}>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Action</th>
+                        <th>Description</th>
                       </tr>
-                    )
-                  })}
-                  </tbody>
-                </Table>
+                    </thead>
+                    <tbody>{this.state.permissionData.map((item, key) => {
+                      return (
+                        <tr key={key}>
+                          <td>{item.id}</td>
+                          <td>{item.action}</td>
+                          <td>{item.description}</td>
+
+                        </tr>
+                      )
+                    })}
+                    </tbody>
+
+                    <nav>
+                      <Pagination2
+                        activePage={this.state.activePage}
+                        itemsCountPerPage={this.state.itemsPerPage}
+                        totalItemsCount={this.state.initialPermissionData ? this.state.initialPermissionData.length : null}
+                        pageRangeDisplayed={5}
+                        onChange={this.handlePageChange}
+                      />
+                    </nav>
+
+                    <div className="pull-left">
+                      <select onChange={this.changePageItem.bind(this)} className="form-control">
+                        <option value="10">No of Items: 10</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </select>
+                    </div>
+
+                  </Table>
+                </Form>
+
               </CardBody>
             </Card>
           </Col>
@@ -786,8 +829,8 @@ class Groups extends Component {
                         }}
                       /> */}
                       <FormGroup row>
-
-                        <Col md="12">
+                        <Col md="3"><Label>Checkboxes</Label></Col>
+                        <Col md="9">
                           <Input type="text" placeholder="Filter Permissions"
                             onChange={this.filterPermissions}
                           /><br />
@@ -795,16 +838,6 @@ class Groups extends Component {
 
                             {this.state.permissionsDeleteList.map((item, key) => {
                               return (
-                                // <tr key={key}>
-                                //   <td>{item.id}</td>
-                                //   <td>{item.name}</td>
-                                //   <td>{item.description}</td>
-                                //   <td>
-                                //     <Button style={showAction} size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                                //     <Button style={showAction} size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>{' '}
-                                //     <Button size="sm" color="secondary" onClick={e => this.findGroupView(item.id)}><i className="fa fa-note"></i> View</Button>{' '}
-                                //   </td>
-                                // </tr>
                                 <FormGroup check className="checkbox" key={key}>
                                   <Input className="form-check-input" type="checkbox" id="checkbox1" name={item} value={item}
                                     onChange={this.readUpdatePermissions} />
@@ -939,20 +972,14 @@ class Groups extends Component {
 const mapStateToProps = (state) => {
   console.log('State is ', state)
   return {
-    groupData: state.group.data,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    fetchGroup,
-    fetchGroups,
-    fetchPermissions,
-    createGroup,
-    deleteGroup,
-    updateGroup
+    fetchGroup
   }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Groups);
-// export default Groups;
+export default connect(mapStateToProps, mapDispatchToProps)(GroupsView);
+// export default GroupsView;

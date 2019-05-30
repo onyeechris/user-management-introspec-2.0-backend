@@ -18,6 +18,7 @@ import {
 //import { PostData } from "../../services/PostData";
 import { Redirect } from "react-router-dom";
 //import { fetchUser } from "../../../actions/action_login";
+import { FormattedMessage } from "react-intl";
 
 class Login extends Component {
   constructor(props) {
@@ -114,7 +115,7 @@ class Login extends Component {
     return (
       <div className="app flex-row align-items-center">
         <div style={topMenu}>
-          Introspec User Management
+          <FormattedMessage id="app.title" defaultMessage="Introspec User Management" />
         </div>
         <Container>
           <Row className="justify-content-center">
@@ -136,8 +137,8 @@ class Login extends Component {
                 <Card className="p-4">
                   <CardBody>
                     <form action="" method="post">
-                      <h1>Login</h1>
-                      <p className="text-muted">Sign In to your account</p>
+                      <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
+                      <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -178,14 +179,14 @@ class Login extends Component {
                             className="px-4"
                             onClick={this.login}
                           >
-                            Login
+                            <FormattedMessage id="Login" defaultMessage="Login" />
                           </Button>
                         </Col>
-                        <Col xs="6" className="text-right">
+                        {/* <Col xs="6" className="text-right">
                           <Button color="link" className="px-0">
                             Forgot password?
                           </Button>
-                        </Col>
+                        </Col> */}
                       </Row>
                     </form>
                   </CardBody>

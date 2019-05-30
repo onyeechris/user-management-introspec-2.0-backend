@@ -2,6 +2,10 @@ import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+
 import {
   AppAside,
   AppBreadcrumb,
@@ -18,6 +22,8 @@ import {
 import navigation from '../../_nav';
 // routes config
 import routes from '../../routes';
+
+import { setLocale } from '../../actions/action_locale';
 
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
@@ -56,11 +62,8 @@ class DefaultLayout extends Component {
   }
 
   render() {
-
-
     if (/appredirect/.test(window.location.href)) {
       if (sessionStorage.getItem("extUserData")) {
-        // return <Redirect to={"/appredirect"} />;
         return <Redirect to={"/appredirect"} />;
       } else {
         return <Redirect to={"/applogin"} />;
@@ -71,6 +74,8 @@ class DefaultLayout extends Component {
       let url_string = window.location.href;
       let url = new URL(url_string);
       let UrlParam = url.searchParams.get("redirectUrl");
+      let appLang = url.searchParams.get("lang");
+      this.props.setLocale(appLang);
       sessionStorage.setItem("redirectUrl", UrlParam);
       console.log(sessionStorage.getItem("redirectUrl"));
       return <Redirect to={"/applogin"} />;
@@ -135,4 +140,20 @@ class DefaultLayout extends Component {
   }
 }
 
-export default DefaultLayout;
+const mapStateToProps = (state) => {
+  console.log('State is ', state);
+  return {
+    groupData: state.group.groupFetched ? state.group.groupFetched.data : '',
+    lang: state.locale.lang
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    setLocale
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DefaultLayout);
+
+// export default DefaultLayout;

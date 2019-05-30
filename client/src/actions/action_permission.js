@@ -4,22 +4,22 @@ import {
 } from './types';
 import { errorSwitch, interceptor } from './utils';
 
-export const STAFFS_FETCHED = 'STAFFS_FETCHED';
-export const STAFFS_FETCH_ERROR = 'STAFFS_FETCH_ERROR';
-export const STAFF_FETCHED = 'STAFF_FETCHED';
-export const STAFF_FETCH_ERROR = 'STAFF_FETCH_ERROR';
-export const STAFF_DELETED = 'STAFF_DELETED';
-export const STAFF_DELETE_ERROR = 'STAFF_DELETE_ERROR';
-export const STAFF_CREATED = 'STAFF_CREATED';
-export const STAFF_CREATE_ERROR = 'STAFF_CREATE_ERROR';
-export const STAFF_UPDATED = 'STAFF_UPDATED';
-export const STAFF_UPDATE_ERROR = 'STAFF_UPDATE_ERROR';
+export const PERMISSIONS_FETCHED = 'PERMISSIONS_FETCHED';
+export const PERMISSIONS_FETCH_ERROR = 'PERMISSIONS_FETCH_ERROR';
+export const PERMISSION_FETCHED = 'PERMISSION_FETCHED';
+export const PERMISSION_FETCH_ERROR = 'PERMISSION_FETCH_ERROR';
+export const PERMISSION_DELETED = 'PERMISSION_DELETED';
+export const PERMISSION_DELETE_ERROR = 'PERMISSION_DELETE_ERROR';
+export const PERMISSION_CREATED = 'PERMISSION_CREATED';
+export const PERMISSION_CREATE_ERROR = 'PERMISSION_CREATE_ERROR';
+export const PERMISSION_UPDATED = 'PERMISSION_UPDATED';
+export const PERMISSION_UPDATE_ERROR = 'PERMISSION_UPDATE_ERROR';
 
-let apiUrl = BASE_URL + 'api/staffs/';
+let apiUrl = BASE_URL + 'api/permissions/';
 
 interceptor();
 
-export function fetchStaffs(type) {
+export function fetchPermissions(type) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -29,23 +29,23 @@ export function fetchStaffs(type) {
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFFS_FETCHED,
+          type: PERMISSIONS_FETCHED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(errorSwitch(error));
         dispatch({
-          type: STAFFS_FETCH_ERROR,
+          type: PERMISSIONS_FETCH_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t fetch staffs');
+        console.log('Rejected.. Couldn\'t fetch permissions');
         console.log(errorSwitch(error));
       })
     })
   }
 }
 
-export function fetchStaff(type) {
+export function fetchPermission(type) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -55,23 +55,23 @@ export function fetchStaff(type) {
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFF_FETCHED,
+          type: PERMISSION_FETCHED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(errorSwitch(error));
         dispatch({
-          type: STAFF_FETCH_ERROR,
+          type: PERMISSION_FETCH_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t fetch staffs');
+        console.log('Rejected.. Couldn\'t fetch permissions');
         console.log(errorSwitch(error));
       })
     })
   }
 }
 
-export function deleteStaff(type) {
+export function deletePermission(type) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -81,16 +81,16 @@ export function deleteStaff(type) {
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFF_DELETED,
+          type: PERMISSION_DELETED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(error.response.data.message);
         dispatch({
-          type: STAFF_DELETE_ERROR,
+          type: PERMISSION_DELETE_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t delete staff');
+        console.log('Rejected.. Couldn\'t delete permission');
         console.log(errorSwitch(error));
         console.log(error.response.data.message);
       })
@@ -98,22 +98,22 @@ export function deleteStaff(type) {
   }
 }
 
-export function createStaff(staffInfo) {
+export function createPermission(permissionInfo) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
-      console.log(staffInfo);
-      axios.post(apiUrl, staffInfo)
+      console.log(permissionInfo);
+      axios.post(apiUrl, permissionInfo)
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
-            type: STAFF_CREATED,
+            type: PERMISSION_CREATED,
             payload: responseJSON
           });
         }).catch((error) => {
           reject(errorSwitch(error));
           dispatch({
-            type: STAFF_CREATE_ERROR,
+            type: PERMISSION_CREATE_ERROR,
             payload: errorSwitch(error)
           });
           console.log(errorSwitch(error));
@@ -122,22 +122,22 @@ export function createStaff(staffInfo) {
   }
 }
 
-export function updateStaff(staffInfo) {
+export function updatePermission(permissionInfo) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
-      console.log(staffInfo);
-      axios.put(apiUrl, staffInfo)
+      console.log(permissionInfo);
+      axios.put(apiUrl, permissionInfo)
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
-            type: STAFF_UPDATED,
+            type: PERMISSION_UPDATED,
             payload: responseJSON
           });
         }).catch((error) => {
           reject(errorSwitch(error));
           dispatch({
-            type: STAFF_UPDATE_ERROR,
+            type: PERMISSION_UPDATE_ERROR,
             payload: errorSwitch(error)
           });
           console.log(errorSwitch(error));

@@ -4,22 +4,22 @@ import {
 } from './types';
 import { errorSwitch, interceptor } from './utils';
 
-export const STAFFS_FETCHED = 'STAFFS_FETCHED';
-export const STAFFS_FETCH_ERROR = 'STAFFS_FETCH_ERROR';
-export const STAFF_FETCHED = 'STAFF_FETCHED';
-export const STAFF_FETCH_ERROR = 'STAFF_FETCH_ERROR';
-export const STAFF_DELETED = 'STAFF_DELETED';
-export const STAFF_DELETE_ERROR = 'STAFF_DELETE_ERROR';
-export const STAFF_CREATED = 'STAFF_CREATED';
-export const STAFF_CREATE_ERROR = 'STAFF_CREATE_ERROR';
-export const STAFF_UPDATED = 'STAFF_UPDATED';
-export const STAFF_UPDATE_ERROR = 'STAFF_UPDATE_ERROR';
+export const GROUP_FETCHED = 'GROUP_FETCHED';
+export const GROUP_FETCH_ERROR = 'GROUP_FETCH_ERROR';
+export const GROUPS_FETCHED = 'GROUPS_FETCHED';
+export const GROUPS_FETCH_ERROR = 'GROUPS_FETCH_ERROR';
+export const GROUP_CREATED = 'GROUP_CREATED';
+export const GROUP_CREATE_ERROR = 'GROUP_CREATE_ERROR';
+export const GROUP_DELETED = 'GROUP_DELETED';
+export const GROUP_DELETE_ERROR = 'GROUP_DELETE_ERROR';
+export const GROUP_UPDATED = 'GROUP_UPDATED';
+export const GROUP_UPDATE_ERROR = 'GROUP_UPDATE_ERROR';
 
-let apiUrl = BASE_URL + 'api/staffs/';
+let apiUrl = BASE_URL + 'api/groups/';
 
 interceptor();
 
-export function fetchStaffs(type) {
+export function fetchGroup(type) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -29,49 +29,73 @@ export function fetchStaffs(type) {
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFFS_FETCHED,
+          type: GROUP_FETCHED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(errorSwitch(error));
         dispatch({
-          type: STAFFS_FETCH_ERROR,
+          type: GROUP_FETCH_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t fetch staffs');
+        console.log('Rejected.. Couldn\'t fetch group');
         console.log(errorSwitch(error));
       })
     })
   }
 }
 
-export function fetchStaff(type) {
+export function fetchGroups() {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(apiUrl + type);
+      console.log(apiUrl);
       axios({
         method: 'GET',
-        url: apiUrl + type
+        url: apiUrl
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFF_FETCHED,
+          type: GROUPS_FETCHED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(errorSwitch(error));
         dispatch({
-          type: STAFF_FETCH_ERROR,
+          type: GROUPS_FETCH_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t fetch staffs');
+        console.log('Rejected.. Couldn\'t fetch groups');
         console.log(errorSwitch(error));
       })
     })
   }
 }
 
-export function deleteStaff(type) {
+export function createGroup(groupInfo) {
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      console.log(apiUrl);
+      console.log(groupInfo);
+      axios.post(apiUrl, groupInfo)
+        .then((responseJSON) => {
+          resolve(responseJSON);
+          dispatch({
+            type: GROUP_CREATED,
+            payload: responseJSON
+          });
+        }).catch((error) => {
+          reject(errorSwitch(error));
+          dispatch({
+            type: GROUP_CREATE_ERROR,
+            payload: errorSwitch(error)
+          });
+          console.log(errorSwitch(error));
+        })
+    })
+  }
+}
+
+export function deleteGroup(type) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -81,16 +105,16 @@ export function deleteStaff(type) {
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
-          type: STAFF_DELETED,
+          type: GROUP_DELETED,
           payload: responseJSON
         });
       }).catch((error) => {
         reject(error.response.data.message);
         dispatch({
-          type: STAFF_DELETE_ERROR,
+          type: GROUP_DELETE_ERROR,
           payload: errorSwitch(error)
         });
-        console.log('Rejected.. Couldn\'t delete staff');
+        console.log('Rejected.. Couldn\'t delete group');
         console.log(errorSwitch(error));
         console.log(error.response.data.message);
       })
@@ -98,46 +122,22 @@ export function deleteStaff(type) {
   }
 }
 
-export function createStaff(staffInfo) {
+export function updateGroup(groupInfo, flag) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(apiUrl);
-      console.log(staffInfo);
-      axios.post(apiUrl, staffInfo)
+      console.log(apiUrl + flag);
+      console.log(groupInfo);
+      axios.put(apiUrl + flag, groupInfo)
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
-            type: STAFF_CREATED,
+            type: GROUP_UPDATED,
             payload: responseJSON
           });
         }).catch((error) => {
           reject(errorSwitch(error));
           dispatch({
-            type: STAFF_CREATE_ERROR,
-            payload: errorSwitch(error)
-          });
-          console.log(errorSwitch(error));
-        })
-    })
-  }
-}
-
-export function updateStaff(staffInfo) {
-  return (dispatch) => {
-    return new Promise((resolve, reject) => {
-      console.log(apiUrl);
-      console.log(staffInfo);
-      axios.put(apiUrl, staffInfo)
-        .then((responseJSON) => {
-          resolve(responseJSON);
-          dispatch({
-            type: STAFF_UPDATED,
-            payload: responseJSON
-          });
-        }).catch((error) => {
-          reject(errorSwitch(error));
-          dispatch({
-            type: STAFF_UPDATE_ERROR,
+            type: GROUP_UPDATE_ERROR,
             payload: errorSwitch(error)
           });
           console.log(errorSwitch(error));
