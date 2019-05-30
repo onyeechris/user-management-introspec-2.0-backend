@@ -424,7 +424,8 @@ class Groups extends Component {
           showPermissions.display = "block"
         }
 
-      }).then(this.toggleEdit())
+      }).then(this.setState({ visible: false }))
+      .then(this.toggleEdit())
       .catch(err => {
         // debugger;
       })
@@ -494,50 +495,6 @@ class Groups extends Component {
         }
         ).then(this.toggleEdit());
 
-
-
-        // let apiUrl = 'groups/';
-
-        // axios.put(this.state.baseUrl + apiUrl + flag,
-        //   groupDataToUpdate,
-        //   {
-        //     headers: {
-        //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token,
-        //       'content-type': 'application/json'
-        //     }
-        //   })
-        //   .then(response => {
-        //     this.setState({ newCreatedGroup: groupDataToUpdate });
-        //     this.setState({ visibleUpdate: true });
-        //     this.toggleEdit();
-        //   })
-        //   .catch(err => {
-        //     //console.log("Could not update group record- " + err);
-        //     // debugger;
-        //     console.log("Could not update record: " + err);
-        //     let res = JSON.parse(JSON.stringify(err.response.data));
-        //     console.log("Server response status: " + res.status);
-        //     console.log("Server response message: " + res.message);
-
-        //     let errMessage = '';
-        //     switch (res.status) {
-        //       case 401:
-        //         errMessage = "Unauthorized, login required!";
-        //         break;
-        //       case 403:
-        //         errMessage = "You don't have the permission to access this function!";
-        //         break;
-        //       case 404:
-        //         errMessage = "Sorry Page Not Found!";
-        //         break;
-        //       case 500:
-        //         errMessage = "Something went wrong, please try again.";
-        //         break;
-        //       default:
-        //         errMessage = "Sorry there was an error";
-        //     }
-        //     this.setState({ formError: errMessage });
-        //   })
       } else {
         this.setState({ formError: "The group must have a name." });
       }
@@ -560,7 +517,6 @@ class Groups extends Component {
 
   onSearch(text) {
     let searchOptions = []
-    // any filter function and return array of options or get array of options from API
 
     const loadedPermissions = [
       this.state.permissionData.map((item) => {
@@ -579,13 +535,6 @@ class Groups extends Component {
     })
   }
 
-
-  // dropDowntoggle(i) {
-  //   const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false); });
-  //   this.setState({
-  //     dropdownOpen: newArray,
-  //   });
-  // }
 
   toggleTab(tab) {
     if (this.state.activeTab !== tab) {
@@ -676,7 +625,7 @@ class Groups extends Component {
                       <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="name" name="name" placeholder="Enter First Name"
+                      <Input type="text" id="name" name="name" placeholder="Enter Group Name"
                         onChange={this.updateValue.bind(this, 'name')}
                       />
                     </Col>
@@ -686,7 +635,7 @@ class Groups extends Component {
                       <Label htmlFor="description">Description <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="description" name="description" placeholder="Enter Last Name" required
+                      <Input type="text" id="description" name="description" placeholder="Enter Description" required
                         onChange={this.updateValue.bind(this, 'description')}
                       />
                     </Col>
@@ -795,16 +744,7 @@ class Groups extends Component {
 
                             {this.state.permissionsDeleteList.map((item, key) => {
                               return (
-                                // <tr key={key}>
-                                //   <td>{item.id}</td>
-                                //   <td>{item.name}</td>
-                                //   <td>{item.description}</td>
-                                //   <td>
-                                //     <Button style={showAction} size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                                //     <Button style={showAction} size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>{' '}
-                                //     <Button size="sm" color="secondary" onClick={e => this.findGroupView(item.id)}><i className="fa fa-note"></i> View</Button>{' '}
-                                //   </td>
-                                // </tr>
+
                                 <FormGroup check className="checkbox" key={key}>
                                   <Input className="form-check-input" type="checkbox" id="checkbox1" name={item} value={item}
                                     onChange={this.readUpdatePermissions} />
