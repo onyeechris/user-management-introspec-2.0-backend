@@ -35,6 +35,7 @@ class Staffs extends Component {
       modal: false,
       editModal: false,
       confirmModal: false,
+      greyedOut: true,
       newStaffData: {
         id: "",
         activated: false,
@@ -134,13 +135,23 @@ class Staffs extends Component {
     this.setState({ activePage: pageNumber });
   }
 
-  handleChange(hireDate) {
+  handleChange = (hireDate) => {
     this.setState({ startDate: hireDate });
     let formatted_date = (("0" + (hireDate.getMonth() + 1)).slice(-2)) + "/" + ("0" + hireDate.getDate()).slice(-2) + "/" + hireDate.getFullYear()
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo.hire_date = formatted_date;
     this.setState({ newStaffData: newStaffInfo });
     console.log(newStaffInfo);
+  }
+
+  handleDateChange = (hireDate) => {
+    this.setState({ greyedOut: false });
+    this.setState({ startDate: hireDate });
+    let formatted_date = (("0" + (hireDate.getMonth() + 1)).slice(-2)) + "/" + ("0" + hireDate.getDate()).slice(-2) + "/" + hireDate.getFullYear()
+    var singleStaffInfo = JSON.parse(JSON.stringify(this.state.singleStaffData));
+    singleStaffInfo.hire_date = formatted_date;
+    this.setState({ singleStaffData: singleStaffInfo });
+    console.log(singleStaffInfo);
   }
 
   toggle() {
@@ -154,6 +165,7 @@ class Staffs extends Component {
   toggleEdit() {
     this.setState({ formError: "" });
     this.setState({ startDate: "" });
+    this.setState({ greyedOut: true });
     this.setState({
       editModal: !this.state.editModal,
     });
@@ -176,10 +188,10 @@ class Staffs extends Component {
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ newStaffData: newStaffInfo });
-    // console.log(newStaffInfo);
   }
 
   readUpdateValue(field, event) {
+    this.setState({ greyedOut: false });
     var newStaffInfo = JSON.parse(JSON.stringify(this.state.singleStaffData));
     newStaffInfo[field] = event.target.value;
     this.setState({ singleStaffData: newStaffInfo });
@@ -747,7 +759,7 @@ class Staffs extends Component {
                       />
                     </Col>
                   </FormGroup>
-                  <FormGroup row>
+                  {/* <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="password">Password <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
@@ -756,7 +768,7 @@ class Staffs extends Component {
                         onChange={this.readUpdateValue.bind(this, 'password')} value={singleStaff.password}
                       />
                     </Col>
-                  </FormGroup>
+                  </FormGroup> */}
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="phone">Phone</Label>
@@ -772,9 +784,17 @@ class Staffs extends Component {
                       <Label htmlFor="date-hire">Hire Date <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" id="date-hire" name="hire_date" placeholder="Date MM/dd/yyyy"
-                        onChange={this.readUpdateValue.bind(this, 'hire_date')} value={singleStaff.hire_date}
+                      <DatePicker
+                        selected={this.state.startDate}
+                        onChange={this.handleDateChange}
+                        className="form-control" placeholderText="Select Date"
+                        // dateFormat="LL"
+                        dateFormat="MM/dd/yyyy"
+                        value={singleStaff.hire_date}
                       />
+                      {/* <Input type="text" id="date-hire" name="hire_date" placeholder="Date MM/dd/yyyy"
+                        onChange={this.readUpdateValue.bind(this, 'hire_date')} value={singleStaff.hire_date}
+                      /> */}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -814,7 +834,7 @@ class Staffs extends Component {
                     </Col>
                   </FormGroup>
                   <ModalFooter>
-                    <Button color="primary" onClick={this.updateStaff}>Submit</Button>{' '}
+                    <Button color="primary" onClick={this.updateStaff} disabled={this.state.greyedOut ? true : false}>Submit</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                   </ModalFooter>
                 </Form>

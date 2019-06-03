@@ -80,6 +80,7 @@ class Groups extends Component {
       hideField: {
         "display": "none"
       },
+      greyedOut: true,
       permissionsDeleteList: [],
     };
     this.toggle = this.toggle.bind(this);
@@ -146,6 +147,7 @@ class Groups extends Component {
   toggleEdit() {
     this.fetchGroups();
     this.setState({ formError: "" });
+    this.setState({ greyedOut: true });
     permissionsToDelete = [];
     this.setState({
       editModal: !this.state.editModal,
@@ -180,6 +182,7 @@ class Groups extends Component {
   }
 
   readUpdateValue(field, event) {
+    this.setState({ greyedOut: false });
     var newGroupInfo = JSON.parse(JSON.stringify(this.state.singleGroupData));
     newGroupInfo[field] = event.target.value;
     this.setState({ singleGroupData: newGroupInfo });
@@ -187,12 +190,14 @@ class Groups extends Component {
   }
 
   readUpdatePermissions(permission) {
+    this.setState({ greyedOut: false });
     console.log(permission.target.value);
     permissionsToDelete.push(permission.target.value);
     console.log(permissionsToDelete);
   }
 
   filterPermissions = (filterText) => {
+    this.setState({ greyedOut: false });
     let filterTextValue = filterText.target.value;
     console.log(filterTextValue);
     console.log(myStaticPermissions);
@@ -716,12 +721,13 @@ class Groups extends Component {
                         options={loadedPermissionsData[0]}
                         selected={this.state.selected}
                         onChange={(selected) => {
+                          this.setState({ greyedOut: false });
                           this.setState({ selected: selected });
                           myCurrentPermissions = selected;
                         }}
                       />
                       <ModalFooter>
-                        <Button color="primary" onClick={e => this.updateGroup(1)}>Add Permissions and Update</Button>{' '}
+                        <Button color="primary" onClick={e => this.updateGroup(1)} disabled={this.state.greyedOut ? true : false}>Add Permissions and Update</Button>{' '}
                         <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                       </ModalFooter>
                     </TabPane>
@@ -756,7 +762,7 @@ class Groups extends Component {
                         </Col>
                       </FormGroup>
                       <ModalFooter>
-                        <Button color="primary" onClick={e => this.updateGroup(0)}>Delete Permissions and Update</Button>{' '}
+                        <Button color="primary" onClick={e => this.updateGroup(0)} disabled={this.state.greyedOut ? true : false}>Delete Permissions and Update</Button>{' '}
                         <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                       </ModalFooter>
                     </TabPane>

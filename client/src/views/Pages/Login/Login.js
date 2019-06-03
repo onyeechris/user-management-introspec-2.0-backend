@@ -3,22 +3,25 @@ import React, { Component } from "react";
 import "../../../custom.css";
 import jwtDecode from "jwt-decode";
 import {
-  Button,
+  // Button,
   Card,
   CardBody,
   CardGroup,
   Col,
   Container,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
+  // Input,
+  // InputGroup,
+  // InputGroupAddon,
+  // InputGroupText,
   Row
 } from "reactstrap";
 //import { PostData } from "../../services/PostData";
 import { Redirect } from "react-router-dom";
 //import { fetchUser } from "../../../actions/action_login";
 import { FormattedMessage } from "react-intl";
+// import { SimpleReactValidator } from "simple-react-validator";
+// import { Values } from "redux-form-website-template";
+import LoginForm from "./LoginForm";
 
 class Login extends Component {
   constructor(props) {
@@ -34,31 +37,25 @@ class Login extends Component {
     };
     this.login = this.login.bind(this);
     this.onChange = this.onChange.bind(this);
+    // this.validator = new SimpleReactValidator()({
+    //   messages: {
+    //     email: 'That is not an email.'
+    //   },
+    // });
   }
 
 
   login(event) {
     event.preventDefault();
-    // console.log(this.state.userLogin);
     if (this.state.userLogin.username && this.state.userLogin.password) {
-
       this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
-
         sessionStorage.setItem("userData", JSON.stringify(result));
         sessionStorage.setItem("loggedInUser", this.state.userLogin.username);
-        // console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-        // console.log(result);
         this.setState({ redirectToReferrer: true });
-
         //decode the token
         let userData = jwtDecode(result.token);
-        // console.log(userData);
-        // console.log(userData.authorities[0]);
-        //save the role from the token to session storage
         sessionStorage.setItem("userRole", userData.authorities[0]);
-        // console.log(sessionStorage.getItem("userRole"));
       }, error => {
-        // console.log(error);
         this.setState({ loginError: "Username or password incorrect!" })
       }
       )
@@ -84,6 +81,21 @@ class Login extends Component {
     this.props.currentModule = null;
   }
 
+  loginUser = (loginUserData) => {
+    console.log(loginUserData);
+    this.props.actions.fetchUser("auth", loginUserData).then(result => {
+      sessionStorage.setItem("userData", JSON.stringify(result));
+      sessionStorage.setItem("loggedInUser", loginUserData.username);
+      this.setState({ redirectToReferrer: true });
+      //decode the token
+      let userData = jwtDecode(result.token);
+      sessionStorage.setItem("userRole", userData.authorities[0]);
+    }, error => {
+      this.setState({ loginError: "Username or password incorrect!" })
+    }
+    )
+  }
+
   render() {
     const topMenu = {
       'backgroundColor': ' #20a8d8 ',
@@ -97,10 +109,10 @@ class Login extends Component {
       'fontSize': '17px',
       'textDecoration': 'none'
     };
-    const errorStyle = {
-      'color': 'red',
-      'fontSize': '20px'
-    }
+    // const errorStyle = {
+    //   'color': 'red',
+    //   'fontSize': '20px'
+    // }
 
 
     if (this.state.redirectToReferrer) {
@@ -136,9 +148,9 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <form action="" method="post">
-                      <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
-                      <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
+                    <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
+                    <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
+                    {/* <form action="" method="post">
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -152,7 +164,9 @@ class Login extends Component {
                           autoComplete="username"
                           required
                           onChange={this.updateValue.bind(this, 'username')}
+                        
                         />
+                        
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
@@ -182,13 +196,11 @@ class Login extends Component {
                             <FormattedMessage id="Login" defaultMessage="Login" />
                           </Button>
                         </Col>
-                        {/* <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">
-                            Forgot password?
-                          </Button>
-                        </Col> */}
                       </Row>
-                    </form>
+                    </form> */}
+
+                    <LoginForm onSubmit={this.loginUser} />
+                    {/* <Values form="login" /> */}
                   </CardBody>
                 </Card>
                 <Card
@@ -197,7 +209,6 @@ class Login extends Component {
                 >
                   <CardBody className="text-center">
                     <div>
-                      {/* <h2>Sign up</h2> */}
                       <p>
                         <img
                           src={"../../assets/img/wallet-outline.png"}
@@ -205,16 +216,6 @@ class Login extends Component {
                           style={{ width: "250px" }}
                         />
                       </p>
-                      {/* <Link to="/register">
-                        <Button
-                          color="primary"
-                          className="mt-3"
-                          active
-                          tabIndex={-1}
-                        >
-                          Register Now!
-                        </Button>
-                      </Link> */}
                     </div>
                   </CardBody>
                 </Card>

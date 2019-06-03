@@ -152,9 +152,9 @@ class LoginApp extends Component {
                             <CardGroup>
                                 <Card className="p-4">
                                     <CardBody>
+                                        <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
+                                        <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
                                         <form action="" method="post">
-                                            <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
-                                            <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
                                                     <InputGroupText>
@@ -204,12 +204,6 @@ class LoginApp extends Component {
                                                         <FormattedMessage id="Back" defaultMessage="Back" />
                                                     </Button>
                                                 </Col>
-                                                {/* <Col xs="6" className="text-right">
-                                                    
-                                                    <Button color="link" className="px-0">
-                                                        Forgot password?
-                                                    </Button>
-                                                </Col> */}
                                             </Row>
                                         </form>
                                     </CardBody>
