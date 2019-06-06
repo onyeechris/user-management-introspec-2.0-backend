@@ -5,6 +5,7 @@ import {
 export const USER_FETCHED = 'USER_FETCHED';
 
 export function fetchUser(type, appUser) {
+  console.log(appUser);
   return (dispatch) => {
     return new Promise((resolve, reject) => {
 

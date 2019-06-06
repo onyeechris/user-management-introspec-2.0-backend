@@ -77,6 +77,7 @@ class DefaultLayout extends Component {
       let appLang = url.searchParams.get("lang");
       this.props.setLocale(appLang);
       localStorage.se8lementLang = appLang;
+      sessionStorage.setItem("appLang", appLang);
       sessionStorage.setItem("redirectUrl", UrlParam);
       console.log(sessionStorage.getItem("redirectUrl"));
       return <Redirect to={"/applogin"} />;

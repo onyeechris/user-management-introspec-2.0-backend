@@ -1,24 +1,29 @@
 import React, { Component } from "react";
 import "../../../custom.css";
 import {
-    Button,
+    // Button,
     Card,
     CardBody,
     CardGroup,
     Col,
     Container,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
+    // Input,
+    // InputGroup,
+    // InputGroupAddon,
+    // InputGroupText,
     Row
 } from "reactstrap";
 //import { Redirect } from "react-router-dom";
-import axios from 'axios';
+// import axios from 'axios';
 // import CryptoJS from "react-native-crypto-js";
 import CryptoJS from "crypto-js";
-import { FormattedMessage } from "react-intl";
 
+import { connect } from 'react-redux';
+import { fetchUser } from '../../../actions/action_login';
+import { bindActionCreators } from 'redux';
+
+import { FormattedMessage } from "react-intl";
+import LoginForm from "./LoginForm";
 
 class LoginApp extends Component {
     constructor(props) {
@@ -39,42 +44,57 @@ class LoginApp extends Component {
     }
 
 
-    login(event) {
+    login = (loginUserData) => {
+
+        // event.preventDefault();
+        this.props.actions.fetchUser("auth", loginUserData).then(result => {
+            console.log(result);
+            sessionStorage.setItem("extUserData", JSON.stringify(result));
+            this.setState({ redirectToReferrer: true });
+        }, error => {
+            this.setState({ loginError: "Username or password incorrect!" })
+        }
+        )
+
+
+
         // //console.log(this.state.userLogin);
-        // if (this.state.userLogin.username && this.state.userLogin.password) {
         //     this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
-        //         let responseJSON = result;
-        //         //console.log(responseJSON);
-        //         if (responseJSON.token) {
-        //             sessionStorage.setItem("userData", JSON.stringify(responseJSON));
+        //         // let responseJSON = result;
+        //         // //console.log(responseJSON);
+        //         // if (responseJSON.token) {
+        //         //     sessionStorage.setItem("userData", JSON.stringify(responseJSON));
+        //         //     this.setState({ redirectToReferrer: true });
+        //         sessionStorage.setItem("extUserData", JSON.stringify(response.data));
         //             this.setState({ redirectToReferrer: true });
-        //         } else {
+        //         }, error {
         //             //console.log("Login error");
         //         }
         //     });
         // }
 
-        event.preventDefault();
-        // //console.log(this.state.userLogin);
-        if (this.state.userLogin.username && this.state.userLogin.password) {
-            axios.post('http://localhost:9100/auth',
-                this.state.userLogin,
-            )
-                .then(response => {
-                    //console.log(response.data);
-                    // sessionStorage.setItem("userData", JSON.stringify(response.data));
-                    sessionStorage.setItem("extUserData", JSON.stringify(response.data));
-                    //console.log(sessionStorage.getItem("extUserData"));
-                    this.setState({ redirectToReferrer: true });
-                })
-                .catch(err => {
 
-                    this.setState({ loginError: "Username or password incorrect!" });
-                    // debugger;
-                })
-        } else {
-            this.setState({ loginError: "Please fill both fields!" });
-        }
+        // event.preventDefault();
+        // // //console.log(this.state.userLogin);
+        // if (this.state.userLogin.username && this.state.userLogin.password) {
+        //     axios.post('http://localhost:9100/auth',
+        //         this.state.userLogin,
+        //     )
+        //         .then(response => {
+        //             //console.log(response.data);
+        //             // sessionStorage.setItem("userData", JSON.stringify(response.data));
+        //             sessionStorage.setItem("extUserData", JSON.stringify(response.data));
+        //             //console.log(sessionStorage.getItem("extUserData"));
+        //             this.setState({ redirectToReferrer: true });
+        //         })
+        //         .catch(err => {
+
+        //             this.setState({ loginError: "Username or password incorrect!" });
+        //             // debugger;
+        //         })
+        // } else {
+        //     this.setState({ loginError: "Please fill both fields!" });
+        // }
     }
 
     onChange(e) {
@@ -89,9 +109,7 @@ class LoginApp extends Component {
     }
 
     redirectUser() {
-
         this.setState({ redirectToUrl: true });
-        //console.log("Redirecting... should have gone by now");
     }
 
     render() {
@@ -108,13 +126,14 @@ class LoginApp extends Component {
             'textDecoration': 'none'
         };
 
-        const errorStyle = {
-            'color': 'red'
-        };
+        // const errorStyle = {
+        //     'color': 'red'
+        // };
 
         if (this.state.redirectToReferrer) {
             // return <Redirect to={"/appredirect"} />;
             const redirectUrl = sessionStorage.getItem("redirectUrl");
+            const appLang = sessionStorage.getItem("appLang");
             const myToken = JSON.parse(sessionStorage.getItem("extUserData")).token;
             //console.log(myToken);
 
@@ -131,14 +150,11 @@ class LoginApp extends Component {
             //console.log("Decrypted:" + decryptedToken); // 'my token'
 
             const urlParam = "?var=" + ciphertext;
-            //console.log(redirectUrl + urlParam);
-            window.location.href = redirectUrl + urlParam;
-            // return <Redirect to={redirectUrl + urlParam} />;
+            window.location.href = redirectUrl + urlParam + "&lang=" + appLang;
         }
         if (this.state.redirectToUrl) {
             // Redirect to the calling URL
             const redirectUrl = sessionStorage.getItem("redirectUrl");
-
             window.location.href = redirectUrl;
         }
         return (
@@ -154,7 +170,7 @@ class LoginApp extends Component {
                                     <CardBody>
                                         <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
                                         <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
-                                        <form action="" method="post">
+                                        {/* <form action="" method="post">
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
                                                     <InputGroupText>
@@ -205,7 +221,8 @@ class LoginApp extends Component {
                                                     </Button>
                                                 </Col>
                                             </Row>
-                                        </form>
+                                        </form> */}
+                                        <LoginForm onSubmit={this.login} externalApp="true" returnToApp={this.redirectUser} />
                                     </CardBody>
                                 </Card>
                                 <Card
@@ -233,4 +250,17 @@ class LoginApp extends Component {
     }
 }
 
-export default LoginApp;
+
+const mapStateToProps = state => {
+    console.log(state);
+    return {
+        profile: state.profile
+    };
+}
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        actions: bindActionCreators({ fetchUser }, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginApp);

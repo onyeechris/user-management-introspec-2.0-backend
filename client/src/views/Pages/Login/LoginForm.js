@@ -45,7 +45,7 @@ const renderField = ({ input, label, type, meta: { touched, error, warning } }) 
 )
 
 let LoginForm = (props) => {
-  const { handleSubmit, pristine, reset, submitting } = props
+  const { handleSubmit, externalApp, returnToApp, pristine, reset, submitting } = props
   return (
     <form onSubmit={handleSubmit}>
       <InputGroup className="mb-3">
@@ -82,16 +82,29 @@ let LoginForm = (props) => {
             <FormattedMessage id="Login" defaultMessage="Login" />
           </Button>
         </Col>
-        <Col xs="6">
-          <Button
-            type="submit"
-            color="default"
-            className="px-4"
-            disabled={pristine || submitting} onClick={reset}
-          >
-            <FormattedMessage id="Clear Values" defaultMessage="Clear Values" />
-          </Button>
-        </Col>
+        {externalApp ?
+          <Col xs="6">
+            <Button
+              type="submit"
+              color="default"
+              className="px-4"
+              onClick={returnToApp}
+            >
+              <FormattedMessage id="Back" defaultMessage="Back" />
+            </Button>
+          </Col>
+          :
+          <Col xs="6">
+            <Button
+              type="submit"
+              color="default"
+              className="px-4"
+              disabled={pristine || submitting} onClick={reset}
+            >
+              <FormattedMessage id="Clear Values" defaultMessage="Clear Values" />
+            </Button>
+          </Col>
+        }
       </Row>
       {/* <div>
         <button type="submit" disabled={submitting}>Submit</button>
