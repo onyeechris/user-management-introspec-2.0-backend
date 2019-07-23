@@ -8,13 +8,13 @@ spring:
   application:
       name: auth-service
   jpa:
-#      database-platform: org.hibernate.dialect.PostgreSQLDialect
       database-platform: org.hibernate.dialect.PostgreSQL9Dialect
       database: POSTGRESQL
       show-sql: true
       generate-ddl: true
+
       hibernate:
-          ddl-auto: create-drop
+          ddl-auto: #  never use ddl generation in production
       properties:
           hibernate.id.new_generator_mappings: true
           hibernate.connection.provider_disables_autocommit: true
@@ -41,7 +41,7 @@ spring:
       hikari:
           auto-commit: false
       initialization-mode: always
-      data: classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
+      data: classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:modules.sql, classpath:permissions.sql
 
   jackson:
     serialization:

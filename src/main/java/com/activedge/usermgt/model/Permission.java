@@ -29,13 +29,16 @@ public class Permission implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
-    @JsonIgnore
-    private Set<Group> grps = new HashSet<>();
-
     public Long getId() {
         return id;
     }
+
+    @ManyToOne
+    private Module module;
+
+    @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
+    @JsonIgnore
+    private Set<Group> grps = new HashSet<>();
 
     public void setId(Long id) {
         this.id = id;

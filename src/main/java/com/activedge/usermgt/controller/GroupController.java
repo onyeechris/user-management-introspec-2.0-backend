@@ -111,8 +111,8 @@ public class GroupController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllGroups(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Group");
+    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+        log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
 
         if (eagerload) {
@@ -134,8 +134,8 @@ public class GroupController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<GroupDTO> getGroups(@PathVariable Long id) {
-        log.debug("REST request to get Group : {}", id);
+    public ResponseEntity<GroupDTO> getGroups(@RequestParam(value = "app", defaultValue="all") String app, @PathVariable Long id) {
+        log.debug("REST request to get Group :{}, App:{}", id, app);
         Optional<GroupDTO> groupsDTO = groupService.findOne(id);
 
         if (!groupsDTO.isPresent()) {
