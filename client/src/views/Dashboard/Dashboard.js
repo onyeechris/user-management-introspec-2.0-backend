@@ -29,6 +29,8 @@ import {
   // hexToRgba 
 } from "@coreui/coreui/dist/js/coreui-utilities";
 
+import { FormattedMessage } from "react-intl";
+
 // const Widget03 = lazy(() => import("../../views/Widgets/Widget03"));
 
 const brandPrimary = getStyle("--primary");
@@ -596,7 +598,7 @@ class Dashboard extends Component {
               <Card className="text-white bg-secondary">
                 <CardBody className="pb-0">
                   <div className="text-value">{this.state.staffData ? this.state.staffData.length : "0"}</div>
-                  <div>Authorized Staffs</div>
+                  <div><FormattedMessage id="Authorized Staffs" defaultMessage="Authorized Staffs" /></div>
                 </CardBody>
                 <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
                   <Line
@@ -614,7 +616,7 @@ class Dashboard extends Component {
               <Card className="text-white bg-primary">
                 <CardBody className="pb-0">
                   <div className="text-value">{this.state.groupData ? this.state.groupData.length : "0"}</div>
-                  <div>Staff Groups</div>
+                  <div><FormattedMessage id="Staff Groups" defaultMessage="Staff Groups" /></div>
                 </CardBody>
                 <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
                   <Line
@@ -632,7 +634,7 @@ class Dashboard extends Component {
               <Card className="text-white bg-secondary">
                 <CardBody className="pb-0">
                   <div className="text-value">{this.state.permissionData ? this.state.permissionData.length : "0"}</div>
-                  <div>App Permissions</div>
+                  <div><FormattedMessage id="App Permissions" defaultMessage="App Permissions" /></div>
                 </CardBody>
                 <div className="chart-wrapper" style={{ height: "70px" }}>
                   <Line
@@ -651,7 +653,7 @@ class Dashboard extends Component {
                 <CardBody className="pb-0">
 
                   <div className="text-value">{this.state.toDoData ? this.state.toDoData.length : "0"}</div>
-                  <div>Pending Authorizations</div>
+                  <div><FormattedMessage id="Pending Authorizations" defaultMessage="Pending Authorizations" /></div>
                 </CardBody>
                 <div className="chart-wrapper mx-3" style={{ height: "70px" }}>
                   <Bar

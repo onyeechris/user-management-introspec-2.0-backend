@@ -1,7 +1,10 @@
+import { FormattedMessage, } from 'react-intl';
+import React from 'react';
+
 export default {
   items: [
     {
-      name: "Dashboard",
+      name: <FormattedMessage id="Dashboard" defaultMessage="Dashboard" />,
       url: "/dashboard",
       icon: "icon-speedometer",
       // badge: {
@@ -11,7 +14,7 @@ export default {
     },
     {
       title: true,
-      name: "User Management",
+      name: <FormattedMessage id="UserManagement" defaultMessage="User Management" />,
       wrapper: {
         // optional wrapper object
         element: "", // required valid HTML5 element tag
@@ -25,24 +28,29 @@ export default {
     //   icon: "icon-user"
     // },
     {
-      name: "Staffs",
+      name: <FormattedMessage id="Staffs" defaultMessage="Staffs" />,
       url: "/staffs",
       icon: "icon-user"
     },
     {
-      name: "Groups",
+      name: <FormattedMessage id="Groups" defaultMessage="Groups" />,
       url: "/groups",
       icon: "icon-people"
     },
     {
-      name: "Permissions",
+      name: <FormattedMessage id="Permissions" defaultMessage="Permissions" />,
       url: "/permissions",
       icon: "icon-wrench"
     },
     {
-      name: "To-Dos",
+      name: <FormattedMessage id="ToDos" defaultMessage="To-Dos" />,
       url: "/todos",
       icon: "icon-phone"
+    },
+    {
+      name: <FormattedMessage id="Settings" defaultMessage="Settings" />,
+      url: "/settings",
+      icon: "icon-wrench"
     },
     // {
     //   title: true,
@@ -62,11 +70,11 @@ export default {
     //       url: "/base/breadcrumbs",
     //       icon: "icon-puzzle"
     //     },
-    //     {
-    //       name: "Cards",
-    //       url: "/base/cards",
-    //       icon: "icon-puzzle"
-    //     },
+    // {
+    //   name: "Cards",
+    //   url: "/base/cards",
+    //   icon: "icon-puzzle"
+    // },
     //     {
     //       name: "Carousels",
     //       url: "/base/carousels",
@@ -82,21 +90,21 @@ export default {
     //       url: "/base/dropdowns",
     //       icon: "icon-puzzle"
     //     },
-    //     {
-    //       name: "Forms",
-    //       url: "/base/forms",
-    //       icon: "icon-puzzle"
-    //     },
-    //     {
-    //       name: "Jumbotrons",
-    //       url: "/base/jumbotrons",
-    //       icon: "icon-puzzle"
-    //     },
-    //     {
-    //       name: "List groups",
-    //       url: "/base/list-groups",
-    //       icon: "icon-puzzle"
-    //     },
+    // {
+    //   name: "Forms",
+    //   url: "/base/forms",
+    //   icon: "icon-puzzle"
+    // },
+    // {
+    //   name: "Jumbotrons",
+    //   url: "/base/jumbotrons",
+    //   icon: "icon-puzzle"
+    // },
+    // {
+    //   name: "List groups",
+    //   url: "/base/list-groups",
+    //   icon: "icon-puzzle"
+    // },
     //     {
     //       name: "Navs",
     //       url: "/base/navs",

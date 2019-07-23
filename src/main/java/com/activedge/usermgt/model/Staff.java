@@ -63,24 +63,21 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @NotNull
     @Column(nullable = false)
-//    @ColumnDefault("1")
+    // @ColumnDefault("1")
     private Boolean activated = false;
 
     @Transient
     private String redisKey;
 
     @ManyToMany
-    @JoinTable(
-            name = "staff_authority",
-            joinColumns = {@JoinColumn(name = "staff_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+    @JoinTable(name = "staff_authority", joinColumns = {
+            @JoinColumn(name = "staff_id", referencedColumnName = "id") }, inverseJoinColumns = {
+                    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
     @BatchSize(size = 10)
     private Set<Authority> authorities = new HashSet<>();
 
-
-
     @ManyToOne
-//    @JsonIgnoreProperties("staff")
+    // @JsonIgnoreProperties("staff")
     private Group group;
 
     public Long getId() {
@@ -117,7 +114,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.lastName = lastName;
     }
 
-
     public Set<Authority> getAuthorities() {
         return authorities;
     }
@@ -149,7 +145,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     }
 
     public void setEmail(String email) {
-        this.email = StringUtils.lowerCase(email, Locale.ENGLISH);;
+        this.email = StringUtils.lowerCase(email, Locale.ENGLISH);
+        ;
     }
 
     public String getPassword() {
@@ -242,19 +239,11 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @Override
     public String toString() {
-        return "Staff{" +
-                "id=" + getId() +
-                ", firstName='" + getFirstName() + "'" +
-                ", lastName='" + getLastName() + "'" +
-                ", phone='" + getPhone() + "'" +
-                ", email='" + getEmail() + "'" +
-                ", password='" + getPassword() + "'" +
-                ", makerChecker='" + getMakerChecker() + "'" +
-                ", Authorities='" + getAuthorities() + "'" +
-                ", Group='" + getGroup() + "'" +
-                ", RedisKey='" + getRedisKey() + "'" +
-                ", hireDate='" + getHireDate() + "'" +
-                "}";
+        return "Staff{" + "id=" + getId() + ", firstName='" + getFirstName() + "'" + ", lastName='" + getLastName()
+                + "'" + ", phone='" + getPhone() + "'" + ", email='" + getEmail() + "'" + ", password='" + getPassword()
+                + "'" + ", makerChecker='" + getMakerChecker() + "'" + ", Authorities='" + getAuthorities() + "'"
+                + ", Group='" + getGroup() + "'" + ", RedisKey='" + getRedisKey() + "'" + ", hireDate='" + getHireDate()
+                + "'" + "}";
     }
 
 }

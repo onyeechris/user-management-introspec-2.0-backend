@@ -93,6 +93,8 @@ import CryptoJS from "crypto-js";
     } else {
         // redirect browser to user management login with your app url included as the redirectUrl
         window.location.href = "http://localhost:3000/applogin/?redirectUrl=" + url_string;
+        // also, for internationalization, you can add a 'lang' param which supports fr, es, en, de and pt languages,// Using French for example ('fr') the previous url can be appended thus
+        // window.location.href = "http://localhost:3000/applogin/?redirectUrl=" + url_string + "&lang=fr";
     }
 
 ```
@@ -103,7 +105,7 @@ Your token will then be used to access the different endpoints in your app.
 
 To Clone this branch to your local, copy the clone command and add the following appendage before you run:
 ```
- -b oghenefe
+ -b dev
 ```
 
 These are the credentials you need to login to the application now:

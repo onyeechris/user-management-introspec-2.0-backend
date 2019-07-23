@@ -21,6 +21,8 @@ import logo from "../../assets/img/brand/logo.svg";
 import sygnet from "../../assets/img/brand/sygnet.svg";
 import { Redirect } from "react-router-dom";
 
+import { FormattedMessage } from 'react-intl';
+
 const propTypes = {
   children: PropTypes.node
 };
@@ -51,19 +53,6 @@ class DefaultHeader extends Component {
     this.setState({ redirectToReferrer: true });
   }
   render() {
-    if (/appredirect/.test(window.location.href)) {
-      return <Redirect to={"/appredirect"} />;
-    }
-
-    if (/applogin/.test(window.location.href)) {
-      // let url_string = window.location.href;
-      // let url = new URL(url_string);
-      // let UrlParam = url.searchParams.get("appUrl");
-      // sessionStorage.setItem("appUrl", UrlParam);
-      // console.log(sessionStorage.getItem("appUrl"));
-      return <Redirect to={"/applogin"} />;
-    }
-
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/login"} />;
     }
@@ -81,34 +70,10 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
-            <NavLink href="/">Introspec User Management</NavLink>
+            <NavLink href="/"><FormattedMessage id="app.title" defaultMessage="Introspec User Management" /></NavLink>
           </NavItem>
-          {/* <NavItem className="px-3">
-            <Link to="/users">Users</Link>
-          </NavItem> */}
-          {/* <NavItem className="px-3">
-            <NavLink href="#">Settings</NavLink>
-          </NavItem> */}
         </Nav>
         <Nav className="ml-auto" navbar>
-          {/* <NavItem className="d-md-down-none">
-            <NavLink href="#">
-              <i className="icon-bell" />
-              <Badge pill color="danger">
-                5
-              </Badge>
-            </NavLink>
-          </NavItem> */}
-          {/* <NavItem className="d-md-down-none">
-            <NavLink href="#">
-              <i className="icon-list" />
-            </NavLink>
-          </NavItem> */}
-          {/* <NavItem className="d-md-down-none">
-            <NavLink href="#">
-              <i className="icon-location-pin" />
-            </NavLink>
-          </NavItem> */}
           <AppHeaderDropdown direction="down">
             <DropdownToggle nav>
               <img
@@ -119,22 +84,10 @@ class DefaultHeader extends Component {
             </DropdownToggle>
             <DropdownMenu right style={{ right: "auto" }}>
               <DropdownItem header tag="div" className="text-center">
-                <strong>Account: </strong> {this.state.loggedInUser}
+                <strong><FormattedMessage id="UserAccount" defaultMessage="Account" />: </strong> {this.state.loggedInUser}
               </DropdownItem>
-              {/* <DropdownItem><i className="fa fa-bell-o"></i> Updates<Badge color="info">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>
-              <DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
-              <DropdownItem><i className="fa fa-user"></i> Profile</DropdownItem>
-              <DropdownItem><i className="fa fa-wrench"></i> Settings</DropdownItem>
-              <DropdownItem><i className="fa fa-usd"></i> Payments<Badge color="secondary">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-file"></i> Projects<Badge color="primary">42</Badge></DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem><i className="fa fa-shield"></i> Lock Account</DropdownItem> */}
-              {/* <DropdownItem onClick={e => this.props.onLogout(e)}><i className="fa fa-lock"></i> Logout</DropdownItem> */}
               <DropdownItem onClick={this.logout}>
-                <i className="fa fa-lock" /> Logout
+                <i className="fa fa-lock" /> <FormattedMessage id="Logout" defaultMessage="Logout" />
               </DropdownItem>
             </DropdownMenu>
           </AppHeaderDropdown>

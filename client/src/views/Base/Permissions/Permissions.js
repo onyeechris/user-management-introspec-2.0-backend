@@ -4,8 +4,12 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Form, FormGroup, Input, Label, Alert } from 'reactstrap';
 import axios from 'axios';
 import Pagination2 from "react-js-pagination";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchPermissions, fetchPermission, deletePermission, createPermission, updatePermission } from '../../../actions/action_permission';
 
 let loggedInUser = "";
+let permissionsToLoad = [];
 
 class Permissions extends Component {
 
@@ -51,27 +55,35 @@ class Permissions extends Component {
   }
 
   componentDidMount() {
-    if (typeof this.props.permission === 'undefined') {
+    // console.log(JSON.parse(sessionStorage.getItem("userData")).token);
+    let permissionUrl = '?size=' + this.state.itemsPerPage;
+    this.props.fetchPermissions(permissionUrl).then(result => {
+      this.setState({ permissionData: result.data.payload });
+      this.setState({ permissionTableData: result.data.meta });
+    }, error => {
+      this.setState({ formError: error });
+    })
 
-      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      let { baseUrl } = this.state;
-      let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
-      axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        //console.log(response.data)
-        this.setState({ permissionData: response.data.payload });
-        this.setState({ permissionTableData: response.data.meta });
-      }).catch(err => {
-        //debugger;
-      })
+    if (this.props.permissionData.data) {
+      console.log(this.props.permissionData.data.payload);
+      permissionsToLoad = this.props.permissionData.data.payload;
+    }
 
-      loggedInUser = sessionStorage.getItem("loggedInUser");
-      //console.log(loggedInUser);
-      if (loggedInUser.toLowerCase().includes("sysdev")) {
-        let visible = {
-          "display": "block"
-        }
-        this.setState({ showAction: visible });
+    // let { baseUrl } = this.state;
+    // axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+    //   //console.log(response.data)
+    //   this.setState({ permissionData: response.data.payload });
+    //   this.setState({ permissionTableData: response.data.meta });
+    // }).catch(err => {
+    //   //debugger;
+    // })
+
+    loggedInUser = sessionStorage.getItem("loggedInUser");
+    if (loggedInUser.toLowerCase().includes("sysdev")) {
+      let visible = {
+        "display": "block"
       }
+      this.setState({ showAction: visible });
     }
   }
 
@@ -85,7 +97,7 @@ class Permissions extends Component {
 
   toggle() {
     this.setState({ formError: "" });
-    this.fetchPermissions();
+    // this.fetchPermissions();
     this.setState({
       modal: !this.state.modal,
     });
@@ -93,13 +105,13 @@ class Permissions extends Component {
 
   toggleEdit() {
     this.setState({ formError: "" });
-    this.fetchPermissions();
+    // this.fetchPermissions();
     this.setState({
       editModal: !this.state.editModal,
     });
   }
   toggleConfirm() {
-    this.fetchPermissions();
+    // this.fetchPermissions();
     this.setState({
       confirmModal: !this.state.confirmModal,
     });
@@ -142,15 +154,17 @@ class Permissions extends Component {
         })
         .then(response => {
           this.setState({ newCreatedPermission: response.data });
-          this.fetchPermissions();
+          console.log(this.state.newPermissionData);
+          console.log(this.state.permissionData);
+          this.state.permissionData.push(this.state.newPermissionData);
+          console.log(this.state.permissionData);
           this.setState({ visible: true });
+          this.toggle();
         })
         .catch(err => {
-          //console.log(err);
-          // debugger;
+          this.setState({ formError: err.response.data.message + "" })
         })
 
-      this.toggle();
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -158,29 +172,30 @@ class Permissions extends Component {
   }
 
   findPermission(permissionId) {
-    let apiUrl = 'permissions/' + permissionId;
-    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    //console.log(this.state.baseUrl + apiUrl);
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singlePermissionData: response.data });
+    this.props.fetchPermission(permissionId).then(result => {
+      this.setState({ singlePermissionData: result.data });
+    }, error => {
+      this.setState({ formError: error })
+    }).then(this.toggleEdit);
 
-      }).then(this.toggleEdit())
-      .catch(err => {
-        // debugger;
-        //console.log("Couldn't find single permission: " + err);
-      })
+
+    // let apiUrl = 'permissions/' + permissionId;
+    // axios.get(this.state.baseUrl + apiUrl,
+    //   {
+    //     headers: {
+    //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+    //     }
+    //   })
+    //   .then(response => {
+    //     this.setState({ singlePermissionData: response.data });
+
+    //   }).then(this.toggleEdit())
+    //   .catch(err => {
+    //   })
   }
 
   findPermissionDelete(permissionId) {
     let apiUrl = 'permissions/' + permissionId;
-    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -192,34 +207,60 @@ class Permissions extends Component {
 
       }).then(this.toggleConfirm())
       .catch(err => {
-        // debugger;
-        //console.log("Couldn't find single permission: " + err);
       })
   }
 
   updatePermission() {
-    //console.log(this.state.singlePermissionData);
     let { singlePermissionData } = this.state;
 
     if (singlePermissionData.action && singlePermissionData.description) {
-      let apiUrl = 'permissions';
-      axios.put(this.state.baseUrl + apiUrl,
-        this.state.singlePermissionData,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+
+      this.props.updatePermission(singlePermissionData).then(result => {
+        for (var item in permissionsToLoad) {
+          if (permissionsToLoad[item].id === singlePermissionData.id) {
+            permissionsToLoad[item] = singlePermissionData;
+            console.log("got here");
+            console.log(singlePermissionData);
+            console.log(permissionsToLoad[item]);
+            console.log(permissionsToLoad);
           }
-        })
-        .then(response => {
-          this.setState({ newCreatedPermission: response });
-          this.setState({ visibleUpdate: true });
-        })
-        .catch(err => {
-          //console.log("Could not update permission record ");
-          // debugger;
-        })
-      this.fetchPermissions();
-      this.toggleEdit();
+        }
+        this.setState({ newCreatedPermission: singlePermissionData });
+        this.setState({ visibleUpdate: true });
+      }, error => {
+        this.setState({ formError: error });
+        console.log(error);
+      }).then(this.toggleEdit())
+
+      // let apiUrl = 'permissions';
+      // axios.put(this.state.baseUrl + apiUrl,
+      //   this.state.singlePermissionData,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      //   .then(response => {
+      //     for (var item in permissionsToLoad) {
+      //       if (permissionsToLoad[item].id === this.state.singlePermissionData.id) {
+      //         permissionsToLoad[item] = this.state.singlePermissionData;
+      //       }
+      //     }
+
+      //     // let tableData = this.state.permissionData;
+      //     // for (var item in tableData) {
+      //     //   console.log(this.state.permissionData[item].id);
+      //     //   if (tableData[item].id === this.state.singlePermissionData.id) {
+      //     //     tableData[item] = this.state.singlePermissionData;
+      //     //     this.setState({ permissionData: tableData });
+      //     //   }
+      //     // }
+      //     this.setState({ newCreatedPermission: this.state.singlePermissionData });
+      //     this.setState({ visibleUpdate: true });
+      //     console.log("hello again");
+      //   }).then(this.toggleEdit())
+      //   .catch(err => {
+      //   })
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -228,53 +269,71 @@ class Permissions extends Component {
 
   deletePermission(permissionId) {
     if (permissionId > 0) {
-      let apiUrl = 'permissions/' + permissionId;
-      //console.log(this.state.baseUrl + apiUrl);
-      axios.delete(this.state.baseUrl + apiUrl,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+
+      this.props.deletePermission(permissionId).then(result => {
+        for (var i = 0; i < permissionsToLoad.length; i++) {
+          if (permissionsToLoad[i].id === permissionId) {
+            permissionsToLoad.splice(i, 1);
           }
-        })
-        .then(response => {
-          //console.log(response);
-          this.fetchPermissions();
-        })
-        .catch(err => {
-          //console.log("Could not delete permission record: " + err);
-          // debugger;
-        })
-      this.toggleConfirm();
+        }
+        this.setState({ permissionData: permissionsToLoad });
+      }, error => {
+        console.log(error);
+        this.setState({ formError: error })
+      }).then(this.toggleConfirm());
+
+      if (this.props.permissionData.permissionDeleted) {
+        console.log(this.props.permissionData.permissionDeleted.data);
+
+      } else if (this.props.permissionData.permissionDeleteError) {
+        console.log('There was an error');
+        console.log(this.props.permissionData.permissionDeleteError);
+      }
+
+      // let apiUrl = 'permissions/' + permissionId;
+      // axios.delete(this.state.baseUrl + apiUrl,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      //   .then(response => {
+      //     console.log(response);
+      //     this.fetchPermissions();
+      //     for (var i = 0; i < this.state.permissionData.length; i++) {
+      //       if (this.state.permissionData[i].id === permissionId) {
+      //         this.state.permissionData.splice(i, 1);
+      //       }
+      //     }
+      //     console.log(this.state.permissionData);
+      //   }).then(this.toggleConfirm())
+      //   .catch(err => {
+      //     console.log("Could not delete permission record: " + err);
+      //     console.log(err.response.data.message);
+      //     this.setState({ formError: "" + err.response.data.message });
+      //   })
+
     }
   }
 
   fetchPermissions() {
     let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
-    //console.log(this.state.baseUrl + permissionUrl);
     axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
       .then((response) => {
-        //console.log(response.data.payload);
-        //console.log("I fetched!");
         this.setState({ permissionData: response.data.payload });
       }).catch(err => {
-        //debugger;
-        //console.log("Error fetching permissions");
-      })
-  }
-  fetchPermissionsPage(pageNumber) {
-    let permissionUrl = 'permissions?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
-    //console.log(this.state.baseUrl + permissionUrl);
-    axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
-      .then((response) => {
-        //console.log(response.data.payload);
-        //console.log("I fetched!");
-        this.setState({ permissionData: response.data.payload });
-      }).catch(err => {
-        //debugger;
-        //console.log("Error fetching permissions");
       })
   }
 
+  fetchPermissionsPage(pageNumber) {
+    let permissionUrl = '?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
+    this.props.fetchPermissions(permissionUrl);
+    // axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+    //   .then((response) => {
+    //     this.setState({ permissionData: response.data.payload });
+    //   }).catch(err => {
+    //   })
+  }
 
   changePageItem(numberOfItems) {
     //console.log("Your items per page: " + numberOfItems.target.value);
@@ -309,8 +368,15 @@ class Permissions extends Component {
 
   render() {
     let { showAction } = this.state;
-    const permissions = this.state.permissionData;
+    // let permissions = this.state.permissionData;
     const singlePermission = this.state.singlePermissionData;
+    console.log(this.props);
+    if (this.props.permissionData.permissionsFetched) {
+      console.log(this.props.permissionData.permissionsFetched.data.payload);
+      permissionsToLoad = this.props.permissionData.permissionsFetched.data.payload;
+    }
+    // let permissionsToLoadData = { ...this.props.permissionData.data };
+    // console.log(permissionsToLoadData.payLoad);
     return (
       <div className="animated fadeIn">
 
@@ -322,22 +388,14 @@ class Permissions extends Component {
                 <div className="pull-right">
                   <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Permission</Button>
                 </div>
-                <div className="pull-right" style={showAction}>
+                {/* <div className="pull-right" style={showAction}>
                   &nbsp; &nbsp;
-                </div>
-                <div className="pull-right">
-                  <select onChange={this.changePageItem.bind(this)} className="form-control">
-                    <option value="10">No of Items: 10</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                  </select>
-                </div>
+                </div> */}
+
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  Permission <strong>{this.state.newCreatedPermission.action}</strong> has been created.
+                  Permission <strong>{this.state.newCreatedPermission.name}</strong> has been created.
                 </Alert>
                 <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
                   Permission <strong>{this.state.newCreatedPermission.action}</strong> has been updated.
@@ -351,7 +409,8 @@ class Permissions extends Component {
                       <th style={showAction}>Actions</th>
                     </tr>
                   </thead>
-                  <tbody>{permissions.map((item, key) => {
+                  {/* <tbody>{permissions.map((item, key) => { */}
+                  <tbody>{permissionsToLoad.map((item, key) => {
                     return (
                       <tr key={key}>
                         <td>{item.id}</td>
@@ -375,6 +434,16 @@ class Permissions extends Component {
                     onChange={this.handlePageChange}
                   />
                 </nav>
+
+                <div className="pull-left">
+                  <select onChange={this.changePageItem.bind(this)} className="form-control">
+                    <option value="10">No of Items: 10</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
               </CardBody>
             </Card>
           </Col>
@@ -440,7 +509,7 @@ class Permissions extends Component {
       </CardHeader>
               <CardBody>
 
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+                <Form action="" method="post" className="form-horizontal" >
                   <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <Input type="hidden" name="id" value={singlePermission.id} onChange={this.readUpdateValue.bind(this, 'id')} />
                   <FormGroup row>
@@ -489,6 +558,7 @@ class Permissions extends Component {
             <Card>
 
               <CardBody>
+                <p style={{ color: 'red' }}>{this.state.formError}</p>
 
                 <p>Are you sure you want to delete permission: {singlePermission.action}?</p>
 
@@ -510,4 +580,22 @@ class Permissions extends Component {
   }
 }
 
-export default Permissions;
+const mapStateToProps = (state) => {
+  console.log('State is ', state)
+  return {
+    permissionData: { ...state.permission },
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    fetchPermissions,
+    fetchPermission,
+    deletePermission,
+    createPermission,
+    updatePermission
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Permissions);
+// export default Permissions;

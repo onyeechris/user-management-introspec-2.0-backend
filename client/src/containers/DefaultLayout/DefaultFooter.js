@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from "react-intl";
 
 const propTypes = {
   children: PropTypes.node,
@@ -16,7 +17,7 @@ class DefaultFooter extends Component {
     return (
       <React.Fragment>
         <span><a href="http://activedgetechnologies.com">ActivEdge Technologies</a> &copy; 2019.</span>
-        <span className="ml-auto">Powered by <a href="https://coreui.io/react">ActivEdge</a></span>
+        <span className="ml-auto"><FormattedMessage id="Powered By" defaultMessage="Powered by" /> <a href="https://coreui.io/react">ActivEdge</a></span>
       </React.Fragment>
     );
   }
