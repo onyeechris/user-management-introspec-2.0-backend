@@ -14,7 +14,7 @@ spring:
       generate-ddl: true
 
       hibernate:
-          ddl-auto: #  never use ddl generation in production
+          ddl-auto: update #  never use ddl generation in production
       properties:
           hibernate.id.new_generator_mappings: true
           hibernate.connection.provider_disables_autocommit: true
@@ -25,7 +25,6 @@ spring:
               jdbc:
                 lob:
                   non_contextual_creation: true
-              ddl-auto: create
 
   redis:
     host: localhost
@@ -35,12 +34,12 @@ spring:
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
-      url: jdbc:postgresql://localhost:5432/usermgt
+      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
       username: postgres
       password: passadmin
       hikari:
           auto-commit: false
-      initialization-mode: always
+#      initialization-mode: always
       data: classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:modules.sql, classpath:permissions.sql
 
   jackson:
