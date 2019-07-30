@@ -69,10 +69,22 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Transient
     private String redisKey;
 
+//    @ManyToMany
+//    @JoinTable(name = "staff_authority", joinColumns = {
+//            @JoinColumn(name = "staff_id", referencedColumnName = "id") }, inverseJoinColumns = {
+//                    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
+//    @BatchSize(size = 10)
+//    private Set<Authority> authorities = new HashSet<>();
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
-            @JoinColumn(name = "staff_id", referencedColumnName = "id") }, inverseJoinColumns = {
-                    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
+            @JoinColumn(name = "staff_id", referencedColumnName = "id") },
+            inverseJoinColumns = {
+//                    @JoinColumns({
+                            @JoinColumn(name = "module_id", referencedColumnName = "module"),
+                            @JoinColumn(name = "authority_id", referencedColumnName = "code")
+//                    })
+                }
+            )
     @BatchSize(size = 10)
     private Set<Authority> authorities = new HashSet<>();
 

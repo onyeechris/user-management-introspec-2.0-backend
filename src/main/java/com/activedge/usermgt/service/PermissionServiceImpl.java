@@ -1,5 +1,6 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
@@ -48,7 +49,7 @@ public class PermissionServiceImpl implements PermissionService {
         } else {
             Permission p = permissionMapper.toEntity(this.findOne(permission.getId()).get());
             log.debug("Updating Permission...{}", permission.getId());
-            p.setAction(permission.getAction() == null ? p.getAction() : permission.getAction());
+//            p.setAction(permission.getAction() == null ? p.getAction() : permission.getAction());
             p.setDescription(permission.getDescription() == null ? p.getDescription() : permission.getDescription());
             permission = p;
         }

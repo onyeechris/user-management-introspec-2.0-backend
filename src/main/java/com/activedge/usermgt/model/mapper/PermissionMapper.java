@@ -1,6 +1,7 @@
 package com.activedge.usermgt.model.mapper;
 
 
+import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import org.mapstruct.*;

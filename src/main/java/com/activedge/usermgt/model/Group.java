@@ -37,6 +37,9 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     @OneToMany(mappedBy = "group")
     private Set<Staff> staff = new HashSet<>();
 
+    @ManyToOne
+    private Module module;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "groups_permission",
             joinColumns = @JoinColumn(name = "groups_id", referencedColumnName = "id"),

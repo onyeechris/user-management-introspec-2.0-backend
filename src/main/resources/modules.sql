@@ -1,16 +1,16 @@
-insert into introspec_module(name)
-values('ATM');
+insert into introspec_module(code, name)
+values('ATM', 'atmrecon');
 
-insert into introspec_module(name)
-values('MATCH');
+insert into introspec_module(code, name)
+values('MATCH', 'matching module');
 
-insert into introspec_module(name)
-values('EXCEPTION');
+insert into introspec_module(code, name)
+values('EXCEPTION', 'exception and escalation');
 
-insert into introspec_module(name)
-values('SETTLEMENT');
+insert into introspec_module(code, name)
+values('SETTLEMENT','settlement application');
 
-insert into introspec_module(name)
-values('USER');
+insert into introspec_module(code, name)
+values('USER','user management');
 
 COMMIT;

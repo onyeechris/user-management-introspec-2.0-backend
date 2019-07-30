@@ -23,22 +23,30 @@ public class Permission implements Serializable {
 
     @NotNull
     @Size(min = 3)
-    @Column(name = "action", unique = true)
+    @Column(name = "action")
     private String action;
 
     @Column(name = "description")
     private String description;
 
-    public Long getId() {
-        return id;
-    }
-
     @ManyToOne
-    private Module module;
+    @JoinColumns({
+            @JoinColumn(
+                    name = "module",
+                    referencedColumnName = "module"),
+            @JoinColumn(
+                    name = "authority",
+                    referencedColumnName = "code")
+    })
+    private Authority authority;
 
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     @JsonIgnore
     private Set<Group> grps = new HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -95,33 +103,23 @@ public class Permission implements Serializable {
         this.grps = groups;
     }
 
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Permission permission = (Permission) o;
-        if (permission.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), permission.getId());
+        if (this == o) return true;
+        if (!(o instanceof Permission)) return false;
+        Permission that = (Permission) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(action, that.action) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(authority, that.authority) &&
+                Objects.equals(grps, that.grps);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hash(id, action, description, authority, grps);
     }
 
-    @Override
-    public String toString() {
-        return "Permission{" +
-                "id=" + getId() +
-                ", action='" + getAction() + "'" +
-                ", description='" + getDescription() + "'" +
-                "}";
-    }
 }
 

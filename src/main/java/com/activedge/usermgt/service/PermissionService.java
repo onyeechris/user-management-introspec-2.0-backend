@@ -1,6 +1,7 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

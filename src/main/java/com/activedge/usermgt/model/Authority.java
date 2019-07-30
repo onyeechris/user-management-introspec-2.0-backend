@@ -1,9 +1,6 @@
 package com.activedge.usermgt.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -14,10 +11,16 @@ public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @EmbeddedId
+    private AuthorityPK id;
+
+    @ManyToOne
+    @JoinColumn(name = "module",insertable = false, updatable = false)
+    private Module module;
+
     @NotNull
     @Size(max = 50)
-    @Id
-    @Column(length = 50, unique = true)
+    @Column(length = 50/*, unique = true*/)
     private String name;
 
     public String getName() {
@@ -50,8 +53,10 @@ public class Authority implements Serializable {
     @Override
     public String toString() {
         return "Authority{" +
-                "name='" + name + '\'' +
-                "}";
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
+
 }
 

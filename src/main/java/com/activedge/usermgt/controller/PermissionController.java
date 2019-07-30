@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.service.PermissionService;
 import io.swagger.annotations.Api;
@@ -22,7 +23,6 @@ import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

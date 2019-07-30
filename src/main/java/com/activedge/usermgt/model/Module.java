@@ -17,10 +17,21 @@ public class Module implements Serializable {
     @Size(max = 50)
     @Id
     @Column(length = 50, unique = true)
+    private String code;
+
+    @NotNull
+    @Size(max = 50)
+    @Column(length = 50, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "module")
-    private Set<Permission> permissions = new HashSet<>();
+//    @OneToMany(mappedBy = "module")
+//    private Set<Permission> permissions = new HashSet<>();
+
+//    @OneToMany(mappedBy = "module")
+//    private Set<Group> groups = new HashSet<>();
+
+//    @OneToMany(mappedBy = "module")
+//    private Set<Authority> authority = new HashSet<>();
 
     public String getName() {
         return name;
