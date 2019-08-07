@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * This is class is currently of no significance
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 //@Api(hidden=true)
 @ApiIgnore
 public class AccountController {

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * REST controller for managing Group.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group.")
 public class GroupController {
 

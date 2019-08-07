@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @Api(value="todo", description="Operations to fetching CHECKER items list")
 public class TodoController {
 

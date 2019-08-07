@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * REST controller for managing Staff.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @Api(value="staff", description="Operations pertaining to bank's staff")
 public class StaffController {
 
