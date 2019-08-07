@@ -32,7 +32,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.activedge.usermgt.controller")) // RequestHandlerSelectors.any()
-                .paths(regex("/api.*|/auth")) // generate documentation only for the path starting with /product ELSE PathSelectors.any()
+                .paths(regex("/.*|/auth")) // generate documentation only for the path starting with /product ELSE PathSelectors.any()
                 .build()
                 .apiInfo(metaData());
     }
