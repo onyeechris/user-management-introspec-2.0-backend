@@ -3,8 +3,12 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.AuthorityPK;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.PermissionDTO;
+import com.activedge.usermgt.repository.AuthorityRepository;
+import com.activedge.usermgt.repository.PermissionRepository;
 import com.activedge.usermgt.service.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,7 +35,7 @@ import java.util.stream.Collectors;
  * REST controller for managing Permission.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @Api(value="permission", description="Access Permission controller for assigning permissions to groups")
 public class PermissionController {
 
@@ -40,8 +45,11 @@ public class PermissionController {
 
     private final PermissionService permissionService;
 
-    public PermissionController(PermissionService permissionService) {
+    private final AuthorityRepository authorityRepository;
+
+    public PermissionController(PermissionService permissionService, AuthorityRepository authorityRepository) {
         this.permissionService = permissionService;
+        this.authorityRepository = authorityRepository;
     }
 
     /**
@@ -53,7 +61,7 @@ public class PermissionController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> createPermission(@Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException {
+    public ResponseEntity<PermissionDTO> createPermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, permissionDTO);
 
         if (errors.hasErrors()) {
@@ -64,6 +72,17 @@ public class PermissionController {
         }
 
         permissionDTO.setId(null);
+
+        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
+        Authority auth;
+
+        if(authority.isPresent()) {
+            auth = authority.get();
+        } else {
+            throw new ServletRequestBindingException("Module[" + module + "] not found");
+        }
+
+        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
@@ -107,11 +126,12 @@ public class PermissionController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllPermissions(Pageable pageable) {
-        log.debug("REST request to get a page of Permissions");
+    public ResponseEntity<ResponseWrapper> getAllPermissions(@RequestHeader(value = "Module", required = true) String module, Pageable pageable) {
+        log.info("REST request to get a page of Permissions on module {}", module);
 
-        Page<PermissionDTO> page = permissionService.findAll(pageable);
-
+        Page<PermissionDTO> page = permissionService.findAll(module, pageable);
+        System.out.println("Page is " + page);
+        System.out.println("Pageable is " + pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);

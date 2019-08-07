@@ -69,14 +69,14 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
-                .antMatchers("/api/permissions/**").hasRole("INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.GET, "/api/permissions/**").hasAnyRole("CHECKER", "MAKER", "DEV")
+                .antMatchers("/api/permissions/**").hasRole("DEV")
 
-                .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.GET, "/api/groups/**").hasAnyRole("CHECKER", "MAKER", "DEV")
                 .antMatchers(HttpMethod.POST, "/api/groups/**").hasRole("MAKER")
                 .antMatchers("/api/groups/**").hasAnyRole("CHECKER", "MAKER")
 
-                .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("CHECKER", "MAKER", "INTROSPEC-SYSDEV")
+                .antMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("CHECKER", "MAKER", "DEV")
                 .antMatchers(HttpMethod.POST, "/api/staff/**").hasRole("MAKER")
                 .antMatchers("/api/staff/**").hasAnyRole("CHECKER", "MAKER")
 

@@ -31,6 +31,22 @@ public class Authority implements Serializable {
         this.name = name;
     }
 
+    public Module getModule() {
+        return module;
+    }
+
+    public void setModule(Module module) {
+        this.module = module;
+    }
+
+    public AuthorityPK getId() {
+        return id;
+    }
+
+    public void setId(AuthorityPK id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -55,6 +71,7 @@ public class Authority implements Serializable {
         return "Authority{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", module='" + module.getCode() + '\'' +
                 '}';
     }
 

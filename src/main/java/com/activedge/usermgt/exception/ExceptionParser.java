@@ -6,15 +6,15 @@ import javax.validation.ValidationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.context.request.WebRequest;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -55,6 +55,16 @@ public class ExceptionParser {
 
 //		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
 
+	}
+
+	@ExceptionHandler(ServletRequestBindingException.class)
+	public final ResponseEntity<Object> handleHeaderException(Exception ex, WebRequest request)
+    {
+		Map<String, Object> errors = new HashMap<>();
+		errors.put("status", HttpStatus.BAD_REQUEST.value());
+		errors.put("message", ex.getLocalizedMessage());
+
+		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(Exception.class)

@@ -1,5 +1,8 @@
 package com.activedge.usermgt.model;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -9,6 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "introspec_module")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Module implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +37,14 @@ public class Module implements Serializable {
 
 //    @OneToMany(mappedBy = "module")
 //    private Set<Authority> authority = new HashSet<>();
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;

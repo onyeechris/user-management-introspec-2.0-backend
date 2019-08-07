@@ -1,6 +1,6 @@
 -- Settlement Endpoints Permissions
 insert into permissions (id, action, description, authority, module) values(1, 'CREATE-ACCOUNT', 'creating account endpoint', 'ROLE_USER', 'ATM');
-insert into permissions (id, action, description, authority, module) values(2, 'POST-ACCOUNT', 'endpoint for posting to core banking', 'ROLE_INTROSPEC-SYSDEV', 'USER');
+insert into permissions (id, action, description, authority, module) values(2, 'POST-ACCOUNT', 'endpoint for posting to core banking', 'ROLE_DEV', 'ADMIN');
 
 -- ATMRecon Endpoints Permissions
 insert into permissions (id, action, description, authority, module) values(3, 'VIEW-JOURNAL', 'creating ATM branch endpoint', 'ROLE_USER', 'ATM');

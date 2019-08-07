@@ -1,10 +1,7 @@
 package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
-import com.activedge.usermgt.model.Authority;
-import com.activedge.usermgt.model.Group;
-import com.activedge.usermgt.model.LdapUser;
-import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.*;
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.LdapUserService;
@@ -21,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
@@ -68,6 +66,8 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             // Get credentials from request
             UserCredentials creds = new ObjectMapper().readValue(request.getInputStream(), UserCredentials.class);
 
+            String encryptedPassword = encoder.encode(creds.getPassword());
+
             // Create auth object (contains credentials) which will be used by auth manager
             UsernamePasswordAuthenticationToken daoAuthToken = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(), creds.getPassword(), Collections.emptyList());
@@ -95,11 +95,13 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                     .map(existingUser -> {
                         // this means that a user can use his AD account or Introspec account to login
                         if(existingUser.isActivated()) {
-                            this.displayToken(this.generateToken(auth, existingUser), "old", response);
+                            this.displayToken(this.generateToken(auth, request, existingUser), "old", response);
+                        } else {
+                            this.displayToken("Empty", "old", response);
                         }
                         return null;
                     })
-                    .orElse(this.createNewUser(auth, response));
+                    .orElse(this.createNewUser(auth, request, response));
 
 //            System.out.println("authenticating john and secret in ldap >>> " + ldapUserService.authenticate("john", "{SHA}5en6G6MezRroT3XKqkdPOmY/BfQ="));
 
@@ -112,7 +114,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         } else {
             Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(((User) auth.getPrincipal()).getUsername());
 
-            this.displayToken(this.generateToken(auth, authUser.get()), "old", response);
+            this.displayToken(this.generateToken(auth, request, authUser.get()), "old", response);
 
 //            log.info("Authentication successful from JPA Authorities:{} --- Username:{} --- Password:{}",
 //                    ((User) auth.getPrincipal()).getAuthorities(),
@@ -122,13 +124,25 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
     }
 
-    public String generateToken(Authentication auth, Staff staff) {
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        this.displayToken(failed.getMessage(), "401", response);
+    }
+
+    public String generateToken(Authentication auth, HttpServletRequest request, Staff staff) {
         Long now = System.currentTimeMillis();
 
         System.out.println("Staff permissions: --- " + staff.getGroup().getPermissions()
                 .stream()
                 .map(permission -> permission.getAction())
                 .collect(Collectors.joining(",")));
+
+        String module = request.getHeader(jwtConfig.getModule());
+
+        List<String> allowedModules = staff.getAuthorities().stream().map(authority -> authority.getModule().getCode()).collect(Collectors.toList());;
+
+        if(!allowedModules.contains(module) && !allowedModules.contains("ADMIN")) return "N/A";
 
         return Jwts.builder()
                 .setSubject(auth.getName())
@@ -147,7 +161,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     }
 
-    private Staff createNewUser(Authentication auth, HttpServletResponse response) {
+    private Staff createNewUser(Authentication auth, HttpServletRequest request, HttpServletResponse response) {
         Staff newUser = new Staff();
 
         LdapUser ldapUser = ldapUserService.getByUserid(((LdapUserDetailsImpl) auth.getPrincipal()).getUsername());
@@ -175,7 +189,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         log.debug("Created Information for Staff: {}", newUser);
 
-        this.displayToken(this.generateToken(auth, newUser), "new", response);
+        this.displayToken(this.generateToken(auth, request, newUser), "new", response);
 
         return newUser;
     }

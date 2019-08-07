@@ -12,7 +12,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses = {})
 public interface PermissionMapper extends EntityMapper<PermissionDTO, Permission> {
 
-
     @Mapping(target = "grps", ignore = true)
     Permission toEntity(PermissionDTO permissionDTO);
 

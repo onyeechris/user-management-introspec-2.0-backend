@@ -27,7 +27,7 @@ public interface PermissionService {
      * @param pageable the pagination information
      * @return the list of entities
      */
-    Page<PermissionDTO> findAll(Pageable pageable);
+    Page<PermissionDTO> findAll(String module, Pageable pageable);
 
 
     /**

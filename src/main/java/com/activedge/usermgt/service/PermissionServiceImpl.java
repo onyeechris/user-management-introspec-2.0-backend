@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
 /**
@@ -41,9 +42,10 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     public PermissionDTO save(PermissionDTO permissionDTO) {
-        log.debug("Request to save Permission : {}", permissionDTO);
+        log.info("Request to save Permission : {}", permissionDTO);
 
         Permission permission = permissionMapper.toEntity(permissionDTO);
+        log.info("Permission : {}", permission);
         if(permission.getId() == null) {
             permission.setGrps(null);
         } else {
@@ -53,6 +55,10 @@ public class PermissionServiceImpl implements PermissionService {
             p.setDescription(permission.getDescription() == null ? p.getDescription() : permission.getDescription());
             permission = p;
         }
+
+//        EntityManager entityManager = BeanUtil.getBean(EntityManager.class);
+//        entityManager.persist(permission);
+
         permission = permissionRepository.save(permission);
 
         return permissionMapper.toDto(permission);
@@ -66,9 +72,9 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<PermissionDTO> findAll(Pageable pageable) {
+    public Page<PermissionDTO> findAll(String module, Pageable pageable) {
         log.debug("Request to get all Permissions");
-        return permissionRepository.findAll(pageable)
+        return permissionRepository.findAllByAuthority_Module_Code(pageable, module)
             .map(permissionMapper::toDto);
     }
 

@@ -1,6 +1,7 @@
 package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,8 +12,11 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "permissions")
-@SequenceGenerator(name = "permGenerator", initialValue = 40, allocationSize = 50)
+@Table(name = "permissions",
+        uniqueConstraints=
+        @UniqueConstraint(columnNames={"module", "action"})
+)
+@SequenceGenerator(name = "permGenerator", initialValue = 200, allocationSize = 50)
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -103,6 +107,23 @@ public class Permission implements Serializable {
         this.grps = groups;
     }
 
+    public Authority getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(Authority authority) {
+        this.authority = authority;
+    }
+
+    @Override
+    public String toString() {
+        return "Permission{" +
+                "id=" + id +
+                ", action='" + action + '\'' +
+                ", description='" + description + '\'' +
+                ", authority=" + authority +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {

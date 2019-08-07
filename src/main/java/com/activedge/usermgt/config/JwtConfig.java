@@ -12,6 +12,9 @@ public class JwtConfig {
     @Value("${security.jwt.header:Authorization}")
     private String header;
 
+    @Value("${security.jwt.module:Module}")
+    private String module;
+
     @Value("${security.jwt.prefix:Bearer }")
     private String prefix;
 
