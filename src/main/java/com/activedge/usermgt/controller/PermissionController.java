@@ -101,7 +101,7 @@ public class PermissionController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> updatePermission(@Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException {
+    public ResponseEntity<PermissionDTO> updatePermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update Permission : {}", permissionDTO);
 
         if (errors.hasErrors() || permissionDTO.getId() == null) {
@@ -111,6 +111,16 @@ public class PermissionController {
                     .collect(Collectors.joining(",")));
         }
 
+        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
+        Authority auth;
+
+        if(authority.isPresent()) {
+            auth = authority.get();
+        } else {
+            throw new ServletRequestBindingException("Module[" + module + "] not found");
+        }
+
+        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.ok()
@@ -130,8 +140,6 @@ public class PermissionController {
         log.info("REST request to get a page of Permissions on module {}", module);
 
         Page<PermissionDTO> page = permissionService.findAll(module, pageable);
-        System.out.println("Page is " + page);
-        System.out.println("Pageable is " + pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);

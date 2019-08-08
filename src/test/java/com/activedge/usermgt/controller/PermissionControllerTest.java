@@ -1,13 +1,16 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.model.Permission;
+import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.skyscreamer.jsonassert.*;
 import org.skyscreamer.jsonassert.comparator.ArraySizeComparator;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
@@ -16,12 +19,12 @@ import org.skyscreamer.jsonassert.comparator.JSONComparator;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.*;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -39,10 +42,10 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@EnableSpringDataWebSupport
-@WebAppConfiguration
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@FixMethodOrder(MethodSorters.JVM)
+//@TestMethodOrder(OrderAnnotation.class)
 public class PermissionControllerTest {
 
     @LocalServerPort
@@ -51,6 +54,8 @@ public class PermissionControllerTest {
     TestRestTemplate restTemplate = new TestRestTemplate();
 
     HttpHeaders headers = new HttpHeaders();
+
+    private static Long id;
 
     @Before
     public void before() {
@@ -96,19 +101,68 @@ public class PermissionControllerTest {
     }
 
     @Test
-    public void addPermission() {
+    public void testAddPermission() throws JSONException {
 
-        Permission permission = new Permission();
+        PermissionDTO permission = new PermissionDTO();
 
-        HttpEntity<Permission> entity = new HttpEntity<Permission>(permission, headers);
+        permission.setAction("Test Endpoint");
+        permission.setDescription("My test endpoint description");
+
+        HttpEntity<PermissionDTO> entity = new HttpEntity<PermissionDTO>(permission, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/students/Student1/courses"),
+                createURLWithPort("/auth-service/permissions"),
                 HttpMethod.POST, entity, String.class);
 
-        String actual = response.getHeaders().get(HttpHeaders.LOCATION).get(0);
+        JSONObject jsonObject = new JSONObject(response.getBody());
 
-        assertTrue(actual.contains("/students/Student1/courses/"));
+        id = jsonObject.getLong("id");
+
+        String expected = "{\n" +
+                "    \"action\": \"Test Endpoint\",\n" +
+                "    \"description\": \"My test endpoint description\"\n" +
+                "}";
+
+        JSONAssert.assertEquals(expected, response.getBody(), JSONCompareMode.LENIENT);
+
+    }
+
+    @Test
+    public void testUpdatePermission() throws JSONException {
+
+        PermissionDTO permission = new PermissionDTO();
+
+        permission.setId(id);
+        permission.setAction("Test Endpoint changed");
+        permission.setDescription("My test endpoint description too");
+
+        HttpEntity<PermissionDTO> entity = new HttpEntity<PermissionDTO>(permission, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/auth-service/permissions"),
+                HttpMethod.PUT, entity, String.class);
+
+        String expected = "{\n" +
+                "    \"action\": \"Test Endpoint changed\",\n" +
+                "    \"description\": \"My test endpoint description too\"\n" +
+                "}";
+
+        JSONAssert.assertEquals(expected, response.getBody(), JSONCompareMode.LENIENT);
+
+    }
+
+    @Test
+    public void testDeletePermission() throws JSONException, InterruptedException {
+
+        Thread.sleep(50); // little pause for update to complete
+
+        HttpEntity<PermissionDTO> entity = new HttpEntity<PermissionDTO>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/auth-service/permissions/" + id),
+                HttpMethod.DELETE, entity, String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
