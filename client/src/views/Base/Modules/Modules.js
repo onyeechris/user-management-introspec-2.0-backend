@@ -233,13 +233,11 @@ class Modules extends Component {
 
   // Get specific module for deleting
   findModuleDelete = (moduleId) => {
-    this.props.fetchModule(moduleId)
-      .then(response => {
-        this.setState({ singleModuleData: response.data });
-      }).then(this.toggleConfirm())
-      .catch(err => {
-        // debugger;
-      })
+    this.props.fetchModule(moduleId).then(result => {
+      this.setState({ singleModuleData: result.data }, this.toggleConfirm());
+    }, error => {
+      this.setState({ formError: error });
+    });
   }
 
   // Send module id to delete module
