@@ -17,7 +17,10 @@ class DefaultFooter extends Component {
     return (
       <React.Fragment>
         <span><a href="http://activedgetechnologies.com">ActivEdge Technologies</a> &copy; 2019.</span>
-        <span className="ml-auto"><FormattedMessage id="Powered By" defaultMessage="Powered by" /> <a href="https://coreui.io/react">ActivEdge</a></span>
+        <span className="ml-auto"><FormattedMessage id="Powered By" defaultMessage="Powered by" /> <a href="https://coreui.io/react">ActivEdge</a>
+          &nbsp; &nbsp; Lang: <FormattedMessage id="currentLang" defaultMessage="EN" />
+        </span>
+
       </React.Fragment>
     );
   }

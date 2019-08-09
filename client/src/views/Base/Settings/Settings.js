@@ -99,12 +99,11 @@ class Settings extends Component {
                       <select type="select" className="form-control" name="select" id="language" onChange={this.change.bind(this)} value={this.state.value}>
                         <option value="en" >English</option>
                         <option value="fr" >Français</option>
-                        {/* <option value="pt" >Português</option>
-                        <option value="es" >Español</option> */}
+                        <option value="pt" >Português</option>
+                        <option value="es" >Español</option>
                       </select>
                       <FormText className="help-block"><FormattedMessage id="LanguageInfo" defaultMessage="This changes the language of the site. It won't change any text entered by users." /></FormText>
                     </Col>
-
                   </FormGroup>
                   {/* <FormGroup row>
                     <Col md="3">

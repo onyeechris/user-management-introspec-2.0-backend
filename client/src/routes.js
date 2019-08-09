@@ -1,5 +1,12 @@
 import React from "react";
 import DefaultLayout from "./containers/DefaultLayout";
+import { FormattedMessage } from "react-intl";
+
+const translate = (pageString) => {
+  return (
+    <FormattedMessage id={pageString} defaultMessage={pageString} />
+  )
+}
 
 const Breadcrumbs = React.lazy(() => import("./views/Base/Breadcrumbs"));
 const Cards = React.lazy(() => import("./views/Base/Cards"));
@@ -47,11 +54,13 @@ const Groups = React.lazy(() => import("./views/Base/Groups"));
 const GroupView = React.lazy(() => import("./views/Base/Groups/GroupsView"));
 const ToDos = React.lazy(() => import("./views/Base/ToDos"));
 const Settings = React.lazy(() => import("./views/Base/Settings"));
+const Modules = React.lazy(() => import("./views/Base/Modules"));
+const ModuleView = React.lazy(() => import("./views/Base/Modules/ModulesView"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: "/", exact: true, name: "Home", component: DefaultLayout },
-  { path: "/dashboard", name: "Dashboard", component: Dashboard },
+  { path: "/", exact: true, name: translate("Home"), component: DefaultLayout },
+  { path: "/dashboard", name: translate("Dashboard"), component: Dashboard },
   { path: "/theme", exact: true, name: "Theme", component: Colors },
   { path: "/theme/colors", name: "Colors", component: Colors },
   { path: "/theme/typography", name: "Typography", component: Typography },
@@ -91,13 +100,15 @@ const routes = [
   { path: "/charts", name: "Charts", component: Charts },
   { path: "/users", exact: true, name: "Users", component: Users },
   { path: "/users/:id", exact: true, name: "User Details", component: User },
-  { path: "/staffs", name: "Staffs", component: Staffs },
-  { path: "/permissions", name: "Permissions", component: Permissions },
-  { path: "/accounts", name: "Accounts", component: Accounts },
-  { path: "/groups", exact: true, name: "Groups", component: Groups },
-  { path: "/groups/group_view", exact: true, name: "Group View", component: GroupView },
-  { path: "/todos", name: "ToDos", component: ToDos },
-  { path: "/settings", name: "Settings", component: Settings },
+  { path: "/staffs", name: translate("Staffs"), component: Staffs },
+  { path: "/permissions", name: translate("Permissions"), component: Permissions },
+  { path: "/accounts", name: translate("Accounts"), component: Accounts },
+  { path: "/groups", exact: true, name: translate("Groups"), component: Groups },
+  { path: "/groups/group_view", exact: true, name: translate("Group View"), component: GroupView },
+  { path: "/todos", name: translate("ToDos"), component: ToDos },
+  { path: "/settings", name: translate("Settings"), component: Settings },
+  { path: "/apps", name: translate("Apps"), component: Modules },
+  { path: "/apps/module_view", exact: true, name: translate("App View"), component: ModuleView },
 ];
 
 export default routes;

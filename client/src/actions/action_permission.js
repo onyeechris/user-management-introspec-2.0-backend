@@ -15,7 +15,7 @@ export const PERMISSION_CREATE_ERROR = 'PERMISSION_CREATE_ERROR';
 export const PERMISSION_UPDATED = 'PERMISSION_UPDATED';
 export const PERMISSION_UPDATE_ERROR = 'PERMISSION_UPDATE_ERROR';
 
-let apiUrl = BASE_URL + 'api/permissions/';
+let apiUrl = BASE_URL + 'permissions/';
 
 interceptor();
 

@@ -31,11 +31,11 @@ spring:
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
-      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
+      url: jdbc:postgresql://localhost:5432/usermgt3
       username: postgres
       password: passadmin
       hikari:
-          auto-commit: false
+          auto-commit: false 
 #      initialization-mode: always
       data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
 

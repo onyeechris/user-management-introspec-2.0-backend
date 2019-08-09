@@ -6,35 +6,35 @@ import {
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchGroup } from '../../../actions/action_group';
+import { fetchModule } from '../../../actions/action_module';
 import { Link } from "react-router-dom";
 // import Pagination2 from "react-js-pagination";
 import { FormattedMessage } from 'react-intl';
 
-import GroupTable from "./GroupTable";
+import ModuleTable from "./ModuleTable";
 
 let firstPermissionsData = [];
 let initialPermissionData = [];
 let permData = [];
-class GroupsView extends Component {
+class ModulesView extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      groupData: [],
+      moduleData: [],
       initialPermissionData: [],
       itemsPerPage: 10,
       activePage: 1,
       permissionData: [],
       permissionTableData: {},
-      myOtherGroupObject: {},
+      myOtherModuleObject: {},
       selected: [],
       newlySelected: [],
-      singleGroupData: {},
+      singleModuleData: {},
       singlePermissionData: {},
-      addedGroup: {},
+      addedModule: {},
       loadedPermissionsData: [],
-      newCreatedGroup: {},
+      newCreatedModule: {},
       showAction: {
         "display": "none"
       },
@@ -42,7 +42,7 @@ class GroupsView extends Component {
         "display": "none"
       },
       permissionsDeleteList: [],
-      singleViewGroupData: this.props.groupData.groupSaved ? this.props.groupData.groupSaved : "",
+      singleViewModuleData: this.props.moduleData.moduleSaved ? this.props.moduleData.moduleSaved : "",
     };
     this.changePageItem = this.changePageItem.bind(this);
   }
@@ -50,22 +50,22 @@ class GroupsView extends Component {
   componentDidMount = () => {
 
     console.log(this.props);
-    console.log(this.props.groupData);
+    console.log(this.props.moduleData);
 
     this.loadData();
-    // if (this.state.singleViewGroupData.data) {
-    //   this.setState({ singleGroupData: this.state.singleViewGroupData.data });
-    //   this.setState({ initialPermissionData: this.state.singleViewGroupData.data.permissions });
-    //   firstPermissionsData = this.state.singleViewGroupData.data.permissions;
+    // if (this.state.singleViewModuleData.data) {
+    //   this.setState({ singleModuleData: this.state.singleViewModuleData.data });
+    //   this.setState({ initialPermissionData: this.state.singleViewModuleData.data.permissions });
+    //   firstPermissionsData = this.state.singleViewModuleData.data.permissions;
 
     //   let permData = firstPermissionsData.slice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
 
     //   this.setState({ permissionData: permData });
     // }
 
-    // let singleViewGroupData = JSON.parse(sessionStorage.getItem("currentSingleGroupData"));
+    // let singleViewModuleData = JSON.parse(sessionStorage.getItem("currentSingleModuleData"));
 
-    // // console.log(singleViewGroupData);
+    // // console.log(singleViewModuleData);
 
 
   }
@@ -128,10 +128,10 @@ class GroupsView extends Component {
 
 
   loadData() {
-    if (this.state.singleViewGroupData.data) {
-      this.setState({ singleGroupData: this.state.singleViewGroupData.data });
-      this.setState({ initialPermissionData: this.state.singleViewGroupData.data.permissions });
-      firstPermissionsData = this.state.singleViewGroupData.data.permissions;
+    if (this.state.singleViewModuleData.data) {
+      this.setState({ singleModuleData: this.state.singleViewModuleData.data });
+      this.setState({ initialPermissionData: this.state.singleViewModuleData.data.permissions });
+      firstPermissionsData = this.state.singleViewModuleData.data.permissions;
 
       permData = firstPermissionsData.slice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
       console.log(permData);
@@ -140,13 +140,13 @@ class GroupsView extends Component {
   }
 
   render() {
-    // let { singleGroupData } = this.state;
+    // let { singleModuleData } = this.state;
 
-    let currentGroupData = this.state.singleViewGroupData.data ? this.state.singleViewGroupData.data : {};
-    let currentGroupPermissions = currentGroupData.permissions ? currentGroupData.permissions : [];
-    // let singleGroupData = currentGroupData;
-    initialPermissionData = currentGroupPermissions;
-    firstPermissionsData = currentGroupPermissions;
+    let currentModuleData = this.state.singleViewModuleData.data ? this.state.singleViewModuleData.data : {};
+    let currentModulePermissions = currentModuleData.permissions ? currentModuleData.permissions : [];
+    // let singleModuleData = currentModuleData;
+    initialPermissionData = currentModulePermissions;
+    firstPermissionsData = currentModulePermissions;
 
     permData = firstPermissionsData.slice((this.state.itemsPerPage * this.state.activePage) - this.state.itemsPerPage, this.state.itemsPerPage);
 
@@ -156,10 +156,10 @@ class GroupsView extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <Link to='/groups'>
+                <Link to='/modules'>
                   <i className="fa fa-arrow-left"></i> {' '}
                   <FormattedMessage id="Back" defaultMessage="Back" />
-                  {/* {this.props.group.groupFetched.data.name} */}
+                  {/* {this.props.module.moduleFetched.data.name} */}
                 </Link>
               </CardHeader>
               <CardBody>
@@ -170,8 +170,8 @@ class GroupsView extends Component {
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {/* {singleGroupData.name} */}
-                    {this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.name : ""}
+                    {/* {singleModuleData.name} */}
+                    {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.name : ""}
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -181,16 +181,16 @@ class GroupsView extends Component {
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {/* {singleGroupData.description} */}
-                    {this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.description : ""}
+                    {/* {singleModuleData.description} */}
+                    {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.description : ""}
                   </Col>
                 </FormGroup>
                 <br />
                 {/* <h5>
-                  <FormattedMessage id="Group Permissions" defaultMessage="Group Permissions" />: &nbsp;
+                  <FormattedMessage id="Module Permissions" defaultMessage="Module Permissions" />: &nbsp;
                     <div style={this.state.hideField}>
-                    {this.props.groupData.groupFetched ? initialPermissionData = this.props.groupData.groupFetched.data.permissions : ""}
-                    {this.props.groupData.groupFetched ? permData = this.props.groupData.groupFetched.data.permissions : ""}
+                    {this.props.moduleData.moduleFetched ? initialPermissionData = this.props.moduleData.moduleFetched.data.permissions : ""}
+                    {this.props.moduleData.moduleFetched ? permData = this.props.moduleData.moduleFetched.data.permissions : ""}
                   </div>
                   {initialPermissionData.length > 0 ? initialPermissionData.length : "None"}</h5>
 
@@ -236,11 +236,11 @@ class GroupsView extends Component {
 
                 </Table> */}
 
-                <GroupTable
+                <ModuleTable
                   hideField={this.state.hideField}
                   changePageItem={this.changePageItem}
                   handlePageChange={this.handlePageChange}
-                  initialPermissionData={this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.permissions : []}
+                  initialPermissionData={this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.permissions : []}
                   itemsPerPage={this.state.itemsPerPage}
                   activePage={this.state.activePage} />
 
@@ -261,15 +261,15 @@ class GroupsView extends Component {
 const mapStateToProps = (state) => {
   console.log('State is ', state)
   return {
-    groupData: state.group
+    moduleData: state.module
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    fetchGroup
+    fetchModule
   }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupsView);
-// export default GroupsView;
+export default connect(mapStateToProps, mapDispatchToProps)(ModulesView);
+// export default ModulesView;

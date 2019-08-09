@@ -1,4 +1,4 @@
-import { GROUP_FETCHED, GROUP_FETCH_ERROR, GROUPS_FETCHED, GROUPS_FETCH_ERROR, GROUP_CREATED, GROUP_CREATE_ERROR, GROUP_DELETED, GROUP_DELETE_ERROR, GROUP_UPDATED, GROUP_UPDATE_ERROR } from '../actions/action_group';
+import { GROUP_FETCHED, GROUP_FETCH_ERROR, GROUPS_FETCHED, GROUPS_FETCH_ERROR, GROUP_CREATED, GROUP_CREATE_ERROR, GROUP_DELETED, GROUP_DELETE_ERROR, GROUP_UPDATED, GROUP_UPDATE_ERROR, GROUP_SAVED } from '../actions/action_group';
 
 const group = (state = {}, action) => {
   switch (action.type) {
@@ -22,6 +22,8 @@ const group = (state = {}, action) => {
       return { ...state, groupUpdated: action.payload }
     case GROUP_UPDATE_ERROR:
       return { ...state, groupUpdateError: action.payload }
+    case GROUP_SAVED:
+      return { ...state, groupSaved: action.payload }
     default:
       return state
   }

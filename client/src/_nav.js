@@ -1,5 +1,6 @@
 import { FormattedMessage, } from 'react-intl';
 import React from 'react';
+// import TodoData from './_navData';
 
 export default {
   items: [
@@ -28,30 +29,47 @@ export default {
     //   icon: "icon-user"
     // },
     {
+      name: <FormattedMessage id="Apps" defaultMessage="Apps" />,
+      url: "/apps",
+      icon: "fa fa-navicon"
+    },
+    {
       name: <FormattedMessage id="Staffs" defaultMessage="Staffs" />,
       url: "/staffs",
       icon: "icon-user"
     },
+    // {
+    //   name: <FormattedMessage id="Groups" defaultMessage="Groups" />,
+    //   url: "/groups",
+    //   icon: "icon-people"
+    // },
+    // {
+    //   name: <FormattedMessage id="Permissions" defaultMessage="Permissions" />,
+    //   url: "/permissions",
+    //   icon: "icon-wrench"
+    // },
+    // {
+    //   name: <FormattedMessage id="ToDos" defaultMessage="To-Dos" />,
+    //   url: "/todos",
+    //   icon: "fa fa-navicon",
+    //   badge: {
+    //     variant: "danger",
+    //     text: ""
+    //   }
+    // },
     {
-      name: <FormattedMessage id="Groups" defaultMessage="Groups" />,
-      url: "/groups",
-      icon: "icon-people"
-    },
-    {
-      name: <FormattedMessage id="Permissions" defaultMessage="Permissions" />,
-      url: "/permissions",
-      icon: "icon-wrench"
-    },
-    {
-      name: <FormattedMessage id="ToDos" defaultMessage="To-Dos" />,
-      url: "/todos",
-      icon: "icon-phone"
+      name: <FormattedMessage id="Audit" defaultMessage="Audit" />,
+      url: "/audit",
+      icon: "icon-folder"
     },
     {
       name: <FormattedMessage id="Settings" defaultMessage="Settings" />,
       url: "/settings",
       icon: "icon-wrench"
     },
+
+
+
     // {
     //   title: true,
     //   name: "Components",
@@ -70,11 +88,11 @@ export default {
     //       url: "/base/breadcrumbs",
     //       icon: "icon-puzzle"
     //     },
-    // {
-    //   name: "Cards",
-    //   url: "/base/cards",
-    //   icon: "icon-puzzle"
-    // },
+    //     {
+    //       name: "Cards",
+    //       url: "/base/cards",
+    //       icon: "icon-puzzle"
+    //     },
     //     {
     //       name: "Carousels",
     //       url: "/base/carousels",
@@ -90,21 +108,21 @@ export default {
     //       url: "/base/dropdowns",
     //       icon: "icon-puzzle"
     //     },
-    // {
-    //   name: "Forms",
-    //   url: "/base/forms",
-    //   icon: "icon-puzzle"
-    // },
-    // {
-    //   name: "Jumbotrons",
-    //   url: "/base/jumbotrons",
-    //   icon: "icon-puzzle"
-    // },
-    // {
-    //   name: "List groups",
-    //   url: "/base/list-groups",
-    //   icon: "icon-puzzle"
-    // },
+    //     {
+    //       name: "Forms",
+    //       url: "/base/forms",
+    //       icon: "icon-puzzle"
+    //     },
+    //     {
+    //       name: "Jumbotrons",
+    //       url: "/base/jumbotrons",
+    //       icon: "icon-puzzle"
+    //     },
+    //     {
+    //       name: "List groups",
+    //       url: "/base/list-groups",
+    //       icon: "icon-puzzle"
+    //     },
     //     {
     //       name: "Navs",
     //       url: "/base/navs",
@@ -283,13 +301,15 @@ export default {
     //       icon: "icon-star"
     //     }
     //   ]
-    // }
+    // },
     // {
     //   name: 'Disabled',
     //   url: '/dashboard',
     //   icon: 'icon-ban',
     //   attributes: { disabled: true },
     // },
+
+
     // {
     //   name: 'Download CoreUI',
     //   url: 'https://coreui.io/react/',
@@ -307,3 +327,16 @@ export default {
     // },
   ]
 };
+
+// const mapStateToProps = (state) => {
+//   console.log('State is ', state)
+//   return {
+//   }
+// }
+
+// const mapDispatchToProps = (dispatch) => {
+//   return bindActionCreators({
+//   }, dispatch)
+// }
+
+// export default connect(mapStateToProps, mapDispatchToProps)(NavItems);

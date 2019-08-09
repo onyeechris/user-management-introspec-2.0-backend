@@ -2,13 +2,15 @@ import axios from 'axios';
 
 export const errorSwitch = (error) => {
     console.log(error);
-    console.log(error.response.data.status);
+    console.log(error.response);
+    // console.log(error.response.data.status);
     // let errorMessage = error.toString();
     // let errorStatus = errorMessage.replace(/^\D+/g, '');
     // errorStatus = parseInt(errorStatus);
 
     // switch (errorStatus) {
-    switch (error.response.data.status) {
+    switch (error) {
+        // switch (error.response.data.status) {
         case 400:
             return "Error, bad request";
         case 401:
@@ -39,6 +41,7 @@ export const interceptor = () => {
         }
         if (token != null) {
             config.headers.Authorization = token ? `${token}` : '';
+            config.headers.Module = "ATM";
             return config;
         }
     });

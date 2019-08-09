@@ -7,7 +7,10 @@ import {
     CardGroup,
     Col,
     Container,
-    // Input,
+    Input,
+    FormGroup,
+    Label,
+    Form,
     // InputGroup,
     // InputGroupAddon,
     // InputGroupText,
@@ -20,6 +23,7 @@ import CryptoJS from "crypto-js";
 
 import { connect } from 'react-redux';
 import { fetchUser } from '../../../actions/action_login';
+import { setLocale } from '../../../actions/action_locale';
 import { bindActionCreators } from 'redux';
 
 import { FormattedMessage } from "react-intl";
@@ -29,20 +33,34 @@ class LoginApp extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userLogin: {
-                username: "",
-                password: ""
-            },
-            baseUrl: 'http://localhost:9100/api/',
+            // userLogin: {
+            //     username: "",
+            //     password: ""
+            // },
+            // baseUrl: 'http://localhost:9100/api/',
             redirectToReferrer: false,
             redirectToUrl: false,
-            loginError: ""
+            loginError: "",
+            value: 'en'
         };
         this.login = this.login.bind(this);
         this.redirectUser = this.redirectUser.bind(this);
         this.onChange = this.onChange.bind(this);
     }
 
+    storedLanguage = ''
+
+    componentWillMount() {
+        this.storedLanguage = localStorage.se8lementLang;
+        this.setState({ value: localStorage.se8lementLang });
+    }
+
+    change(event) {
+        this.setState({
+            value: event.target.value
+        })
+        this.props.setLocale(event.target.value);
+    }
 
     login = (loginUserData) => {
 
@@ -126,9 +144,16 @@ class LoginApp extends Component {
             'textDecoration': 'none'
         };
 
-        // const errorStyle = {
-        //     'color': 'red'
-        // };
+        const footerStyle = {
+            'position': 'fixed',
+            'bottom': '15px',
+            'right': '15px',
+            'display': 'inline-block',
+        }
+
+        const errorStyle = {
+            'color': 'red'
+        };
 
         if (this.state.redirectToReferrer) {
             // return <Redirect to={"/appredirect"} />;
@@ -160,7 +185,7 @@ class LoginApp extends Component {
         return (
             <div className="app flex-row align-items-center">
                 <div style={topMenu}>
-                    Introspec | <a href="/home" className="menuLink" onClick={this.menuHome}> <FormattedMessage id="User Sign In" defaultMessage="User Sign In" /></a>
+                    <FormattedMessage id="app.title" defaultMessage="Introspec User Management" />
                 </div>
                 <Container>
                     <Row className="justify-content-center">
@@ -170,6 +195,7 @@ class LoginApp extends Component {
                                     <CardBody>
                                         <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
                                         <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
+                                        <p style={errorStyle}>{this.props.profile.userFetchError}</p>
                                         {/* <form action="" method="post">
                                             <InputGroup className="mb-3">
                                                 <InputGroupAddon addonType="prepend">
@@ -222,7 +248,11 @@ class LoginApp extends Component {
                                                 </Col>
                                             </Row>
                                         </form> */}
-                                        <LoginForm onSubmit={this.login} externalApp="true" returnToApp={this.redirectUser} />
+                                        <LoginForm onSubmit={this.login} externalApp="true" returnToApp={this.redirectUser}
+                                            ClearText={<FormattedMessage id="Clear Values" defaultMessage="Clear Values" />}
+                                            LoginText={<FormattedMessage id="Login" defaultMessage="Login" />}
+                                            BackText={<FormattedMessage id="Back" defaultMessage="Back" />}
+                                        />
                                     </CardBody>
                                 </Card>
                                 <Card
@@ -245,6 +275,19 @@ class LoginApp extends Component {
                         </Col>
                     </Row>
                 </Container>
+                <div style={footerStyle}>
+                    <Form inline>
+                        <FormGroup>
+                            <Label htmlFor="language">Language: &nbsp; &nbsp;</Label>
+                            <Input type="select" className="form-control" name="select" id="language" onChange={this.change.bind(this)} value={this.state.value}>
+                                <option value="en" >English</option>
+                                <option value="fr" >Français</option>
+                                <option value="pt" >Português</option>
+                                <option value="es" >Español</option>
+                            </Input>
+                        </FormGroup>
+                    </Form>
+                </div>
             </div >
         );
     }
@@ -254,12 +297,17 @@ class LoginApp extends Component {
 const mapStateToProps = state => {
     console.log(state);
     return {
+        lang: state.locale.lang,
         profile: state.profile
     };
 }
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators({ fetchUser }, dispatch)
+        actions: bindActionCreators({
+            fetchUser,
+            setLocale
+        }, dispatch
+        )
     }
 }
 

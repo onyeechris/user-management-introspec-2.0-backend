@@ -5,7 +5,6 @@ import { Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-
 import {
   AppAside,
   AppBreadcrumb,
@@ -34,7 +33,8 @@ class DefaultLayout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      redirectToReferrer: false
+      redirectToReferrer: false,
+      todoData: ''
     };
     this.signOut = this.signOut.bind(this);
 
@@ -43,17 +43,13 @@ class DefaultLayout extends Component {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   componentDidMount() {
-
     if (sessionStorage.getItem("userData")) {
       console.log("User Logged In");
-
     } else if (sessionStorage.getItem("extUserData")) {
       console.log("External Application : User Logged In");
     } else {
       this.setState({ redirectToReferrer: true });
     }
-
-
   }
 
   signOut(e) {
@@ -143,10 +139,10 @@ class DefaultLayout extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('State is ', state);
+  // console.log('State is ', state);
   return {
     groupData: state.group.groupFetched ? state.group.groupFetched.data : '',
-    lang: state.locale.lang
+    lang: state.locale.lang,
   }
 }
 

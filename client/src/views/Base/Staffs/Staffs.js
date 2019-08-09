@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import { Form, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
+import {
+  // Form, FormGroup, Input, Label, 
+  Alert
+} from 'reactstrap';
 // import DatePicker from "react-datepicker";
 // import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/material_green.css'
@@ -11,14 +14,16 @@ import axios from 'axios';
 // var DataTable = require('react-data-components').DataTable;
 import Pagination2 from "react-js-pagination";
 
-import DatePicker from 'react-datepicker';
+// import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchStaffs, fetchStaff, deleteStaff, createStaff, updateStaff } from '../../../actions/action_staff';
-
+import { fetchGroups } from '../../../actions/action_group';
 import { FormattedMessage } from "react-intl";
+import CreateStaffForm from './CreateStaffForm';
+import UpdateStaffForm from './UpdateStaffForm';
 
 let loggedInUserRole = "";
 class Staffs extends Component {
@@ -57,8 +62,9 @@ class Staffs extends Component {
       newDate: '',
       formError: "",
       userRole: "",
+      // Change this back to 'none' for role access security
       showAction: {
-        "display": "none"
+        "display": "block"
       },
       startDate: '',
       currentError: ''
@@ -82,13 +88,9 @@ class Staffs extends Component {
   componentDidMount() {
 
     if (sessionStorage.getItem("userData")) {
-      console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      console.log(this.props);
-      console.log(this.state);
-
       let type = '?size=' + this.state.itemsPerPage;
-
       this.props.fetchStaffs(type).then(result => {
+        console.log(result);
         this.setState({ staffData: result.data.payload });
         this.setState({ staffTableData: result.data.meta });
         this.setState({ itemsPerPage: result.data.meta.size });
@@ -98,28 +100,19 @@ class Staffs extends Component {
       }
       )
 
-
-
-      // axios.get(this.state.baseUrl + staffUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
-      //   .then((response) => {
-      //     this.setState({ staffData: response.data.payload });
-      //     this.setState({ staffTableData: response.data.meta });
-      //     this.setState({ itemsPerPage: response.data.meta.size });
-      //   }).catch(err => {
-      //   })
-
-      let groupUrl = 'groups';
-      axios.get(this.state.baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+      // let groupUrl = 'groups';
+      // axios.get(this.state.baseUrl + groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+      this.props.fetchGroups()
         .then((response) => {
           this.setState({ groupData: response.data.payload });
         }).then(err => {
         })
-
     } else {
       this.setState({ redirectToReferrer: true });
     }
 
     loggedInUserRole = sessionStorage.getItem("userRole");
+    console.log(loggedInUserRole);
     if (loggedInUserRole.toLowerCase().includes("maker")) {
       let makeVisible = {
         "display": "block"
@@ -157,6 +150,9 @@ class Staffs extends Component {
   toggle() {
     this.setState({ formError: "" });
     this.setState({ startDate: "" });
+    // this.setState({ newCreatedStaff: {} });
+    // this.setState({ newStaffData: {} });
+    // this.setState({ newStaffInfo: {} });
     this.setState({
       modal: !this.state.modal,
     });
@@ -164,7 +160,7 @@ class Staffs extends Component {
 
   toggleEdit() {
     this.setState({ formError: "" });
-    this.setState({ startDate: "" });
+    this.setState({ startDate: this.state.singleStaffData.hire_date });
     this.setState({ greyedOut: true });
     this.setState({
       editModal: !this.state.editModal,
@@ -216,51 +212,38 @@ class Staffs extends Component {
         this.setState({ formError: error });
       }
       )
-
-      // let staffUrl = 'staffs';
-      // axios.post(this.state.baseUrl + staffUrl,
-      //   newStaffData,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     this.setState({ newCreatedStaff: newStaffData });
-      //     this.fetchStaffs();
-      //     this.setState({ visible: true });
-      //     this.toggle();
-      //   })
-      //   .catch(err => {
-      //     console.log("Could not create record: " + err);
-      //     let res = JSON.parse(JSON.stringify(err.response.data));
-      //     console.log("Server response status: " + res.status);
-      //     console.log("Server response message: " + res.message);
-
-      //     let errMessage = '';
-      //     switch (res.status) {
-      //       case 401:
-      //         errMessage = "Unauthorized, login required!";
-      //         break;
-      //       case 403:
-      //         errMessage = "You don't have the permission to access this function!";
-      //         break;
-      //       case 404:
-      //         errMessage = "Sorry Page Not Found!";
-      //         break;
-      //       case 500:
-      //         errMessage = "Something went wrong, please try again.";
-      //         break;
-      //       default:
-      //         errMessage = "Sorry there was an error";
-      //     }
-      //     this.setState({ formError: errMessage });
-      //     //console.log(err);
-      //   })
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
     }
+  }
+
+  createNewStaff = (newStaffData) => {
+    console.log(newStaffData);
+    // let hireDate = newStaffData.hire_date;
+    // this.setState({ startDate: hireDate });
+    // let formatted_date = (("0" + (hireDate.getMonth() + 1)).slice(-2)) + "/" + ("0" + hireDate.getDate()).slice(-2) + "/" + hireDate.getFullYear()
+
+    // var newStaffInfo = JSON.parse(JSON.stringify(this.state.newStaffData));
+    // newStaffInfo.hire_date = formatted_date;
+    // this.setState({ newStaffData: newStaffInfo });
+    // console.log(newStaffInfo);
+
+    // newStaffData.hire_date = formatted_date;
+    newStaffData.hire_date = this.state.newStaffData.hire_date;
+    newStaffData.maker_checker = "MAKER";
+    // console.log(newStaffData.hire_date);
+    this.setState({ newCreatedStaff: newStaffData });
+
+    this.props.createStaff(newStaffData).then(result => {
+      this.setState({ visible: true });
+      this.toggle();
+    }, error => {
+      console.log(error);
+      this.setState({ formError: error });
+    }
+    )
+
   }
 
   findStaff(staffId) {
@@ -378,6 +361,18 @@ class Staffs extends Component {
     }
   }
 
+  updateNewStaff(staffUpdateData) {
+    console.log(staffUpdateData);
+    this.setState({ newCreatedStaff: this.state.singleStaffData });
+    this.props.updateStaff(staffUpdateData).then(result => {
+      this.setState({ visibleUpdate: true });
+      this.toggleEdit();
+    }, error => {
+      this.setState({ formError: error });
+    }
+    )
+  }
+
   deleteStaff(staffId) {
     if (staffId > 0) {
       this.props.deleteStaff(staffId).then(result => {
@@ -483,9 +478,11 @@ class Staffs extends Component {
     reloadTable();
   }
 
-
-
-
+  translate = (pageString) => {
+    return (
+      <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+  }
 
 
   render() {
@@ -512,7 +509,7 @@ class Staffs extends Component {
     const staffGroup = this.state.groupData;
     const singleStaff = this.state.singleStaffData;
 
-    console.log(this.props);
+    // console.log(this.props);
 
     return (
 
@@ -529,10 +526,10 @@ class Staffs extends Component {
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.currentError}</p>
                 <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  User <strong>{this.state.newCreatedStaff.first_name}</strong> has been created and submitted for activation.
+                  {this.translate("User")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been created and submitted for activation")}.
                 </Alert>
                 <Alert color="warning" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  Update request for user <strong>{this.state.newCreatedStaff.first_name}</strong> has been submitted for authorization.
+                  {this.translate("Update request for user")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been submitted for authorization")}.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
@@ -554,8 +551,10 @@ class Staffs extends Component {
                         <td>{item.maker_checker}</td>
                         <td>{showGroup(item.group_id)}</td>
                         <td style={showAction}>
-                          <Button size="sm" color="primary" onClick={e => this.findStaff(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                          <Button size="sm" color="danger" onClick={e => this.findStaffDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>
+                          <Button size="sm" color="primary" onClick={e => this.findStaff(item.id)}><i className="fa fa-dot-circle-o"></i>
+                            {' '}{this.translate("Update")}</Button>{' '}
+                          <Button size="sm" color="danger" onClick={e => this.findStaffDelete(item.id)}><i className="fa fa-ban"></i>
+                            {' '}{this.translate("Delete")}</Button>
                         </td>
                       </tr>
                     )
@@ -591,15 +590,15 @@ class Staffs extends Component {
 
         {/* Create Staff Modal */}
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Create Staff</ModalHeader>
+          <ModalHeader toggle={this.toggle}><FormattedMessage id="Create User" defaultMessage="Create User" /></ModalHeader>
           <ModalBody>
             <Card>
               <CardHeader>
-                <strong></strong> Please fill the form below
+                <strong></strong> <FormattedMessage id="Please fill the form below" defaultMessage="Please fill the form below" />
               </CardHeader>
               <CardBody>
-                <Form action="" method="post" className="form-horizontal">
-                  <p style={{ color: 'red' }}>{this.state.formError}</p>
+                <p style={{ color: 'red' }}>{this.state.formError}</p>
+                {/* <Form action="" method="post" className="form-horizontal">
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="firstName">First Name <span style={{ color: 'red' }}>*</span></Label>
@@ -664,10 +663,6 @@ class Staffs extends Component {
                         // dateFormat="LL"
                         dateFormat="MM/dd/yyyy"
                       />
-
-                      {/* <Input type="text" id="hire-date" name="hire_date" placeholder="Date MM/dd/yyyy"
-                        onChange={this.updateValue.bind(this, 'hire_date')}
-                      /> */}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -708,7 +703,8 @@ class Staffs extends Component {
                     <Button color="primary" onClick={this.createStaff}>Submit</Button>{' '}
                     <Button color="secondary" onClick={this.toggle}>Cancel</Button>
                   </ModalFooter>
-                </Form>
+                </Form> */}
+                <CreateStaffForm onSubmit={this.createNewStaff} staffGroup={staffGroup} toggle={this.toggle} currentDate={this.state.startDate} handleChange={this.handleChange} />
               </CardBody>
             </Card>
           </ModalBody>
@@ -726,7 +722,7 @@ class Staffs extends Component {
                 <strong></strong> Staff details below
               </CardHeader>
               <CardBody>
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+                {/* <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
                   <Input type="hidden" name="id" value={singleStaff.id} onChange={this.readUpdateValue.bind(this, 'id')} />
                   <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <FormGroup row>
@@ -759,16 +755,6 @@ class Staffs extends Component {
                       />
                     </Col>
                   </FormGroup>
-                  {/* <FormGroup row>
-                    <Col md="3">
-                      <Label htmlFor="password">Password <span style={{ color: 'red' }}>*</span></Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input type="password" id="password" name="password" placeholder="Your Password" autoComplete="email"
-                        onChange={this.readUpdateValue.bind(this, 'password')} value={singleStaff.password}
-                      />
-                    </Col>
-                  </FormGroup> */}
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="phone">Phone</Label>
@@ -788,13 +774,9 @@ class Staffs extends Component {
                         selected={this.state.startDate}
                         onChange={this.handleDateChange}
                         className="form-control" placeholderText="Select Date"
-                        // dateFormat="LL"
                         dateFormat="MM/dd/yyyy"
                         value={singleStaff.hire_date}
                       />
-                      {/* <Input type="text" id="date-hire" name="hire_date" placeholder="Date MM/dd/yyyy"
-                        onChange={this.readUpdateValue.bind(this, 'hire_date')} value={singleStaff.hire_date}
-                      /> */}
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -837,7 +819,8 @@ class Staffs extends Component {
                     <Button color="primary" onClick={this.updateStaff} disabled={this.state.greyedOut ? true : false}>Submit</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                   </ModalFooter>
-                </Form>
+                </Form> */}
+                <UpdateStaffForm onSubmit={this.updateNewStaff} singleStaff={singleStaff} staffGroup={staffGroup} toggle={this.toggleEdit} currentDate={this.state.startDate} handleChange={this.handleChange} />
               </CardBody>
             </Card>
           </ModalBody>
@@ -872,9 +855,10 @@ class Staffs extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('State is ', state)
+  // console.log('State is ', state)
   return {
     staffData: state.staff,
+    groupData: state.group
   }
 }
 
@@ -884,7 +868,8 @@ const mapDispatchToProps = (dispatch) => {
     fetchStaff,
     deleteStaff,
     createStaff,
-    updateStaff
+    updateStaff,
+    fetchGroups
   }, dispatch)
 }
 
