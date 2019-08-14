@@ -1,6 +1,7 @@
 package com.activedge.usermgt.repository;
 
 import com.activedge.usermgt.model.Group;
+import com.activedge.usermgt.model.GroupPK;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GroupRepository extends JpaRepository<Group, Long> {
+public interface GroupRepository extends JpaRepository<Group, GroupPK> {
 
     @Query(value = "select distinct groups from Group groups left join fetch groups.permissions",
             countQuery = "select count(distinct groups) from Group groups")
@@ -22,6 +23,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findAllWithEagerRelationships();
 
     @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")
-    Optional<Group> findOneWithEagerRelationships(@Param("id") Long id);
+    Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
 
 }

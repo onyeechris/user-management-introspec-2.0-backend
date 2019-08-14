@@ -60,9 +60,9 @@ public class StaffDTO implements Serializable {
     @JsonFormat(pattern = "MM/dd/yyyy")
     private LocalDate hire_date;
 
-    @ApiModelProperty(notes = "The staff permission group id", required = true)
-    @NotNull(message = "Staff access group is required.")
-    private Long group_id;
+//    @ApiModelProperty(notes = "The staff permission group id", required = true)
+//    @NotNull(message = "Staff access group is required.")
+//    private Long group_id;
 
     @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
@@ -135,13 +135,13 @@ public class StaffDTO implements Serializable {
         this.hire_date = hire_date;
     }
 
-    public Long getGroup_id() {
-        return group_id;
-    }
-
-    public void setGroup_id(Long group_id) {
-        this.group_id = group_id;
-    }
+//    public Long getGroup_id() {
+//        return group_id;
+//    }
+//
+//    public void setGroup_id(Long group_id) {
+//        this.group_id = group_id;
+//    }
 
     public String getRedis_key() {
         return redis_key;
@@ -182,7 +182,7 @@ public class StaffDTO implements Serializable {
             ", email='" + getEmail() + "'" +
             ", makerChecker='" + getMaker_checker() + "'" +
             ", hireDate='" + getHire_date() + "'" +
-            ", group=" + getGroup_id() +
+//            ", group=" + getGroup_id() +
             "}";
     }
 }

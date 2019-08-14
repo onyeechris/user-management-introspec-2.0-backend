@@ -2,6 +2,7 @@ package com.activedge.usermgt.service;
 
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
@@ -45,12 +46,12 @@ public interface GroupService {
      * @param id the id of the entity
      * @return the entity
      */
-    Optional<GroupDTO> findOne(Long id);
+    Optional<GroupDTO> findOne(GroupPK id);
 
     /**
      * Delete the "id" groups.
      *
      * @param id the id of the entity
      */
-    void delete(Long id);
+    void delete(GroupPK id);
 }

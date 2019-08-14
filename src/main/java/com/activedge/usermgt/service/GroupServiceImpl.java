@@ -2,6 +2,7 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
+import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.model.dto.PermissionDTO;
@@ -163,14 +164,14 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<GroupDTO> findOne(Long id) {
+    public Optional<GroupDTO> findOne(GroupPK id) {
         log.debug("Request to get Group : {}", id);
         return groupRepository.findOneWithEagerRelationships(id)
             .map(groupMapper::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Group> findById(Long id) {
+    public Optional<Group> findById(GroupPK id) {
         return groupRepository.findOneWithEagerRelationships(id);
     }
 
@@ -180,7 +181,7 @@ public class GroupServiceImpl implements GroupService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(Long id) {
+    public void delete(GroupPK id) {
         log.debug("Request to delete Group : {}", id);
         groupRepository.deleteById(id);
     }

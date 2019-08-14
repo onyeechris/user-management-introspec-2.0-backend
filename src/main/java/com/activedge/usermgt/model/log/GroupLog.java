@@ -24,8 +24,18 @@ public class GroupLog {
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
+//    @ManyToOne
+//    @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK_group_history_log"))
+
     @ManyToOne
-    @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK_group_history_log"))
+    @JoinColumns({
+            @JoinColumn(
+                    name = "group_id",
+                    referencedColumnName = "id", foreignKey = @ForeignKey(name = "FK_group_history_log")),
+            @JoinColumn(
+                    name = "module_id",
+                    referencedColumnName = "module", foreignKey = @ForeignKey(name = "FK_group_module_history_log")),
+    })
     private Group group;
 
     @Type(type = "text")

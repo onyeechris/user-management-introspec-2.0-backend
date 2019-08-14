@@ -1,5 +1,6 @@
 package com.activedge.usermgt.model.dto;
 
+import com.activedge.usermgt.model.GroupPK;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,7 +20,7 @@ import java.util.Objects;
 public class GroupDTO implements Serializable {
 
     @ApiModelProperty(notes = "The database generated group ID")
-    private Long id;
+    private GroupPK id;
 
     @ApiModelProperty(notes = "The group name with minimum of 3 characters", required = true)
     @NotNull
@@ -36,11 +37,11 @@ public class GroupDTO implements Serializable {
     @ApiModelProperty(notes = "The redis reference number if available")
     private String redis_key;
 
-    public Long getId() {
+    public GroupPK getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(GroupPK id) {
         this.id = id;
     }
 

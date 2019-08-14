@@ -69,28 +69,30 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Transient
     private String redisKey;
 
-//    @ManyToMany
-//    @JoinTable(name = "staff_authority", joinColumns = {
-//            @JoinColumn(name = "staff_id", referencedColumnName = "id") }, inverseJoinColumns = {
-//                    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
-//    @BatchSize(size = 10)
-//    private Set<Authority> authorities = new HashSet<>();
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
             @JoinColumn(name = "staff_id", referencedColumnName = "id") },
             inverseJoinColumns = {
-//                    @JoinColumns({
-                            @JoinColumn(name = "module_id", referencedColumnName = "module"),
-                            @JoinColumn(name = "authority_id", referencedColumnName = "code")
-//                    })
+                    @JoinColumn(name = "module_id", referencedColumnName = "module"),
+                    @JoinColumn(name = "authority_id", referencedColumnName = "code")
                 }
             )
     @BatchSize(size = 10)
     private Set<Authority> authorities = new HashSet<>();
 
-    @ManyToOne
-    // @JsonIgnoreProperties("staff")
-    private Group group;
+//    @ManyToOne
+//    // @JsonIgnoreProperties("staff")
+//    private Group group;
+    @ManyToMany
+    @JoinTable(name = "staff_group", joinColumns = {
+            @JoinColumn(name = "staff_id", referencedColumnName = "id") },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "module", referencedColumnName = "module"),
+                    @JoinColumn(name = "group_id", referencedColumnName = "id")
+            }
+    )
+    @BatchSize(size = 10)
+    private Set<Group> groups = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -200,18 +202,26 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.hireDate = hireDate;
     }
 
-    public Group getGroup() {
-        return group;
+    public Set<Group> getGroups() {
+        return groups;
     }
 
-    public Staff group(Group group) {
-        this.group = group;
-        return this;
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
+    //    public Group getGroup() {
+//        return groups;
+//    }
+//
+//    public Staff group(Group group) {
+//        this.groups = group;
+//        return this;
+//    }
+//
+//    public void setGroup(Group group) {
+//        this.group = group;
+//    }
 
     public Boolean isActivated() {
         return activated;
@@ -254,7 +264,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         return "Staff{" + "id=" + getId() + ", firstName='" + getFirstName() + "'" + ", lastName='" + getLastName()
                 + "'" + ", phone='" + getPhone() + "'" + ", email='" + getEmail() + "'" + ", password='" + getPassword()
                 + "'" + ", makerChecker='" + getMakerChecker() + "'" + ", Authorities='" + getAuthorities() + "'"
-                + ", Group='" + getGroup() + "'" + ", RedisKey='" + getRedisKey() + "'" + ", hireDate='" + getHireDate()
+                + "'" + ", RedisKey='" + getRedisKey() + "'" + ", hireDate='" + getHireDate()
                 + "'" + "}";
     }
 

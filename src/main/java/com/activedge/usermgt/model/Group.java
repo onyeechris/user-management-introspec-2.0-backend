@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 
 import com.activedge.usermgt.model.event.GroupEntityListener;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,12 +19,17 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     private static final long serialVersionUID = 1L;
 
+    /*
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
 //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "tableGenerator")
 //    @TableGenerator(name = "tableGenerator", initialValue = 3)
     private Long id;
+    */
+
+    @EmbeddedId
+    private GroupPK id;
 
     @NotNull
     @Size(min = 3)
@@ -34,26 +40,33 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "group")
-    private Set<Staff> staff = new HashSet<>();
+//    @OneToMany(mappedBy = "group")
+//    private Set<Staff> staff = new HashSet<>();
 
-    @ManyToOne
-    private Module module;
+    @ManyToMany
+    @JoinTable(name = "staff_group",
+            joinColumns = {
+                @JoinColumn(name = "group_id", referencedColumnName = "id"),
+                @JoinColumn(name = "module", referencedColumnName = "module")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "staff_id", referencedColumnName = "id") })
+    @BatchSize(size = 10)
+    private Set<Staff> staffs = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "groups_permission",
-            joinColumns = @JoinColumn(name = "groups_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "permissions_id", referencedColumnName = "id"))
+            joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id"), @JoinColumn(name = "module", referencedColumnName = "module")},
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
     private Set<Permission> permissions = new HashSet<>();
 
     @Transient
     private String redisKey;
 
-    public Long getId() {
+    public GroupPK getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(GroupPK id) {
         this.id = id;
     }
 
@@ -91,29 +104,29 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
         this.description = description;
     }
 
-    public Set<Staff> getStaff() {
-        return staff;
+    public Set<Staff> getStaffs() {
+        return staffs;
     }
 
     public Group staff(Set<Staff> staff) {
-        this.staff = staff;
+        this.staffs = staff;
         return this;
     }
 
     public Group addStaff(Staff staff) {
-        this.staff.add(staff);
+        this.staffs.add(staff);
 //        staff.setGroups(this);
         return this;
     }
 
     public Group removeStaff(Staff staff) {
-        this.staff.remove(staff);
+        this.staffs.remove(staff);
 //        staff.setGroups(null);
         return this;
     }
 
-    public void setStaff(Set<Staff> staff) {
-        this.staff = staff;
+    public void setStaffs(Set<Staff> staff) {
+        this.staffs = staff;
     }
 
     public Set<Permission> getPermissions() {
@@ -143,31 +156,30 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Group)) return false;
+        if (!super.equals(o)) return false;
         Group group = (Group) o;
-        if (group.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), group.getId());
+        return Objects.equals(id, group.id) &&
+                Objects.equals(name, group.name) &&
+                Objects.equals(description, group.description) &&
+                Objects.equals(staffs, group.staffs) &&
+                Objects.equals(permissions, group.permissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hash(super.hashCode(), id, name, description, staffs, permissions);
     }
 
     @Override
     public String toString() {
         return "Group{" +
-                "id=" + getId() +
-                ", name='" + getName() + "'" +
-                ", description='" + getDescription() + "'" +
-                ", permissions='" + getPermissions() + "'" +
-                "}";
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", staffs=" + getStaffs() +
+                ", permissions=" + getPermissions() +
+                '}';
     }
 }

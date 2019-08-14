@@ -4,6 +4,7 @@ import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
@@ -136,7 +137,7 @@ public class GroupController {
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<GroupDTO> getGroups(@RequestParam(value = "app", defaultValue="all") String app, @PathVariable Long id) {
         log.debug("REST request to get Group :{}, App:{}", id, app);
-        Optional<GroupDTO> groupsDTO = groupService.findOne(id);
+        Optional<GroupDTO> groupsDTO = groupService.findOne(new GroupPK());
 
         if (!groupsDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
@@ -157,7 +158,7 @@ public class GroupController {
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteGroups(@PathVariable Long id) {
         log.debug("REST request to delete GROUP : {}", id);
-        groupService.delete(id);
+        groupService.delete(new GroupPK());
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

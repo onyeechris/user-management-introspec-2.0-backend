@@ -36,7 +36,7 @@ spring:
       password: passadmin
       hikari:
           auto-commit: false
-#      initialization-mode: always
+#      initialization-mode: never
       data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
 
   jackson:

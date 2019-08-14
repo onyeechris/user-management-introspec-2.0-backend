@@ -11,7 +11,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses = {GroupMapper.class})
 public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
-    @Mapping(source = "group.id", target = "group_id")
+//    @Mapping(source = "group.id", target = "group_id")
     @Mapping(source = "firstName", target = "first_name")
     @Mapping(source = "lastName", target = "last_name")
     @Mapping(source = "hireDate", target = "hire_date")
@@ -19,7 +19,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "redisKey", target = "redis_key")
     StaffDTO toDto(Staff staff);
 
-    @Mapping(source = "group_id", target = "group")
+//    @Mapping(source = "group_id", target = "group")
     @Mapping(source = "first_name", target = "firstName")
     @Mapping(source = "last_name", target = "lastName")
     @Mapping(source = "hire_date", target = "hireDate")

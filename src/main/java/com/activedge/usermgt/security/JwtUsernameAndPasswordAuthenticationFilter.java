@@ -133,9 +133,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     public String generateToken(Authentication auth, HttpServletRequest request, Staff staff) {
         Long now = System.currentTimeMillis();
 
-        System.out.println("Staff permissions: --- " + staff.getGroup().getPermissions()
+        System.out.println("Staff permissions: --- " + staff.getGroups()
                 .stream()
-                .map(permission -> permission.getAction())
+                .map(permission -> permission.getName())//permission.getAction())
                 .collect(Collectors.joining(",")));
 
         String module = request.getHeader(jwtConfig.getModule());
@@ -150,9 +150,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList())) //.collect(Collectors.joining(",")
-                .claim("permissions", staff.getGroup().getPermissions()
+                .claim("permissions", staff.getGroups()//staff.getGroup.getPermissions()
                         .stream()
-                        .map(permission -> permission.getAction())
+                        .map(permission -> permission.getName())//permission.getAction())
                         .collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
@@ -182,8 +182,8 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         newUser.setAuthorities(authorities);
         // assign new user group
         Group group = new Group();
-        group.setId(0L);
-        newUser.setGroup(group);
+        group.setId(new GroupPK());
+        newUser.setGroups(null);
 
         staffRepository.save(newUser);
 

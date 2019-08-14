@@ -77,7 +77,7 @@ public class StaffServiceImpl implements StaffService {
                 s.setPhone(staff.getPhone() == null ? s.getPhone() : staff.getPhone());
                 s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
                 s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
-                s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
+//                s.setGroup(staff.getGroup() == null ? s.getGroup() : staff.getGroup());
                 s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
                 s.setMakerChecker(staff.getMakerChecker() == null ? s.getMakerChecker() : staff.getMakerChecker());
                 s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());

@@ -50,7 +50,7 @@ public class StaffSpy extends Spy implements RedisQueue {
                 this.staff.setPhone(staf.getPhone());
                 this.staff.setEmail(staf.getEmail());
                 this.staff.setPassword(staf.getPassword());
-                this.staff.setGroup(staf.getGroup());
+                this.staff.setGroups(staf.getGroups());
                 this.staff.setHireDate(staf.getHireDate());
                 this.staff.setMakerChecker(staf.getMakerChecker());
                 this.staff.setActivated(staf.isActivated());
