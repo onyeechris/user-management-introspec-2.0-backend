@@ -69,6 +69,9 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Transient
     private String redisKey;
 
+    @OneToMany(mappedBy = "staff")
+    Set<StaffModule> assignments;
+
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
             @JoinColumn(name = "staff_id", referencedColumnName = "id") },

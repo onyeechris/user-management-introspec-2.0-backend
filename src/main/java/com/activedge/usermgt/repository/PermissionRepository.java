@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-    Page<Permission> findAllByAuthority_Module_Code(Pageable pageable, String module);
+    Page<Permission> findAllByModule_Code(Pageable pageable, String module);
 
 }

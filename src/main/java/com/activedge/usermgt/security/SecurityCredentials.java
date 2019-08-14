@@ -76,6 +76,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth-service/groups/**").hasRole("MAKER")
                 .antMatchers("/auth-service/groups/**").hasAnyRole("CHECKER", "MAKER")
 
+//                .antMatchers(HttpMethod.GET, "/auth-service/staff").hasAnyRole("ADMIN", "AUDITOR", "DEV")
                 .antMatchers(HttpMethod.GET, "/auth-service/staff/**").hasAnyRole("CHECKER", "MAKER", "DEV")
                 .antMatchers(HttpMethod.POST, "/auth-service/staff/**").hasRole("MAKER")
                 .antMatchers("/auth-service/staff/**").hasAnyRole("CHECKER", "MAKER")

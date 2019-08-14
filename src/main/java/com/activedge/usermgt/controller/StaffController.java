@@ -3,12 +3,15 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.log.MakerItem;
+import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.LdapUserService;
+import com.activedge.usermgt.service.ModuleService;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -49,11 +53,13 @@ public class StaffController {
 
     private final StaffService staffService;
     private final LdapUserService ldapUserService;
+    private final ModuleRepository moduleRepository;
 
 
-    public StaffController(StaffService staffService, LdapUserService ldapUserService) {
+    public StaffController(StaffService staffService, LdapUserService ldapUserService, ModuleRepository moduleRepository) {
         this.staffService = staffService;
         this.ldapUserService = ldapUserService;
+        this.moduleRepository = moduleRepository;
     }
 
     /**
@@ -122,10 +128,18 @@ public class StaffController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllStaff(Pageable pageable) {
+    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
         log.debug("REST request to get a page of "+ENTITY_NAME);
 
-        Page<StaffDTO> page = staffService.findAll(pageable);
+        Page<StaffDTO> page = null;
+
+        Optional<Module> module = this.moduleRepository.findById(mdl);
+
+        if(!module.isPresent()) {
+//            page = staffService.findAllBy(module, pageable);
+        } else {
+            page = staffService.findAll(pageable);
+        }
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
@@ -167,4 +181,18 @@ public class StaffController {
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+
+    /*
+     * Helper methods
+     */
+    private Module getModule(String mdl) throws ServletRequestBindingException {
+        Optional<Module> module = this.moduleRepository.findById(mdl);
+
+        if(!module.isPresent()) {
+            throw new ServletRequestBindingException("Module[" + mdl + "] not found");
+        }
+
+        return module.get();
+    }
+
 }

@@ -33,16 +33,21 @@ public class Permission implements Serializable {
     @Column(name = "description")
     private String description;
 
+
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(
-                    name = "module",
-                    referencedColumnName = "module"),
-            @JoinColumn(
-                    name = "authority",
-                    referencedColumnName = "code")
-    })
-    private Authority authority;
+    @JoinColumn(name = "module", referencedColumnName = "code")
+    private Module module;
+
+//    @ManyToOne
+//    @JoinColumns({
+//            @JoinColumn(
+//                    name = "module",
+//                    referencedColumnName = "module"),
+//            @JoinColumn(
+//                    name = "authority",
+//                    referencedColumnName = "code")
+//    })
+//    private Authority authority;
 
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     @JsonIgnore
@@ -107,13 +112,13 @@ public class Permission implements Serializable {
         this.grps = groups;
     }
 
-    public Authority getAuthority() {
-        return authority;
-    }
+//    public Authority getAuthority() {
+//        return authority;
+//    }
 
-    public void setAuthority(Authority authority) {
-        this.authority = authority;
-    }
+//    public void setAuthority(Authority authority) {
+//        this.authority = authority;
+//    }
 
     @Override
     public String toString() {
@@ -121,7 +126,7 @@ public class Permission implements Serializable {
                 "id=" + id +
                 ", action='" + action + '\'' +
                 ", description='" + description + '\'' +
-                ", authority=" + authority +
+//                ", authority=" + authority +
                 '}';
     }
 
@@ -133,13 +138,13 @@ public class Permission implements Serializable {
         return Objects.equals(id, that.id) &&
                 Objects.equals(action, that.action) &&
                 Objects.equals(description, that.description) &&
-                Objects.equals(authority, that.authority) &&
+//                Objects.equals(authority, that.authority) &&
                 Objects.equals(grps, that.grps);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, action, description, authority, grps);
+        return Objects.hash(id, action, description, /*authority,*/ grps);
     }
 
 }

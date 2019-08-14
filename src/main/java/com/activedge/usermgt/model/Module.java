@@ -34,6 +34,9 @@ public class Module implements Serializable {
     @Column(length = 255)
     private String description;
 
+    @OneToMany(mappedBy = "module")
+    Set<StaffModule> staffModules;
+
 //    @OneToMany(mappedBy = "module")
 //    private Set<Permission> permissions = new HashSet<>();
 
