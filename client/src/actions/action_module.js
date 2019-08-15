@@ -123,12 +123,12 @@ export function deleteModule(type) {
   }
 }
 
-export function updateModule(moduleInfo, flag) {
+export function updateModule(moduleInfo) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(apiUrl + flag);
+      console.log(apiUrl);
       console.log(moduleInfo);
-      axios.put(apiUrl + flag, moduleInfo)
+      axios.put(apiUrl, moduleInfo)
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
@@ -136,12 +136,12 @@ export function updateModule(moduleInfo, flag) {
             payload: responseJSON
           });
         }).catch((error) => {
-          reject(errorSwitch(error));
+          reject(error.response ? error.response.data.message : errorSwitch(error));
           dispatch({
             type: MODULE_UPDATE_ERROR,
             payload: errorSwitch(error)
           });
-          console.log(errorSwitch(error));
+          console.log(error.response ? error.response.data.message : errorSwitch(error));
         })
     })
   }

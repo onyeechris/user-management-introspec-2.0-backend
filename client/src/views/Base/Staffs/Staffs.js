@@ -9,7 +9,7 @@ import {
 // import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/material_green.css'
 import "react-datepicker/dist/react-datepicker.css";
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import axios from 'axios';
 // var DataTable = require('react-data-components').DataTable;
 import Pagination2 from "react-js-pagination";
@@ -35,8 +35,6 @@ class Staffs extends Component {
       staffTableData: {},
       itemsPerPage: 20,
       activePage: 1,
-      redirectToReferrer: false,
-      redirectToMainMenu: false,
       modal: false,
       editModal: false,
       confirmModal: false,
@@ -252,28 +250,10 @@ class Staffs extends Component {
     }, error => {
       this.setState({ formError: error });
     }).then(this.toggleEdit());
-
-    // let apiUrl = 'staffs/' + staffId;
-    // axios.get(this.state.baseUrl + apiUrl,
-    //   {
-    //     headers: {
-    //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-    //     }
-    //   })
-    //   .then(response => {
-    //     this.setState({ singleStaffData: response.data });
-
-    //   }).then(this.toggleEdit())
-    //   .catch(err => {
-    //     // debugger;
-    //     //console.log("Couldn't find single staff: " + err);
-    //   })
   }
 
   findStaffDelete(staffId) {
     let apiUrl = 'staffs/' + staffId;
-    //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-    //console.log(this.state.baseUrl + apiUrl);
     axios.get(this.state.baseUrl + apiUrl,
       {
         headers: {
@@ -296,9 +276,7 @@ class Staffs extends Component {
     console.log(singleStaffData);
     //validation
     if (singleStaffData.first_name
-      // && singleStaffData.password
       && singleStaffData.email
-      // && singleStaffData.group_id
       && singleStaffData.hire_date
       && singleStaffData.maker_checker) {
 
@@ -311,50 +289,6 @@ class Staffs extends Component {
         this.setState({ formError: error });
       }
       )
-
-
-      // let apiUrl = 'staffs';
-      // axios.put(this.state.baseUrl + apiUrl,
-      //   this.state.singleStaffData,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     this.setState({ newCreatedStaff: this.state.singleStaffData });
-      //     this.fetchStaffs();
-      //     this.setState({ visibleUpdate: true });
-      //     this.toggleEdit();
-      //   })
-      //   .catch(err => {
-      //     console.log("Could not update record: " + err);
-      //     let res = JSON.parse(JSON.stringify(err.response.data));
-      //     console.log("Server response status: " + res.status);
-      //     console.log("Server response message: " + res.message);
-
-      //     let errMessage = '';
-      //     switch (res.status) {
-      //       case 401:
-      //         errMessage = "Unauthorized, login required!";
-      //         break;
-      //       case 403:
-      //         errMessage = "You don't have the permission to access this function!";
-      //         break;
-      //       case 404:
-      //         errMessage = "Sorry Page Not Found!";
-      //         break;
-      //       case 500:
-      //         errMessage = "Something went wrong, please try again.";
-      //         break;
-      //       default:
-      //         errMessage = "Sorry there was an error";
-      //     }
-      //     this.setState({ formError: errMessage });
-      //     // debugger;
-      //   })
-
-
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -386,47 +320,6 @@ class Staffs extends Component {
       if (this.props.staffData.staffDeleteError) {
         console.log(this.props.staffData.staffDeleteError);
       }
-
-      // axios.delete(this.state.baseUrl + apiUrl,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     this.toggleConfirm()
-      //     console.log(response);
-      //   })
-      //   .catch(err => {
-      // console.log("Could not delete staff record: " + err);
-      // let res = JSON.parse(JSON.stringify(err.response.data));
-      // console.log("Server response status: " + res.status);
-      // console.log("Server response message: " + res.message);
-
-      //     let errMessage = '';
-      //     switch (res.status) {
-      //       case 400:
-      //         errMessage = "Error, bad request";
-      //         break;
-      //       case 401:
-      //         errMessage = "Unauthorized, login required!";
-      //         break;
-      //       case 403:
-      //         errMessage = "You don't have the permission to access this function!";
-      //         break;
-      //       case 404:
-      //         errMessage = "Sorry Page Not Found!";
-      //         break;
-      //       case 500:
-      //         errMessage = "Something went wrong, please try again.";
-      //         break;
-      //       default:
-      //         errMessage = "Sorry there was an error";
-      //     }
-      //     this.setState({ formError: errMessage });
-      //     // debugger;
-      //   })
-
     }
   }
 
@@ -486,11 +379,6 @@ class Staffs extends Component {
 
 
   render() {
-
-    if (this.state.redirectToReferrer) {
-      return <Redirect to={"/login"} />;
-    }
-
     let { groupData } = this.state;
     let { showAction } = this.state;
 
@@ -498,7 +386,6 @@ class Staffs extends Component {
       let itemGroupName = "";
       groupData.forEach(group => {
         if (groupID === group.id) {
-          //console.log("There was a match!");
           itemGroupName = group.name;
         }
       })
@@ -508,8 +395,6 @@ class Staffs extends Component {
     let staff = this.state.staffData;
     const staffGroup = this.state.groupData;
     const singleStaff = this.state.singleStaffData;
-
-    // console.log(this.props);
 
     return (
 

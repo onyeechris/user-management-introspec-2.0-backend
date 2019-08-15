@@ -16,12 +16,8 @@ import { fetchPermissions } from '../../../actions/action_permission';
 import { FormattedMessage } from 'react-intl';
 import CreateModuleForm from './CreateModuleForm';
 
-let moduleDataToUpdate = {};
-moduleDataToUpdate.permissions = [];
 
 let loggedInUserRole = "";
-let myCurrentPermissions = [];
-let permissionsToDelete = [];
 class Modules extends Component {
 
   constructor(props) {
@@ -44,22 +40,14 @@ class Modules extends Component {
         description: "",
         permissions: []
       },
-      permissionsData: {
-        id: "",
-        action: "",
-        description: "",
-      },
       singleModuleData: {},
+      updatedModuleData: {},
       singlePermissionData: {},
-      baseUrl: 'http://localhost:9100/api/',
       addedModule: {},
-      loadedPermissionsData: [],
-      newCreatedModule: {},
       active: [],
       visible: false,
       visibleUpdate: false,
-      dropdownOpen: new Array(19).fill(false),
-      activeTab: '1',
+      visibleDelete: false,
       formError: "",
       // Change this back to 'none' for role access security
       showAction: {
@@ -69,21 +57,22 @@ class Modules extends Component {
         "display": "none"
       },
       greyedOut: true,
-      permissionsDeleteList: [],
     };
     this.toggle = this.toggle.bind(this);
     this.toggleEdit = this.toggleEdit.bind(this);
     this.toggleConfirm = this.toggleConfirm.bind(this);
-    this.toggleView = this.toggleView.bind(this);
     this.updateValue = this.updateValue.bind(this);
     this.readUpdateValue = this.readUpdateValue.bind(this);
-    this.createModule = this.createModule.bind(this);
+    this.createNewModule = this.createNewModule.bind(this);
     this.findModule = this.findModule.bind(this);
     this.findModuleView = this.findModuleView.bind(this);
     this.fetchModules = this.fetchModules.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onDismissUpdate = this.onDismissUpdate.bind(this);
+    this.onDismissDelete = this.onDismissDelete.bind(this);
   }
+
+
 
   componentDidMount() {
 
@@ -95,19 +84,6 @@ class Modules extends Component {
     }
     )
 
-    // this.props.fetchPermissions('?size=1000').then(result => {
-    //   this.setState({ permissionData: result.data.payload });
-    //   loadedPermissionsData = [
-    //     result.data.payload.map((item) => {
-    //       return ({ value: item.action, label: item.action })
-    //     })
-    //   ];
-    // }, error => {
-    //   // console.log(error);
-    //   this.setState({ formError: error });
-    // }
-    // )
-
     loggedInUserRole = sessionStorage.getItem("userRole");
     if (loggedInUserRole.toLowerCase().includes("admin")) {
       let makeVisible = {
@@ -117,33 +93,29 @@ class Modules extends Component {
     }
   }
 
+
+
   toggle() {
     this.fetchModules();
-    this.setState({ formError: "" });
+    this.setState({ formError: "" }, this.dismissAllAlerts());
     this.setState({
       modal: !this.state.modal,
     }, this.fetchModules());
   }
+
   toggleEdit() {
     this.fetchModules();
     this.setState({ formError: "" });
     this.setState({ greyedOut: true });
-    permissionsToDelete = [];
     this.setState({
       editModal: !this.state.editModal,
     });
   }
+
   toggleConfirm() {
     this.fetchModules();
     this.setState({
       confirmModal: !this.state.confirmModal,
-    });
-  }
-
-  toggleView() {
-    this.fetchModules();
-    this.setState({
-      viewModal: !this.state.viewModal,
     });
   }
 
@@ -152,6 +124,15 @@ class Modules extends Component {
   }
   onDismissUpdate() {
     this.setState({ visibleUpdate: false });
+  }
+  onDismissDelete() {
+    this.setState({ visibleDelete: false });
+  }
+
+  dismissAllAlerts() {
+    this.setState({ visible: false });
+    this.setState({ visibleUpdate: false });
+    this.setState({ visibleDelete: false });
   }
 
   updateValue(field, event) {
@@ -169,36 +150,16 @@ class Modules extends Component {
     //// console.log(this.state.singleModuleData);
   }
 
-  createModule() {
-    let { newModuleData } = this.state;
-    if (newModuleData.name
-      && newModuleData.description) {
-
-      this.props.createModule(newModuleData).then(result => {
-        this.setState({ addedModule: newModuleData });
-      }, error => {
-        // console.log(error);
-        this.setState({ formError: error });
-      }
-      ).then(this.setState({ visible: true }))
-      this.toggle();
-    }
-    else {
-      this.setState({ formError: "The module must have a name and a description." });
-    }
-  }
-
+  // Create a new App Module
   createNewModule = (newModuleData) => {
     this.props.createModule(newModuleData).then(result => {
       this.setState({ addedModule: newModuleData });
       let newList = this.state.moduleData;
       newList.push(newModuleData);
-      this.setState({ moduleData: newList });
+      this.setState({ moduleData: newList }, this.setState({ visible: true }, this.toggle()));
     }, error => {
       this.setState({ formError: error });
-    }
-    ).then(this.setState({ visible: true }))
-    this.toggle();
+    })
   }
 
   // Hot reload page
@@ -211,141 +172,66 @@ class Modules extends Component {
   }
 
   // Get specific module to view module Details
-  findModuleView(moduleId) {
-    this.props.fetchModule(moduleId).then(result => {
+  findModuleView = (moduleCode) => {
+    this.props.fetchModule(moduleCode).then(result => {
       // console.log(result);
-      this.setState({ singleModuleData: result.data });
-      let resPermissions = result.data.permissions;
-      let perm = [];
-      resPermissions.forEach(permission => {
-        perm.push(permission.action);
-      })
-      this.setState({ selected: perm });
-      this.setState({ permissionData: result.data.permissions });
       this.props.saveModuleInfo(result);
-      console.log(this.props);
+      sessionStorage.setItem("userModule", moduleCode)
+      this.setState({ singleModuleData: result.data }, this.props.history.push('/apps/module_view'));
     }, error => {
-      // console.log(error);
-    }
-    ).then(console.log(this.props)
-    ).then(this.props.history.push('/apps/module_view'))
+      this.setState({ formError: error });
+    });
   }
 
   // Get specific module for deleting
-  findModuleDelete = (moduleId) => {
-    this.props.fetchModule(moduleId).then(result => {
+  findModuleDelete = (moduleCode) => {
+    this.props.fetchModule(moduleCode).then(result => {
+      this.dismissAllAlerts();
       this.setState({ singleModuleData: result.data }, this.toggleConfirm());
     }, error => {
       this.setState({ formError: error });
     });
   }
 
-  // Send module id to delete module
-  deleteModule(moduleId) {
-    if (moduleId || moduleId === 0) {
-      this.props.deleteModule(moduleId).then(result => {
+  // Send module code to delete module
+  deleteModule(moduleCode) {
+    if (moduleCode || moduleCode === 0) {
+      this.props.deleteModule(moduleCode).then(result => {
         this.toggleConfirm();
       }, error => {
-        // console.log(error);
+        console.log(error);
         this.setState({ formError: error });
       }
-      );
+      ).then(this.setState({ visibleDelete: true }));
     }
   }
 
-  // Function to find specific module by ID
-  findModule(moduleId) {
-    this.props.fetchModule(moduleId)
-      .then(response => {
-        this.setState({ singleModuleData: response.data });
-      }).then(this.setState({ visible: false }, this.toggleEdit()))
-      .catch(err => {
-        this.setState({ formError: err });
-      })
+  // Function to find specific module by code for editing
+  findModule(moduleCode) {
+    this.props.fetchModule(moduleCode)
+      .then(result => {
+        this.dismissAllAlerts();
+        console.log(result);
+        this.setState({ singleModuleData: result.data });
+        this.setState({ updatedModuleData: result.data }, this.toggleEdit());
+      }, error => {
+        this.setState({ formError: error });
+      });
   }
 
-  updateModule = (flag) => {
-
-    const populateMyPermissions = () => {
-
-      if (myCurrentPermissions) {
-
-        moduleDataToUpdate.id = this.state.singleModuleData.id;
-        moduleDataToUpdate.name = this.state.singleModuleData.name;
-        moduleDataToUpdate.description = this.state.singleModuleData.description;
-
-        if (flag === 1) {
-          moduleDataToUpdate.permissions = [];
-          let permissionObject = {};
-
-          myCurrentPermissions.forEach(permission => {
-            this.state.permissionData.forEach(item => {
-              permissionObject = {};
-              if (permission === item.action) {
-                permissionObject = {
-                  'id': item.id,
-                  'action': permission,
-                  'description': item.description
-                };
-                moduleDataToUpdate.permissions.push(permissionObject);
-              }
-            });
-          });
-        } else {
-          moduleDataToUpdate.permissions = [];
-          let permissionObject = {};
-          permissionsToDelete.forEach(permission => {
-            this.state.permissionData.forEach(item => {
-              permissionObject = {};
-              if (permission === item.action) {
-                permissionObject = {
-                  'id': item.id,
-                  'action': permission,
-                  'description': item.description
-                };
-                moduleDataToUpdate.permissions.push(permissionObject);
-              }
-            });
-          });
-        }
-        return true;
-      }
+  // Function to update App Modules
+  updateModule = () => {
+    console.log(this.state.singleModuleData);
+    this.props.updateModule(this.state.singleModuleData).then(result => {
+      this.setState({ visibleUpdate: true }, this.toggleEdit());
+    }, error => {
+      console.log(error);
+      this.setState({ formError: error });
     }
-
-    const updateTheModule = () => {
-
-      if (moduleDataToUpdate.name) {
-        this.props.updateModule(moduleDataToUpdate, flag).then(result => {
-          this.setState({ newCreatedModule: moduleDataToUpdate });
-          this.setState({ visibleUpdate: true });
-        }, error => {
-          // console.log(error);
-          this.setState({ formError: error });
-        }
-        ).then(this.toggleEdit());
-
-      } else {
-        this.setState({ formError: "The module must have a name." });
-      }
-    }
-
-    const updateMyModule = async () => {
-      try {
-        const response = await populateMyPermissions()
-        // debugger;
-        if (response) {
-          updateTheModule();
-        }
-      }
-      catch (error) {
-        //// console.log(error);
-      }
-    }
-    updateMyModule();
+    )
   }
 
-
-
+  // Function for internationalization FormattedMessage
   translate = (pageString) => {
     return (
       <FormattedMessage id={pageString} defaultMessage={pageString} />
@@ -357,10 +243,7 @@ class Modules extends Component {
 
 
   render() {
-    let checkboxStyle = {
-      "overflowY": "scroll",
-      "height": "130px"
-    }
+
     const modules = this.state.moduleData ? this.state.moduleData : {};
 
     let { singleModuleData } = this.state;
@@ -385,7 +268,10 @@ class Modules extends Component {
                   {this.translate("App")} <strong> {this.state.addedModule.name} </strong> {' '}{this.translate("has been created")}.
                 </Alert>
                 <Alert color="info" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  {this.translate("Update request for module")} <strong> {this.state.newCreatedModule.name} </strong> {' '}{this.translate("has been submitted for authorization")}.
+                  {this.translate("Update on module")} <strong> {this.state.updatedModuleData.name} </strong> {' '}{this.translate("successful")}.
+                </Alert>
+                <Alert color="info" isOpen={this.state.visibleDelete} toggle={this.onDismissDelete}>
+                  {this.translate("Module")} <strong> {this.state.singleModuleData.name} </strong> {' '}{this.translate("has been deleted successfully")}.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
@@ -405,13 +291,13 @@ class Modules extends Component {
                         <td>{item.code}</td>
                         <td>{item.description}</td>
                         <td>
-                          <Button style={showAction} size="sm" color="primary" onClick={e => this.findModule(item.id)}><i className="fa fa-dot-circle-o"></i>
+                          <Button style={showAction} size="sm" color="primary" onClick={e => this.findModule(item.code)}><i className="fa fa-dot-circle-o"></i>
                             {' '}<FormattedMessage id="Update" defaultMessage="Update" />
                           </Button>{' '}
-                          <Button style={showAction} size="sm" color="danger" onClick={e => this.findModuleDelete(item.id)}><i className="fa fa-ban"></i>
+                          <Button style={showAction} size="sm" color="danger" onClick={e => this.findModuleDelete(item.code)}><i className="fa fa-ban"></i>
                             {' '}<FormattedMessage id="Delete" defaultMessage="Delete" />
                           </Button>{' '}
-                          <Button size="sm" color="secondary" onClick={e => this.findModuleView(item.id)}><i className="fa fa-note"></i>
+                          <Button size="sm" color="secondary" onClick={e => this.findModuleView(item.code)}><i className="fa fa-note"></i>
                             {' '}<FormattedMessage id="View" defaultMessage="View" />
                           </Button>{' '}
                         </td>
@@ -463,9 +349,8 @@ class Modules extends Component {
                 <strong></strong> Module details below
               </CardHeader>
               <CardBody>
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
-                  {/* <Input type="hidden" name="id" value={singleModuleData.id} onChange={this.readUpdateValue.bind(this, 'id')} /> */}
-                  <p style={{ color: 'red' }}>{this.state.formError}</p>
+                <p style={{ color: 'red' }}>{this.state.formError}</p>
+                <Form action="" method="post" className="form-horizontal" >
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
@@ -473,16 +358,6 @@ class Modules extends Component {
                     <Col xs="12" md="9">
                       <Input type="text" id="name" name="name" placeholder="Enter Module Name"
                         onChange={this.readUpdateValue.bind(this, 'name')} value={singleModuleData.name}
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label htmlFor="description">Code</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input type="text" id="code" name="code" placeholder="Enter Code" required
-                        onChange={this.readUpdateValue.bind(this, 'code')} value={singleModuleData.code}
                       />
                     </Col>
                   </FormGroup>
@@ -499,7 +374,7 @@ class Modules extends Component {
                   </FormGroup>
 
                   <ModalFooter>
-                    <Button color="primary" onClick={e => this.updateModule} disabled={this.state.greyedOut ? true : false}>Update Module</Button>{' '}
+                    <Button color="primary" onClick={e => this.updateModule()} disabled={this.state.greyedOut ? true : false}>Update Module</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
                   </ModalFooter>
 
@@ -508,79 +383,6 @@ class Modules extends Component {
             </Card>
           </ModalBody>
         </Modal>
-
-
-
-
-
-
-
-        {/*Modal to view module permissions*/}
-
-        <Modal isOpen={this.state.viewModal} toggle={this.toggleView} className={this.props.className}>
-          <ModalHeader toggle={this.toggleView}>View Module Permissions</ModalHeader>
-          <ModalBody>
-
-            <Card>
-              <CardHeader>
-                <strong></strong> Module details below
-              </CardHeader>
-              <CardBody>
-
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label htmlFor="name">Name</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      {singleModuleData.name}
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label htmlFor="description">Description</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      {singleModuleData.description}
-                    </Col>
-                  </FormGroup>
-                  <br />
-                  <h5>Module Permissions: {this.state.permissionData.length > 0 ? this.state.permissionData.length : "None"}</h5>
-
-                  <Table hover bordered striped responsive size="sm" style={this.state.permissionData.length > 0 ? {} : this.state.hideField}>
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Action</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <div style={checkboxStyle}>
-                      <tbody>{this.state.permissionData.map((item, key) => {
-                        return (
-                          <tr key={key}>
-                            <td>{item.id}</td>
-                            <td>{item.action}</td>
-                            <td>{item.description}</td>
-
-                          </tr>
-                        )
-                      })}
-                      </tbody>
-                    </div>
-                  </Table>
-
-                  <ModalFooter>
-                    <Button color="secondary" onClick={this.toggleView}>Done</Button>
-                  </ModalFooter>
-                </Form>
-              </CardBody>
-            </Card>
-
-          </ModalBody>
-
-        </Modal>
-
 
 
 
@@ -602,7 +404,7 @@ class Modules extends Component {
                 <p>Are you sure you want to delete module: {singleModuleData.name}?</p>
 
                 <ModalFooter>
-                  <Button color="primary" onClick={e => this.deleteModule(singleModuleData.id)}>Delete</Button>{' '}
+                  <Button color="primary" onClick={e => this.deleteModule(singleModuleData.code)}>Delete</Button>{' '}
                   <Button color="secondary" onClick={this.toggleConfirm}>Cancel</Button>
                 </ModalFooter>
               </CardBody>

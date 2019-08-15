@@ -107,7 +107,7 @@ const routes = [
   { path: "/groups/group_view", exact: true, name: translate("Group View"), component: GroupView },
   { path: "/todos", name: translate("ToDos"), component: ToDos },
   { path: "/settings", name: translate("Settings"), component: Settings },
-  { path: "/apps", name: translate("Apps"), component: Modules },
+  { path: "/apps", exact: true, name: translate("Apps"), component: Modules },
   { path: "/apps/module_view", exact: true, name: translate("App View"), component: ModuleView },
 ];
 

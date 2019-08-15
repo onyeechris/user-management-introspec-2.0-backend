@@ -32,7 +32,8 @@ export const errorSwitch = (error) => {
 //     TOKEN = JSON.parse(sessionStorage.getItem("userData")).token;
 // }
 
-export const interceptor = () => {
+export const interceptor = (userModule) => {
+    console.log(userModule);
     axios.interceptors.request.use(function (config) {
         let token = '';
 
@@ -41,7 +42,9 @@ export const interceptor = () => {
         }
         if (token != null) {
             config.headers.Authorization = token ? `${token}` : '';
-            config.headers.Module = "ATM";
+            // if (userModule != null && userModule !== undefined) {
+            //     config.headers.Module = userModule ? `${userModule}` : '';
+            // }
             return config;
         }
     });

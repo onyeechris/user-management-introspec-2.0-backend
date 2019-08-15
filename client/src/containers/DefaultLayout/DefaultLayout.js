@@ -82,6 +82,12 @@ class DefaultLayout extends Component {
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/login"} />;
     }
+    // Constant check to ensure app token is present
+    if (sessionStorage.getItem("userData") || /applogin/.test(window.location.href)) {
+      console.log("App Access");
+    } else {
+      return <Redirect to={"/login"} />;
+    }
 
     return (
       <div className="app">
