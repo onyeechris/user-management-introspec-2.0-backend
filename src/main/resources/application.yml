@@ -31,7 +31,7 @@ spring:
   datasource:
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
-      url: jdbc:postgresql://localhost:5432/usermgt3
+      url: jdbc:postgresql://localhost:5432/usermgt
       username: postgres
       password: passadmin
       hikari:

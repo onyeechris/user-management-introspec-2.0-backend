@@ -20,7 +20,7 @@ public class UsermgtApplication implements WebMvcConfigurer {
                 SpringApplication application = new SpringApplication(UsermgtApplication.class);
                 // little hack to initialize schemas on first application startup
                 DataSource dataSource = DataSourceBuilder.create().username("postgres").password("passadmin")
-                                .url("jdbc:postgresql://localhost:5432/usermgt3")
+                                .url("jdbc:postgresql://localhost:5432/usermgt")
                                 .driverClassName("org.postgresql.Driver").build();
 
                 Properties properties = new Properties();
