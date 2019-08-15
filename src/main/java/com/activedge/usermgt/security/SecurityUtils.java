@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,33 @@ public final class SecurityUtils {
                 return null;
             });
     }
+
+
+    /**
+     * Get the login of the current user.
+     *
+     * @return the login of the current user
+     */
+    public static Optional<Map<String, Object>> getCurrentUserMap() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Map<String, Object> response = new HashMap<>();
+
+        return Optional.ofNullable(securityContext.getAuthentication())
+                .map(authentication -> {
+                    if (authentication.getPrincipal() instanceof UserDetails) {
+                        UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                        response.put("username", springSecurityUser.getUsername());
+                        response.put("authorities", springSecurityUser.getAuthorities());
+                        return response;
+                    } else if (authentication.getPrincipal() instanceof String) {
+                        response.put("username", authentication.getPrincipal());
+                        response.put("authorities", authentication.getAuthorities());
+                        return response;
+                    }
+                    return null;
+                });
+    }
+
 
     /**
      * Get the JWT of the current user.

@@ -22,7 +22,7 @@ import java.util.Set;
 @Entity
 @Table(name = "staff")
 @EntityListeners(StaffEntityListener.class)
-@SequenceGenerator(name = "tabGenerator", initialValue = 7, allocationSize = 50)
+@SequenceGenerator(name = "tabGenerator", initialValue = 5, allocationSize = 50)
 public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;

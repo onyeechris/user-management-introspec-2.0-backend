@@ -75,6 +75,10 @@ logging:
       hibernate:
         SQL: DEBUG
 #    root: DEBUG
+    com:
+      activedge:
+        usermgt: DEBUG
+#    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
 
 #  using for JavaSE:  java -Dspring.redis.embedded=true

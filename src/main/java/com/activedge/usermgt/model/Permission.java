@@ -33,7 +33,6 @@ public class Permission implements Serializable {
     @Column(name = "description")
     private String description;
 
-
     @ManyToOne
     @JoinColumn(name = "module", referencedColumnName = "code")
     private Module module;
