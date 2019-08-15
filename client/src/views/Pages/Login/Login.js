@@ -9,7 +9,10 @@ import {
   CardGroup,
   Col,
   Container,
-  // Input,
+  Input,
+  FormGroup,
+  Label,
+  Form,
   // InputGroup,
   // InputGroupAddon,
   // InputGroupText,
@@ -22,6 +25,9 @@ import { FormattedMessage } from "react-intl";
 // import { SimpleReactValidator } from "simple-react-validator";
 // import { Values } from "redux-form-website-template";
 import LoginForm from "./LoginForm";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setLocale } from '../../../actions/action_locale';
 
 class Login extends Component {
   constructor(props) {
@@ -33,17 +39,26 @@ class Login extends Component {
       },
       redirectToReferrer: false,
       redirectToMainMenu: false,
-      loginError: ""
+      loginError: "",
+      value: 'en'
     };
     this.login = this.login.bind(this);
     this.onChange = this.onChange.bind(this);
-    // this.validator = new SimpleReactValidator()({
-    //   messages: {
-    //     email: 'That is not an email.'
-    //   },
-    // });
   }
 
+  storedLanguage = ''
+
+  componentWillMount() {
+    this.storedLanguage = localStorage.se8lementLang;
+    this.setState({ value: localStorage.se8lementLang });
+  }
+
+  change(event) {
+    this.setState({
+      value: event.target.value
+    })
+    this.props.setLocale(event.target.value);
+  }
 
   login(event) {
     event.preventDefault();
@@ -109,11 +124,20 @@ class Login extends Component {
       'fontSize': '17px',
       'textDecoration': 'none'
     };
-    // const errorStyle = {
-    //   'color': 'red',
-    //   'fontSize': '20px'
-    // }
+    const appTitle = {
+      'float': 'left'
+    }
+    const footerStyle = {
+      'position': 'fixed',
+      'bottom': '15px',
+      'right': '15px',
+      'display': 'inline-block',
+    }
+    const errorStyle = {
+      'color': 'red'
+    }
 
+    console.log(this.props);
 
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/dashboard"} />;
@@ -127,7 +151,8 @@ class Login extends Component {
     return (
       <div className="app flex-row align-items-center">
         <div style={topMenu}>
-          <FormattedMessage id="app.title" defaultMessage="Introspec User Management" />
+          <div style={appTitle}><FormattedMessage id="app.title" defaultMessage="Introspec User Management" /></div>
+
         </div>
         <Container>
           <Row className="justify-content-center">
@@ -139,9 +164,8 @@ class Login extends Component {
               />
             </div>
             <br />
-            <br />
-            <br />
-            <br />
+          </Row>
+          <Row className="justify-content-center"> &nbsp;
           </Row>
           <Row className="justify-content-center">
             <Col md="8">
@@ -150,6 +174,7 @@ class Login extends Component {
                   <CardBody>
                     <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
                     <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
+                    <p style={errorStyle}>{this.props.profile.userFetchError}</p>
                     {/* <form action="" method="post">
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
@@ -199,8 +224,11 @@ class Login extends Component {
                       </Row>
                     </form> */}
 
-                    <LoginForm onSubmit={this.loginUser} />
-                    {/* <Values form="login" /> */}
+                    <LoginForm onSubmit={this.loginUser}
+                      ClearText={<FormattedMessage id="Clear Values" defaultMessage="Clear Values" />}
+                      LoginText={<FormattedMessage id="Login" defaultMessage="Login" />}
+                      BackText={<FormattedMessage id="Back" defaultMessage="Back" />}
+                    />
                   </CardBody>
                 </Card>
                 <Card
@@ -223,9 +251,37 @@ class Login extends Component {
             </Col>
           </Row>
         </Container>
+        <div style={footerStyle}>
+          <Form inline>
+            <FormGroup>
+              <Label htmlFor="language">Language: &nbsp; &nbsp;</Label>
+              <Input type="select" className="form-control" name="select" id="language" onChange={this.change.bind(this)} value={this.state.value}>
+                <option value="en" >English</option>
+                <option value="fr" >Français</option>
+                <option value="pt" >Português</option>
+                <option value="es" >Español</option>
+              </Input>
+            </FormGroup>
+          </Form>
+        </div>
       </div >
     );
   }
 }
 
-export default Login;
+const mapStateToProps = (state) => {
+  console.log('State is ', state)
+  return {
+    lang: state.locale.lang
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    { setLocale },
+    dispatch
+  )
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
+// export default Login;

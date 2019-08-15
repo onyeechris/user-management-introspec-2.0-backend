@@ -5,6 +5,11 @@ import {
   FormGroup, Label, Modal, ModalBody, ModalFooter, ModalHeader
 } from 'reactstrap';
 import axios from 'axios';
+import { FormattedMessage } from "react-intl";
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchTodos } from '../../../actions/action_todo';
 
 let loggedInUserRole = "";
 class ToDos extends Component {
@@ -29,6 +34,7 @@ class ToDos extends Component {
       showAction: {
         "display": "none"
       },
+      currentError: ''
     };
     this.toggleEditStaff = this.toggleEditStaff.bind(this);
     this.toggleEditGroup = this.toggleEditGroup.bind(this);
@@ -42,38 +48,37 @@ class ToDos extends Component {
   }
 
   componentDidMount() {
-    if (typeof this.props.toDo === 'undefined') {
 
-      //console.log(JSON.parse(sessionStorage.getItem("userData")).token);
-      let baseUrl = 'http://localhost:9100/api/todos';
-      axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+    this.props.fetchTodos().then(result => {
+      this.setState({ toDoData: result.data.payload }, console.log(this.state.toDoData));
+    }, error => {
+      console.log(error);
+      this.setState({ currentError: error });
+    }
+    )
 
-        //console.log(response.data);
-        this.setState({ toDoData: response.data.payload });
-        //console.log(JSON.parse(response.data.payload[0].payload));
-
-      }).catch(err => {
-        //console.log("Couldn't fetch todo data, " + err);
-      })
-
-
-      let groupUrl = 'http://localhost:9100/api/groups';
-      axios.get(groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-        //console.log(response.data)
-        this.setState({ smallGroupData: response.data.payload });
-      }).catch(err => {
-        //console.log(err);
-      })
+    // let baseUrl = 'http://localhost:9100/api/todos';
+    // axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+    //   this.setState({ toDoData: response.data.payload });
+    // }).catch(err => {
+    // })
 
 
-      loggedInUserRole = sessionStorage.getItem("userRole");
-      //console.log(loggedInUserRole);
-      if (loggedInUserRole.toLowerCase().includes("checker")) {
-        let makeVisible = {
-          "display": "block"
-        }
-        this.setState({ showAction: makeVisible });
+    let groupUrl = 'http://localhost:9100/api/groups';
+    axios.get(groupUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
+      //console.log(response.data)
+      this.setState({ smallGroupData: response.data.payload });
+    }).catch(err => {
+      //console.log(err);
+    })
+
+    loggedInUserRole = sessionStorage.getItem("userRole");
+    //console.log(loggedInUserRole);
+    if (loggedInUserRole.toLowerCase().includes("checker")) {
+      let makeVisible = {
+        "display": "block"
       }
+      this.setState({ showAction: makeVisible });
     }
   }
 
@@ -133,7 +138,6 @@ class ToDos extends Component {
     var payloadData = JSON.parse(fieldData);
     this.setState({ singleStaffData: payloadData });
     this.setState({ currentRecord: payloadData });
-    //console.log(this.state.singleStaffData);
     this.toggleEditStaff();
   }
 
@@ -168,6 +172,7 @@ class ToDos extends Component {
       })
     this.toggleEditStaff();
     this.setState({ payloadAction: this.state.currentRecord.action });
+    this.props.fetchTodos();
   }
 
 
@@ -212,25 +217,35 @@ class ToDos extends Component {
       })
     this.toggleEditGroup();
     this.setState({ payloadAction: this.state.currentRecord.action });
+    this.props.fetchTodos();
   }
 
   fetchToDos() {
-    let baseUrl = 'http://localhost:9100/api/todos';
+
+    let baseUrl = this.state.baseUrl + 'todos';
     axios.get(baseUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
 
       //console.log(response.data);
       this.setState({ toDoData: response.data.payload });
       //console.log(JSON.parse(response.data.payload[0].payload));
-
+      sessionStorage.setItem("pendingTasks", response.data.payload.length);
     }).catch(err => {
       //console.log("Couldn't fetch todo data, " + err);
       //debugger;
     })
+
+  }
+
+  translate = (pageString) => {
+    return (
+      <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
   }
 
   render() {
     let { showAction } = this.state;
-    let toDos = this.state.toDoData ? this.state.toDoData : [];
+    // let toDos = this.state.toDoData ? this.state.toDoData : [];
+    let toDos = this.state.toDoData;
     let { singleStaffData } = this.state;
     let singleStaff = {};
     if (singleStaffData.payload) {
@@ -251,11 +266,7 @@ class ToDos extends Component {
       singleStaff.phone = currentStaffData.phone;
       singleStaff.password = currentStaffData.password;
       singleStaff.id = 1;
-      // singleStaff.hire_date = currentStaffData.hireDate.monthValue + "/" + currentStaffData.hireDate.dayOfMonth + "/" + currentStaffData.hireDate.year;
       singleStaff.hire_date = currentStaffData.hireDate;
-      //console.log(currentStaffData.hireDate);
-      //console.log(currentStaffData.password);
-      //console.log(singleStaff);
     }
 
     let { singleGroupData } = this.state;
@@ -272,7 +283,6 @@ class ToDos extends Component {
       singleGroup.name = currentGroupData.name;
       singleGroup.id = 1;
       singleGroup.description = currentGroupData.description;
-      //console.log(singleGroup);
     }
 
     if (singleGroup.permissions.length > 0) {
@@ -285,56 +295,48 @@ class ToDos extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> All To Dos
+                <i className="fa fa-align-justify"></i> {' '}{this.translate("All To Dos")}
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  {this.state.payloadAction} <strong> {this.state.entityData.first_name ? this.state.entityData.first_name : this.state.entityData.name}</strong> successfully authorized.
+                  {this.state.payloadAction} <strong> {this.state.entityData.first_name ? this.state.entityData.first_name : this.state.entityData.name}</strong> {this.translate("successfully authorized")}.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Action</th>
-                      <th>Payload</th>
-                      <th>Created By</th>
-                      <th>Time</th>
-                      <th style={showAction}>Action</th>
+                      <th>{this.translate("ID")}</th>
+                      <th>{this.translate("Action")}</th>
+                      <th>{this.translate("Payload")}</th>
+                      <th>{this.translate("Created By")}</th>
+                      <th>{this.translate("Time")}</th>
+                      <th style={showAction}>{this.translate("Action")}</th>
                     </tr>
                   </thead>
-                  <tbody>{toDos ? toDos.map((item, key) => {
-                    console.log(item);
-                    var dataPayload = JSON.parse(item.payload);
-                    return (
-                      <tr key={key}>
-                        <td>{item.id}</td>
-                        <td>{item.action}</td>
-                        <td>{item.action.toLowerCase().includes("staff") ? dataPayload.firstName : dataPayload.name}</td>
-                        <td>{item.maker}</td>
-                        <td>{item.at}</td>
-                        <td style={showAction}>
-                          <Button size="sm" color="primary"
-                            onClick={e => item.action.toLowerCase().includes("staff") ? this.fetchStaff(JSON.stringify(item)) : this.fetchGroup(JSON.stringify(item))}>
-                            <i className="fa fa-dot-circle-o"></i> Authorize
-                          </Button>
-                        </td>
-                      </tr>
-                    )
-                  }) : "List is Empty"}
+                  <tbody>{toDos.length > 0 ?
+                    toDos.map((item, key) => {
+                      console.log(item);
+                      if (item) {
+                        let dataPayload = JSON.parse(item.payload);
+                        return (
+                          <tr key={key}>
+                            <td>{item.id}</td>
+                            <td>{item.action}</td>
+                            <td>{item.action.toLowerCase().includes("staff") ? dataPayload.firstName : dataPayload.name}</td>
+                            <td>{item.maker}</td>
+                            <td>{item.at}</td>
+                            <td style={showAction}>
+                              <Button size="sm" color="primary"
+                                onClick={e => item.action.toLowerCase().includes("staff") ? this.fetchStaff(JSON.stringify(item)) : this.fetchGroup(JSON.stringify(item))}>
+                                <i className="fa fa-dot-circle-o"></i> {' '}{this.translate("Authorize")}
+                              </Button>
+                            </td>
+                          </tr>
+                        )
+                      } return (<tr></tr>)
+                    })
+                    : "List is Empty"}
                   </tbody>
                 </Table>
-                {/* <nav>
-                  <Pagination>
-                    <PaginationItem><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-                    <PaginationItem active>
-                      <PaginationLink tag="button">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-                    <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-                  </Pagination>
-                </nav> */}
               </CardBody>
             </Card>
           </Col>
@@ -519,4 +521,19 @@ class ToDos extends Component {
   }
 }
 
-export default ToDos;
+
+const mapStateToProps = (state) => {
+  // console.log('State is ', state)
+  return {
+    todoData: state.todo,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    fetchTodos
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ToDos);
+// export default ToDos;

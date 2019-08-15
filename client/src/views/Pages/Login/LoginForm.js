@@ -7,9 +7,11 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Row
+  Row,
+  FormFeedback,
+  FormGroup,
 } from "reactstrap";
-import { FormattedMessage } from "react-intl";
+// import { FormattedMessage } from "react-intl";
 
 const required = value => value ? undefined : 'Required';
 // const maxLength = max => value =>
@@ -32,34 +34,48 @@ const email = value => {
 //   value && /.+@aol\.com/.test(value) ?
 //     'Really? You still use AOL for your email?' : undefined
 
+// const errorStyle = {
+//   'color': 'red',
+//   'fontSize': '20px'
+// }
+const formStyle = {
+  'width': '100%',
+  // 'border': '1px solid red',
+}
 const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
   <div>
-    <Input
+    <Input style={formStyle}
+      bsSize="lg"
+      className="input-lg"
       type={type}
       placeholder={label}
       {...input}
     />
     {/* <input {...input} placeholder={label} type={type} /> */}
-    {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+    {/* {touched && ((error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>) || (warning && <span>{warning}</span>))} */}
+    {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
+
   </div>
 )
 
 let LoginForm = (props) => {
-  const { handleSubmit, externalApp, returnToApp, pristine, reset, submitting } = props
+  const { handleSubmit, externalApp, returnToApp, pristine, reset, ClearText, LoginText, BackText, submitting } = props
   return (
     <form onSubmit={handleSubmit}>
-      <InputGroup className="mb-3">
-        <InputGroupAddon addonType="prepend">
-          <InputGroupText>
-            <i className="icon-user" />
-          </InputGroupText>
-        </InputGroupAddon>
-        <Field name="username" type="text"
-          component={renderField}
-          label="Username"
-          validate={[required, email]}
-        />
-      </InputGroup>
+      <FormGroup>
+        <InputGroup className="mb-3">
+          <InputGroupAddon addonType="prepend">
+            <InputGroupText>
+              <i className="icon-user" />
+            </InputGroupText>
+          </InputGroupAddon>
+          <Field name="username" type="text"
+            component={renderField}
+            label="Username"
+            validate={[required, email]}
+          />
+        </InputGroup>
+      </FormGroup>
       <InputGroup className="mb-4">
         <InputGroupAddon addonType="prepend">
           <InputGroupText>
@@ -72,36 +88,39 @@ let LoginForm = (props) => {
         />
       </InputGroup>
       <Row>
-        <Col xs="6">
+        <Col xs="5">
           <Button
             type="submit"
             color="primary"
             className="px-4"
             disabled={submitting}
           >
-            <FormattedMessage id="Login" defaultMessage="Login" />
+            {LoginText}
+            {/* <FormattedMessage id="Login" defaultMessage="Login" /> */}
           </Button>
         </Col>
         {externalApp ?
-          <Col xs="6">
+          <Col xs="7">
             <Button
               type="submit"
               color="default"
               className="px-4"
               onClick={returnToApp}
             >
-              <FormattedMessage id="Back" defaultMessage="Back" />
+              {BackText}
+              {/* <FormattedMessage id="Back" defaultMessage="Back" /> */}
             </Button>
           </Col>
           :
-          <Col xs="6">
+          <Col xs="7">
             <Button
               type="submit"
               color="default"
               className="px-4"
               disabled={pristine || submitting} onClick={reset}
             >
-              <FormattedMessage id="Clear Values" defaultMessage="Clear Values" />
+              {ClearText}
+              {/* <FormattedMessage id="Clear Values" defaultMessage="Clear Values" /> */}
             </Button>
           </Col>
         }

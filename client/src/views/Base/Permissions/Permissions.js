@@ -7,10 +7,11 @@ import Pagination2 from "react-js-pagination";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchPermissions, fetchPermission, deletePermission, createPermission, updatePermission } from '../../../actions/action_permission';
+import { FormattedMessage } from 'react-intl';
+import CreatePermissionForm from "./CreatePermissionForm";
 
 let loggedInUser = "";
 let permissionsToLoad = [];
-
 class Permissions extends Component {
 
   constructor(props) {
@@ -171,6 +172,20 @@ class Permissions extends Component {
     }
   }
 
+  createNewPermission = (newPermissionData) => {
+    console.log(newPermissionData);
+    this.props.createPermission(newPermissionData)
+      .then(response => {
+        this.setState({ newCreatedPermission: response.data });
+        this.state.permissionData.push(this.state.newPermissionData);
+        this.setState({ visible: true });
+        this.toggle();
+      })
+      .catch(err => {
+        this.setState({ formError: err + "" })
+      })
+  }
+
   findPermission(permissionId) {
     this.props.fetchPermission(permissionId).then(result => {
       this.setState({ singlePermissionData: result.data });
@@ -232,35 +247,6 @@ class Permissions extends Component {
         console.log(error);
       }).then(this.toggleEdit())
 
-      // let apiUrl = 'permissions';
-      // axios.put(this.state.baseUrl + apiUrl,
-      //   this.state.singlePermissionData,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     for (var item in permissionsToLoad) {
-      //       if (permissionsToLoad[item].id === this.state.singlePermissionData.id) {
-      //         permissionsToLoad[item] = this.state.singlePermissionData;
-      //       }
-      //     }
-
-      //     // let tableData = this.state.permissionData;
-      //     // for (var item in tableData) {
-      //     //   console.log(this.state.permissionData[item].id);
-      //     //   if (tableData[item].id === this.state.singlePermissionData.id) {
-      //     //     tableData[item] = this.state.singlePermissionData;
-      //     //     this.setState({ permissionData: tableData });
-      //     //   }
-      //     // }
-      //     this.setState({ newCreatedPermission: this.state.singlePermissionData });
-      //     this.setState({ visibleUpdate: true });
-      //     console.log("hello again");
-      //   }).then(this.toggleEdit())
-      //   .catch(err => {
-      //   })
     }
     else {
       this.setState({ formError: "Please fill all fields marked with (*)" });
@@ -289,30 +275,6 @@ class Permissions extends Component {
         console.log('There was an error');
         console.log(this.props.permissionData.permissionDeleteError);
       }
-
-      // let apiUrl = 'permissions/' + permissionId;
-      // axios.delete(this.state.baseUrl + apiUrl,
-      //   {
-      //     headers: {
-      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-      //     }
-      //   })
-      //   .then(response => {
-      //     console.log(response);
-      //     this.fetchPermissions();
-      //     for (var i = 0; i < this.state.permissionData.length; i++) {
-      //       if (this.state.permissionData[i].id === permissionId) {
-      //         this.state.permissionData.splice(i, 1);
-      //       }
-      //     }
-      //     console.log(this.state.permissionData);
-      //   }).then(this.toggleConfirm())
-      //   .catch(err => {
-      //     console.log("Could not delete permission record: " + err);
-      //     console.log(err.response.data.message);
-      //     this.setState({ formError: "" + err.response.data.message });
-      //   })
-
     }
   }
 
@@ -328,25 +290,16 @@ class Permissions extends Component {
   fetchPermissionsPage(pageNumber) {
     let permissionUrl = '?size=' + this.state.itemsPerPage + '&page=' + pageNumber;
     this.props.fetchPermissions(permissionUrl);
-    // axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
-    //   .then((response) => {
-    //     this.setState({ permissionData: response.data.payload });
-    //   }).catch(err => {
-    //   })
   }
 
   changePageItem(numberOfItems) {
-    //console.log("Your items per page: " + numberOfItems.target.value);
-
     const updateStateVariable = () => {
       this.setState({ itemsPerPage: numberOfItems.target.value });
       return true;
     }
 
     //using an asynchronous function
-
     const reloadTable = async () => {
-
       try {
         const response = await updateStateVariable();
         if (response) {
@@ -354,15 +307,18 @@ class Permissions extends Component {
         }
       }
       catch (error) {
-        //console.log(error);
+        console.log(error);
       }
     }
 
     reloadTable();
   }
 
-
-
+  translate = (pageString) => {
+    return (
+      <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+  }
 
 
 
@@ -370,13 +326,11 @@ class Permissions extends Component {
     let { showAction } = this.state;
     // let permissions = this.state.permissionData;
     const singlePermission = this.state.singlePermissionData;
-    console.log(this.props);
+    // console.log(this.props);
     if (this.props.permissionData.permissionsFetched) {
       console.log(this.props.permissionData.permissionsFetched.data.payload);
       permissionsToLoad = this.props.permissionData.permissionsFetched.data.payload;
     }
-    // let permissionsToLoadData = { ...this.props.permissionData.data };
-    // console.log(permissionsToLoadData.payLoad);
     return (
       <div className="animated fadeIn">
 
@@ -384,9 +338,9 @@ class Permissions extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> All Permissions
+                <i className="fa fa-align-justify"></i>{' '}{this.translate("All Permissions")}
                 <div className="pull-right">
-                  <Button onClick={this.toggle} className="mr-1" style={showAction}>Create New Permission</Button>
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>{this.translate("Create New Permission")}</Button>
                 </div>
                 {/* <div className="pull-right" style={showAction}>
                   &nbsp; &nbsp;
@@ -395,21 +349,22 @@ class Permissions extends Component {
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  Permission <strong>{this.state.newCreatedPermission.name}</strong> has been created.
+                  <FormattedMessage id="Permission" defaultMessage="Permission" />{' '}
+                  <strong>{this.state.newCreatedPermission.name}</strong> <FormattedMessage id="has been created" defaultMessage="has been created" />.
                 </Alert>
                 <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  Permission <strong>{this.state.newCreatedPermission.action}</strong> has been updated.
+                  <FormattedMessage id="Permission" defaultMessage="Permission" />{' '}
+                  <strong>{this.state.newCreatedPermission.action}</strong> <FormattedMessage id="has been updated" defaultMessage="has been updated" />.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Action</th>
-                      <th>Description</th>
-                      <th style={showAction}>Actions</th>
+                      <th><FormattedMessage id="tableId" defaultMessage="ID" /></th>
+                      <th><FormattedMessage id="Name" defaultMessage="Name" /></th>
+                      <th><FormattedMessage id="Description" defaultMessage="Description" /></th>
+                      <th style={showAction}><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
                     </tr>
                   </thead>
-                  {/* <tbody>{permissions.map((item, key) => { */}
                   <tbody>{permissionsToLoad.map((item, key) => {
                     return (
                       <tr key={key}>
@@ -417,8 +372,10 @@ class Permissions extends Component {
                         <td>{item.action}</td>
                         <td>{item.description}</td>
                         <td style={showAction}>
-                          <Button size="sm" color="primary" onClick={e => this.findPermission(item.id)}><i className="fa fa-dot-circle-o"></i> Update</Button>{' '}
-                          <Button size="sm" color="danger" onClick={e => this.findPermissionDelete(item.id)}><i className="fa fa-ban"></i> Delete</Button>
+                          <Button size="sm" color="primary" onClick={e => this.findPermission(item.id)}><i className="fa fa-dot-circle-o"></i>
+                            {' '}<FormattedMessage id="Update" defaultMessage="Update" /></Button>{' '}
+                          <Button size="sm" color="danger" onClick={e => this.findPermissionDelete(item.id)}><i className="fa fa-ban"></i>
+                            {' '}<FormattedMessage id="Delete" defaultMessage="Delete" /></Button>
                         </td>
                       </tr>
                     )
@@ -461,9 +418,9 @@ class Permissions extends Component {
                 <strong></strong> Please fill the form below
       </CardHeader>
               <CardBody>
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
-
-                  <p style={{ color: 'red' }}>{this.state.formError}</p>
+                <p style={{ color: 'red' }}>{this.props.permissionData.permissionCreateError}</p>
+                {/* <p style={{ color: 'red' }}>{this.state.formError}</p> */}
+                {/* <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
                   <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="action">Action <span style={{ color: 'red' }}>*</span></Label>
@@ -488,7 +445,8 @@ class Permissions extends Component {
                     <Button color="primary" onClick={this.createPermission}>Submit</Button>{' '}
                     <Button color="secondary" onClick={this.toggle}>Cancel</Button>
                   </ModalFooter>
-                </Form>
+                </Form> */}
+                <CreatePermissionForm onSubmit={this.createNewPermission} toggle={this.toggle} />
               </CardBody>
             </Card>
 

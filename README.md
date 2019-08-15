@@ -13,6 +13,7 @@
 - Java 8+
 - Maven 3+
 - Node 8+
+- PostgreSQL 9+
 
 ######Deploying and Running application:
 > Step One: Build the client side (from the root directory, navigate to the client folder)
@@ -92,11 +93,17 @@ import CryptoJS from "crypto-js";
         sessionStorage.setItem("myToken", decryptedToken); 
     } else {
         // redirect browser to user management login with your app url included as the redirectUrl
-        window.location.href = "http://localhost:3000/applogin/?redirectUrl=" + url_string;
-        // also, for internationalization, you can add a 'lang' param which supports fr, es, en, de and pt languages,// Using French for example ('fr') the previous url can be appended thus
+         window.location.href = "http://localhost:3000/applogin/?redirectUrl=" + url_string;
+        // also, for internationalization, you can add a 'lang' param which supports fr, es, en, de and pt languages,// Using French // for example ('fr') the previous url can be appended thus
         // window.location.href = "http://localhost:3000/applogin/?redirectUrl=" + url_string + "&lang=fr";
     }
 
+// In your render
+    if(sessionStorage.getItem("myToken")) {
+        console.log("Welcome");
+    } else {
+        return <Redirect to={"/login"} />;
+    }
 ```
 
 #####NB: Here we are using 'introspecAppToken' as the key to decrypt the encrypted token.. this can be changed to hard-to-guess string we choose but has to be the same on both ends.

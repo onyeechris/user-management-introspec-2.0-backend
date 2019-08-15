@@ -15,7 +15,7 @@ export const STAFF_CREATE_ERROR = 'STAFF_CREATE_ERROR';
 export const STAFF_UPDATED = 'STAFF_UPDATED';
 export const STAFF_UPDATE_ERROR = 'STAFF_UPDATE_ERROR';
 
-let apiUrl = BASE_URL + 'api/staffs/';
+let apiUrl = BASE_URL + 'staffs/';
 
 interceptor();
 

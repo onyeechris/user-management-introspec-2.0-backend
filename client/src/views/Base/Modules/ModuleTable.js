@@ -4,48 +4,10 @@ import {
     Table
 } from 'reactstrap';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
-// import { connect } from 'react-redux';
-// import { bindActionCreators } from 'redux';
-// import { fetchGroup } from '../../../actions/action_group';
-// import { Link } from "react-router-dom";
 import Pagination2 from "react-js-pagination";
 import { FormattedMessage } from 'react-intl';
 
-class GroupTable extends Component {
-
-    // componentDidMount(){
-    //     console.log(this.props);
-    //     const { hideField, initialPermissionData, activePage, itemsPerPage, changePageItem } = this.props
-    //     let permData = initialPermissionData.slice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage);
-    // }
-
-    // handlePageChange = (pageNumber) => {
-    //     const { hideField, initialPermissionData, activePage, itemsPerPage, changePageItem } = this.props
-    //     let permData = initialPermissionData.slice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage);
-
-
-    //     console.log(pageNumber);
-    //     let permDataNew = [];
-    //     const updateStateVariable = () => {
-    //       firstPermissionsData = { ...initialPermissionData };
-    //       permDataNew = firstPermissionsData.splice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage);
-    //       return true;
-    //     }
-    //     const reloadTable = async () => {
-    //       try {
-    //         const response = await updateStateVariable();
-    //         if (response) {
-    //           permData = permDataNew;
-    //           console.log(permData);
-    //         }
-    //       }
-    //       catch (error) {
-    //         console.log(error);
-    //       }
-    //     }
-    //     reloadTable();
-    //   }
-
+class ModuleTable extends Component {
 
     render() {
         const { hideField, initialPermissionData, activePage, itemsPerPage, changePageItem } = this.props
@@ -55,9 +17,6 @@ class GroupTable extends Component {
             console.log(pageNumber);
             let permDataNew = [];
             const updateStateVariable = () => {
-                //   firstPermissionsData = { ...initialPermissionData };
-                //   permDataNew = firstPermissionsData.splice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage);
-                // permDataNew = numbers.filter(function (x) { return x > 3; });
                 return true;
             }
             const reloadTable = async () => {
@@ -75,11 +34,10 @@ class GroupTable extends Component {
             reloadTable();
         }
 
-
         return (
             <div className="container">
                 <h5>
-                    <FormattedMessage id="Group Permissions" defaultMessage="Group Permissions" />: &nbsp;
+                    <FormattedMessage id="Module Permissions" defaultMessage="Module Permissions" />: &nbsp;
 
                     {initialPermissionData.length > 0 ? initialPermissionData.length : "None"}</h5>
 
@@ -102,7 +60,6 @@ class GroupTable extends Component {
                         )
                     })}
                     </tbody>
-
                     <nav>
                         <Pagination2
                             activePage={activePage}
@@ -121,26 +78,10 @@ class GroupTable extends Component {
                             <option value="50">50</option>
                         </select>
                     </div>
-
                 </Table>
             </div>
         );
     }
 }
 
-// const mapStateToProps = (state) => {
-//     console.log('State is ', state)
-//     return {
-
-//     }
-// }
-
-// const mapDispatchToProps = (dispatch) => {
-//     return bindActionCreators({
-
-//     }, dispatch)
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(GroupTable);
-
-export default GroupTable;
+export default ModuleTable;

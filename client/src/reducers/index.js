@@ -4,6 +4,8 @@ import staff from './staff_reducer';
 import group from './group_reducer';
 import permission from './permission_reducer';
 import locale from './locale_reducer';
+import todo from './todo_reducer';
+import module from './module_reducer';
 import { reducer as formReducer } from 'redux-form';
 
 const rootReducer = combineReducers({
@@ -12,6 +14,8 @@ const rootReducer = combineReducers({
   group,
   permission,
   locale,
+  todo,
+  module,
   form: formReducer,
 });
 
