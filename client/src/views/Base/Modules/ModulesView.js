@@ -10,6 +10,10 @@ import { fetchModule } from '../../../actions/action_module';
 import { Link } from "react-router-dom";
 import Pagination2 from "react-js-pagination";
 import { FormattedMessage } from 'react-intl';
+import {
+  fetchStaffs,
+  // fetchStaff, deleteStaff, createStaff, updateStaff 
+} from '../../../actions/action_staff';
 
 // import ModuleTable from "./ModuleTable";
 
@@ -45,6 +49,9 @@ class ModulesView extends Component {
       singleViewModuleData: this.props.moduleData.moduleSaved ? this.props.moduleData.moduleSaved : "",
       staffData: [],
       staffTableData: {},
+      newCreatedStaff: {},
+      visible: false,
+      visibleUpdate: false,
     };
     this.changePageItem = this.changePageItem.bind(this);
   }
@@ -131,6 +138,12 @@ class ModulesView extends Component {
     }
   }
 
+  translate = (pageString) => {
+    return (
+      <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+  }
+
   render() {
 
     let { groupData } = this.state;
@@ -157,8 +170,14 @@ class ModulesView extends Component {
                 <Link to='/apps'>
                   <i className="fa fa-arrow-left"></i> {' '}
                   <FormattedMessage id="Back" defaultMessage="Back" />
-                  {/* {this.props.module.moduleFetched.data.name} */}
                 </Link>
+                <p style={{ color: 'red' }}>{this.state.currentError}</p>
+                <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
+                  {this.translate("User")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been created and submitted for activation")}.
+                </Alert>
+                <Alert color="warning" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
+                  {this.translate("Update request for user")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been submitted for authorization")}.
+                </Alert>
               </CardHeader>
               <CardBody>
                 <FormGroup row>
@@ -168,7 +187,6 @@ class ModulesView extends Component {
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {/* {singleModuleData.name} */}
                     {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.name : ""}
                   </Col>
                 </FormGroup>
@@ -179,7 +197,6 @@ class ModulesView extends Component {
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {/* {singleModuleData.description} */}
                     {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.code : ""}
                   </Col>
                 </FormGroup>
@@ -190,28 +207,16 @@ class ModulesView extends Component {
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {/* {singleModuleData.description} */}
                     {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.description : ""}
                   </Col>
                 </FormGroup>
                 <br />
-
-
-                {/* <ModuleTable
-                  hideField={this.state.hideField}
-                  changePageItem={this.changePageItem}
-                  handlePageChange={this.handlePageChange}
-                  initialPermissionData={this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.permissions : []}
-                  itemsPerPage={this.state.itemsPerPage}
-                  activePage={this.state.activePage} /> */}
-
               </CardBody>
             </Card>
           </Col>
         </Row>
 
 
-        <br />
         <br />
 
         <Row>
@@ -224,13 +229,7 @@ class ModulesView extends Component {
                 </div>
               </CardHeader>
               <CardBody>
-                <p style={{ color: 'red' }}>{this.state.currentError}</p>
-                <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  {this.translate("User")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been created and submitted for activation")}.
-                </Alert>
-                <Alert color="warning" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  {this.translate("Update request for user")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been submitted for authorization")}.
-                </Alert>
+
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
@@ -238,8 +237,7 @@ class ModulesView extends Component {
                       <th><FormattedMessage id="tableFirstName" defaultMessage="First Name" /></th>
                       <th><FormattedMessage id="tableEmail" defaultMessage="Email" /></th>
                       <th><FormattedMessage id="tableRoleName" defaultMessage="Role" /></th>
-                      <th><FormattedMessage id="tableGroupName" defaultMessage="Group" /></th>
-                      <th style={showAction}><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
+                      <th><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
                     </tr>
                   </thead>
                   <tbody>{staff.map((item, key) => {
@@ -249,8 +247,10 @@ class ModulesView extends Component {
                         <td>{item.first_name}</td>
                         <td>{item.email}</td>
                         <td>{item.maker_checker}</td>
-                        <td>{showGroup(item.group_id)}</td>
                         <td>
+                          <Button size="sm" color="secondary" onClick={e => { console.log("Clicked!") }}><i className="fa fa-note"></i>
+                            {' '}<FormattedMessage id="View" defaultMessage="View" />
+                          </Button>
                         </td>
                       </tr>
                     )
@@ -290,13 +290,15 @@ class ModulesView extends Component {
 const mapStateToProps = (state) => {
   console.log('State is ', state)
   return {
-    moduleData: state.module
+    moduleData: state.module,
+    staffData: state.staff
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    fetchModule
+    fetchModule,
+    fetchStaffs
   }, dispatch)
 }
 
