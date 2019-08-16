@@ -16,7 +16,7 @@ import java.util.Set;
         uniqueConstraints=
         @UniqueConstraint(columnNames={"module", "action"})
 )
-@SequenceGenerator(name = "permGenerator", initialValue = 200, allocationSize = 50)
+@SequenceGenerator(name = "permGenerator", initialValue = 200, allocationSize = 1)
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +25,7 @@ public class Permission implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permGenerator")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "Permission action is required")
     @Size(min = 3)
     @Column(name = "action")
     private String action;

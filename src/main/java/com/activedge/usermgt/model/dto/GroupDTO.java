@@ -4,6 +4,7 @@ import com.activedge.usermgt.model.GroupPK;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -15,15 +16,16 @@ import java.util.Objects;
 /**
  * A DTO for the Group entity.
  */
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Group Transfer Entity")
 public class GroupDTO implements Serializable {
 
     @ApiModelProperty(notes = "The database generated group ID")
-    private GroupPK id;
+    private String id;
 
+//    @NotNull(message = "Group name is required")
     @ApiModelProperty(notes = "The group name with minimum of 3 characters", required = true)
-    @NotNull
     @Size(min = 3, message = "group character length too short. Should be atleast 3 charaters")
     private String name;
 
@@ -31,80 +33,15 @@ public class GroupDTO implements Serializable {
     @Size(min = 10, message = "group description length too short. Should be atleast 10 charaters")
     private String description;
 
-    @Valid
+    @ApiModelProperty(notes = "The group module/app")
+    @Size(min = 3, message = "group module length too short. Should be atleast 3 charaters")
+    private String module;
+
+//    @Valid
     private Set<PermissionDTO> permissions = new HashSet<>();
 
-    @ApiModelProperty(notes = "The redis reference number if available")
-    private String redis_key;
+//    @Valid
+    private Set<StaffDTO> staffs = new HashSet<>();
 
-    public GroupPK getId() {
-        return id;
-    }
 
-    public void setId(GroupPK id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<PermissionDTO> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<PermissionDTO> permissions) {
-        this.permissions = permissions;
-    }
-
-    public String getRedis_key() {
-        return redis_key;
-    }
-
-    public void setRedis_key(String redis_key) {
-        this.redis_key = redis_key;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        GroupDTO groupDTO = (GroupDTO) o;
-        if (groupDTO.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), groupDTO.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
-
-    @Override
-    public String toString() {
-        return "GroupDTO{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", permissions='" + getPermissions() + "'" +
-            "}";
-    }
 }

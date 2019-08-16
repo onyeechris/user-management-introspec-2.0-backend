@@ -26,18 +26,18 @@ public abstract class AbstractAuditingEntity<U> implements Serializable {
 
     protected static final long serialVersionUID = 1L;
 
-    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
-    @JsonIgnore
-    protected String createdBy;
+//    @Column(name = "created_by", nullable = true, length = 50, updatable = false)
+//    @JsonIgnore
+//    protected String createdBy;
 
     @CreatedBy
     @Column(name = "approved_by", nullable = false, length = 50, updatable = false)
     @JsonIgnore
     protected String approvedBy;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
-    @JsonIgnore
-    protected LocalDateTime createdDate = LocalDateTime.now();
+//    @Column(name = "created_date", nullable = false, updatable = false)
+//    @JsonIgnore
+//    protected LocalDateTime createdDate = LocalDateTime.now();
 
     @CreatedDate
     @Column(name = "approved_date", nullable = false, updatable = false)
@@ -45,18 +45,18 @@ public abstract class AbstractAuditingEntity<U> implements Serializable {
 //    @Temporal(TemporalType.TIMESTAMP)
     protected Instant approvedDate = Instant.now();
 
-    @Column(name = "last_modified_by", length = 50)
-    @JsonIgnore
-    protected U lastModifiedBy;
+//    @Column(name = "last_modified_by", length = 50)
+//    @JsonIgnore
+//    protected U lastModifiedBy;
 
     @LastModifiedBy
     @Column(name = "last_modified_approved_by", length = 50)
     @JsonIgnore
     protected U lastModifiedApprovedBy;
 
-    @Column(name = "last_modified_date")
-    @JsonIgnore
-    protected LocalDateTime lastModifiedDate = LocalDateTime.now();
+//    @Column(name = "last_modified_date")
+//    @JsonIgnore
+//    protected LocalDateTime lastModifiedDate = LocalDateTime.now();
 
     @LastModifiedDate
     @Column(name = "last_modified_approved_date")

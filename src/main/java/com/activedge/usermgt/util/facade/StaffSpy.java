@@ -58,12 +58,12 @@ public class StaffSpy extends Spy implements RedisQueue {
                 this.staff.setRedisKey(staf.getRedisKey());
                 if(staf.getId() == null) {
                     // creating...
-                    this.staff.setCreatedBy(makerItem.get().getMaker());
-                    this.staff.setCreatedDate(makerItem.get().getAt());
+//                    this.staff.setCreatedBy(makerItem.get().getMaker());
+//                    this.staff.setCreatedDate(makerItem.get().getAt());
                 } else {
                     // updating...
-                    this.staff.setLastModifiedBy(makerItem.get().getMaker());
-                    this.staff.setLastModifiedDate(makerItem.get().getAt());
+//                    this.staff.setLastModifiedBy(makerItem.get().getMaker());
+//                    this.staff.setLastModifiedDate(makerItem.get().getAt());
                 }
                 // delete this log from redis
                 delete4rmQueue(makerItem.get().getId());

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,12 @@ import javax.persistence.Version;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A DTO for the Staff entity.
  */
+@Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Staff Transfer Entity")
@@ -60,9 +60,9 @@ public class StaffDTO implements Serializable {
     @JsonFormat(pattern = "MM/dd/yyyy")
     private LocalDate hire_date;
 
-//    @ApiModelProperty(notes = "The staff permission group id", required = true)
-//    @NotNull(message = "Staff access group is required.")
-//    private Long group_id;
+    @ApiModelProperty(notes = "The staff permission groups")
+    @NotNull(message = "Staff access group is required.")
+    private Set<GroupDTO> groups = new HashSet<>();
 
     @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
@@ -70,119 +70,4 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The redis reference number if available")
     private String redis_key;
 
-
-    public Boolean getActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirst_name() {
-        return first_name;
-    }
-
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
-    }
-
-    public String getLast_name() {
-        return last_name;
-    }
-
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public MakerChecker getMaker_checker() {
-        return maker_checker;
-    }
-
-    public void setMaker_checker(MakerChecker maker_checker) {
-        this.maker_checker = maker_checker;
-    }
-
-    public LocalDate getHire_date() {
-        return hire_date;
-    }
-
-    public void setHire_date(LocalDate hire_date) {
-        this.hire_date = hire_date;
-    }
-
-//    public Long getGroup_id() {
-//        return group_id;
-//    }
-//
-//    public void setGroup_id(Long group_id) {
-//        this.group_id = group_id;
-//    }
-
-    public String getRedis_key() {
-        return redis_key;
-    }
-
-    public void setRedis_key(String redisKey) {
-        this.redis_key = redisKey;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        StaffDTO staffDTO = (StaffDTO) o;
-        if (staffDTO.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), staffDTO.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
-
-    @Override
-    public String toString() {
-        return "StaffDTO{" +
-            "id=" + getId() +
-            ", firstName='" + getFirst_name() + "'" +
-            ", lastName='" + getLast_name() + "'" +
-            ", phone='" + getPhone() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", makerChecker='" + getMaker_checker() + "'" +
-            ", hireDate='" + getHire_date() + "'" +
-//            ", group=" + getGroup_id() +
-            "}";
-    }
 }

@@ -40,6 +40,10 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     @Column(name = "description")
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "module", insertable = false, updatable = false)
+    private Module module;
+
 //    @OneToMany(mappedBy = "group")
 //    private Set<Staff> staff = new HashSet<>();
 
@@ -53,7 +57,8 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     @BatchSize(size = 10)
     private Set<Staff> staffs = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany
     @JoinTable(name = "groups_permission",
             joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id"), @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))

@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +68,7 @@ public class GroupController {
                     .collect(Collectors.joining(", ")));
         }
 
-        groupDTO.setId(null);
+        groupDTO.setId(UUID.randomUUID().toString().replaceAll("-", ""));
         GroupDTO result = groupService.save(groupDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))

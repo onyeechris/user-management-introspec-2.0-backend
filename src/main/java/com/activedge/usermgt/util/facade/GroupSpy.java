@@ -51,12 +51,12 @@ public class GroupSpy extends Spy implements RedisQueue {
                 this.group.setPermissions(grp.getPermissions());
                 if(grp.getId() == null) {
                     // creating...
-                    this.group.setCreatedBy(makerItem.get().getMaker());
-                    this.group.setCreatedDate(makerItem.get().getAt());
+//                    this.group.setCreatedBy(makerItem.get().getMaker());
+//                    this.group.setCreatedDate(makerItem.get().getAt());
                 } else {
                     // updating...
-                    this.group.setLastModifiedBy(makerItem.get().getMaker());
-                    this.group.setLastModifiedDate(makerItem.get().getAt());
+//                    this.group.setLastModifiedBy(makerItem.get().getMaker());
+//                    this.group.setLastModifiedDate(makerItem.get().getAt());
                 }
                 // delete this log from redis
                 delete4rmQueue(makerItem.get().getId());

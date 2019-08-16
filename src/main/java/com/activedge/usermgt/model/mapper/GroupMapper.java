@@ -3,21 +3,37 @@ package com.activedge.usermgt.model.mapper;
 
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
+import com.activedge.usermgt.repository.ModuleRepository;
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.UUID;
 
 /**
  * Mapper for the entity Group and its DTO GroupDTO.
  */
-@Mapper(componentModel = "spring", uses = {PermissionMapper.class})
+@Mapper(componentModel = "spring", uses = {ModuleMapper.class})
 public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
 
-    @Mapping(source = "redisKey", target = "redis_key")
+    ModuleMapper mapper = Mappers.getMapper( ModuleMapper.class );
+
+    @Mapping(source = "id.id", target = "id")
+    @Mapping(source = "id.module.code", target = "module")
     GroupDTO toDto(Group group);
 
 //    @Mapping(target = "staff", ignore = true)
-    @Mapping(source = "redis_key", target = "redisKey")
+//    @Mapping(source = "redis_key", target = "redisKey")
+//    @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getModule()), groupDTO.getId()) )")
+    @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getModule()), groupDTO.getId()) )")
     Group toEntity(GroupDTO groupDTO);
+
+//    @ObjectFactory
+//    default GroupPK createId(GroupDTO dto) {
+//        return dto == null ? null : new GroupPK(fromCode(dto.getModule()), dto.getId());
+//    }
 
     default Group fromId(GroupPK id) {
         if (id == null) {
@@ -27,4 +43,14 @@ public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
         group.setId(id);
         return group;
     }
+
+    default Module fromCode(String code) {
+        if (code == null) {
+            return null;
+        }
+        Module module = mapper.fromId(code);
+
+        return module;
+    }
+
 }

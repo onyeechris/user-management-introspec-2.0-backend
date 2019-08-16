@@ -4,10 +4,14 @@ import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.Permission;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.model.dto.PermissionDTO;
+import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.mapper.GroupMapper;
+import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
+import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.util.Lambda;
@@ -40,12 +44,16 @@ public class GroupServiceImpl implements GroupService {
     private MakerItemRepository makerItemRepository;
 
     private final GroupMapper groupMapper;
+    private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
+    private final StaffMapper staffMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, MakerItemRepository makerItemRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper, MakerItemRepository makerItemRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
+        this.staffMapper = staffMapper;
+        this.moduleMapper = moduleMapper;
         this.makerItemRepository = makerItemRepository;
     }
 
@@ -60,33 +68,88 @@ public class GroupServiceImpl implements GroupService {
 //        Group group = groupMapper.toEntity(groupDTO);
         log.info("Request to save Group : {}", groupDTO);
         Group g;
+        GroupPK groupPK = new GroupPK(moduleMapper.fromId(groupDTO.getModule()), groupDTO.getId());
 
+        Optional<Group> group = this.findById(groupPK);
 
-        if(groupDTO.getRedis_key() == null) {
-            Optional<Group> group = this.findById(groupDTO.getId());
+        if(!group.isPresent()) throw new NotFoundException("No Group ["+groupDTO.getId()+"] found for module["+groupDTO.getModule()+"]!");
 
-            if(!group.isPresent()) throw new NotFoundException("No Id["+groupDTO.getId()+"] found !");
+        g = group.get();
 
-            g = group.get();
+        groupDTO.setName(groupDTO.getName() == null ? g.getName() : groupDTO.getName());
+        groupDTO.setDescription(groupDTO.getDescription() == null ? g.getDescription() : groupDTO.getDescription());
 
-            groupDTO.setName(groupDTO.getName() == null ? g.getName() : groupDTO.getName());
-            groupDTO.setDescription(groupDTO.getDescription() == null ? g.getDescription() : groupDTO.getDescription());
-            if(flag == 1) {
-                for (Permission p : g.getPermissions()) {
-                    // add permission attached to entity
-                    groupDTO.getPermissions().add(permissionMapper.toDto(p));
-                }
-            } else {
-                // delete permission attached to entity
-                for(PermissionDTO p: groupDTO.getPermissions()) {
-                    if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
-                        g.getPermissions().remove(permissionMapper.toEntity(p));
+        switch (flag) {
+            // 1 => Add permission(s) | staffs to group if any is present
+            case 1:
+                if(!groupDTO.getPermissions().isEmpty()) {
+                    for (Permission p : g.getPermissions()) {
+                        // add permission attached to entity
+                        groupDTO.getPermissions().add(permissionMapper.toDto(p));
                     }
+                } else {
+                    groupDTO.setPermissions(permissionMapper.toDtoSet(g.getPermissions()));
                 }
-                groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
-            }
-            log.info("Updating group... {}", groupDTO);
+                // ---                                                              --- //
+                if(!groupDTO.getStaffs().isEmpty()) {
+                    for (Staff s : g.getStaffs()) {
+                        // add staff attached to entity
+                        groupDTO.getStaffs().add(staffMapper.toDto(s));
+                    }
+                } else {
+                    groupDTO.setStaffs(staffMapper.toDtoSet(g.getStaffs()));
+                }
+                break;
+
+            // otherwise delete if flag is not set to true
+            default:
+                // delete permission attached to entity
+                if(!groupDTO.getPermissions().isEmpty()) {
+                    for(PermissionDTO p: groupDTO.getPermissions()) {
+                        if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
+                            g.getPermissions().remove(permissionMapper.toEntity(p));
+                        }
+                    }
+                    groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
+                } else {
+                    groupDTO.setPermissions(permissionMapper.toDtoSet(g.getPermissions()));
+                }
+
+                // delete staff attached to entity
+                if(!groupDTO.getStaffs().isEmpty()) {
+                    for(StaffDTO s: groupDTO.getStaffs()) {
+                        if (!g.getStaffs().add(staffMapper.toEntity(s))) {
+                            g.getStaffs().remove(staffMapper.toEntity(s));
+                        }
+                    }
+                    groupDTO.setStaffs(groupMapper.toDto(g).getStaffs());
+                } else {
+                    groupDTO.setStaffs(staffMapper.toDtoSet(g.getStaffs()));
+                }
+                break;
+
         }
+
+        /*
+        if(flag == 1) {
+            for (Permission p : g.getPermissions()) {
+                // add permission attached to entity
+                groupDTO.getPermissions().add(permissionMapper.toDto(p));
+            }
+        } else {
+            // delete permission attached to entity
+            for(PermissionDTO p: groupDTO.getPermissions()) {
+                if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
+                    g.getPermissions().remove(permissionMapper.toEntity(p));
+                }
+            }
+            groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
+        }
+        */
+
+        log.debug("Updating group... {}", groupDTO);
+
+
 //        else {
 //            groupDTO.setId(null);
 //            groupDTO.setPermissions(new HashSet<>());
@@ -95,8 +158,11 @@ public class GroupServiceImpl implements GroupService {
 
         g = groupMapper.toEntity(groupDTO);
 
-        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-        spyGroupObj.checkModel();
+        log.debug("Converted group ... {}", g);
+
+//      Enable MakerChecker
+//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
+//        spyGroupObj.checkModel();
 
         // added for tests
 //        Group gg = groupMapper.toEntity(groupDTO);
@@ -110,17 +176,21 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO save(GroupDTO groupDTO) throws NotFoundException, ActivityRequiredException {
-        log.info("Request to save Group : {}", groupDTO);
+        log.debug("Request to save Group : {}", groupDTO);
 
         Group g;
 
         // create new group
         groupDTO.setPermissions(new HashSet<>());
-        log.info("Saving group... {}", groupDTO);
+        groupDTO.setStaffs(new HashSet<>());
+
+        log.debug("Saving group... {}", groupDTO);
+
         g = groupMapper.toEntity(groupDTO);
 
-        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-        spyGroupObj.checkModel();
+//      Enable MakerChecker
+//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
+//        spyGroupObj.checkModel();
 
         // added for tests
 //        Group gg = groupMapper.toEntity(groupDTO);

@@ -5,6 +5,8 @@ import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import org.mapstruct.*;
 
+import java.util.Set;
+
 /**
  * Mapper for the entity Staff and its DTO StaffDTO.
  */
@@ -18,6 +20,8 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "makerChecker", target = "maker_checker")
     @Mapping(source = "redisKey", target = "redis_key")
     StaffDTO toDto(Staff staff);
+
+    Set<StaffDTO> toDtoSet(Set<Staff> staffs);
 
 //    @Mapping(source = "group_id", target = "group")
     @Mapping(source = "first_name", target = "firstName")

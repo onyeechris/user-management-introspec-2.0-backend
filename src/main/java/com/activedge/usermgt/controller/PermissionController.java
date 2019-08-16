@@ -72,17 +72,17 @@ public class PermissionController {
         }
 
         permissionDTO.setId(null);
+//
+//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
+//        Authority auth;
+//
+//        if(authority.isPresent()) {
+//            auth = authority.get();
+//        } else {
+//            throw new ServletRequestBindingException("Module[" + module + "] not found");
+//        }
 
-        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-        Authority auth;
-
-        if(authority.isPresent()) {
-            auth = authority.get();
-        } else {
-            throw new ServletRequestBindingException("Module[" + module + "] not found");
-        }
-
-        permissionDTO.setAuthority(auth);
+//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
@@ -111,16 +111,16 @@ public class PermissionController {
                     .collect(Collectors.joining(",")));
         }
 
-        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-        Authority auth;
-
-        if(authority.isPresent()) {
-            auth = authority.get();
-        } else {
-            throw new ServletRequestBindingException("Module[" + module + "] not found");
-        }
-
-        permissionDTO.setAuthority(auth);
+//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
+//        Authority auth;
+//
+//        if(authority.isPresent()) {
+//            auth = authority.get();
+//        } else {
+//            throw new ServletRequestBindingException("Module[" + module + "] not found");
+//        }
+//
+//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.ok()
