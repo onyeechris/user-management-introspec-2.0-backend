@@ -2,6 +2,8 @@ package com.activedge.usermgt.model;
 
 
 import com.activedge.usermgt.model.event.GroupEntityListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
@@ -13,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "groups", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "name" } ) } )
 @EntityListeners(GroupEntityListener.class)
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
@@ -33,7 +35,8 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     @NotNull
     @Size(min = 3)
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
+//    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Size(min = 10)
@@ -48,6 +51,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 //    private Set<Staff> staff = new HashSet<>();
 
     @ManyToMany
+    @JsonManagedReference
     @JoinTable(name = "staff_group",
             joinColumns = {
                 @JoinColumn(name = "group_id", referencedColumnName = "id"),
@@ -59,6 +63,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @ManyToMany
+    @JsonManagedReference
     @JoinTable(name = "groups_permission",
             joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id"), @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
@@ -114,6 +119,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     }
 
     public Group staff(Set<Staff> staff) {
+        System.out.println(">>>>>> Staff is " + staff);
         this.staffs = staff;
         return this;
     }
@@ -167,14 +173,14 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
         Group group = (Group) o;
         return Objects.equals(id, group.id) &&
                 Objects.equals(name, group.name) &&
-                Objects.equals(description, group.description) &&
+                Objects.equals(description, group.description);/*&&
                 Objects.equals(staffs, group.staffs) &&
-                Objects.equals(permissions, group.permissions);
+                Objects.equals(permissions, group.permissions);*/
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, staffs, permissions);
+        return Objects.hash(super.hashCode(), id, name, description/*, staffs, permissions*/);
     }
 
     @Override
@@ -183,8 +189,8 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", staffs=" + getStaffs() +
-                ", permissions=" + getPermissions() +
+//                ", staffs=" + getStaffs() +
+//                ", permissions=" + getPermissions() +
                 '}';
     }
 }

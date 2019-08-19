@@ -3,6 +3,7 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.GroupDTO;
@@ -168,7 +169,27 @@ public class GroupServiceImpl implements GroupService {
 //        Group gg = groupMapper.toEntity(groupDTO);
 //        gg.setCreatedBy("test");
 //        gg.setCreatedDate(LocalDateTime.now());
-
+//        {
+//            "id": "b3b0c1b47a0140688edc853f3f78b995",
+//                "name": "GroupName",
+//                "description": "Group name description",
+//                "module": "ATM",
+//                "permissions": [
+//            {
+//                "id": 1,
+//                    "action": "CREATE-ACCOUNT",
+//                    "description": "creating account endpoint"
+//            }
+//    ],
+//            "staffs": [
+//            {
+//                "id": 3,
+//                    "email": "admin@aet.com",
+//                    "groups": [],
+//                "activated": true
+//            }
+//    ]
+//        }
 //        g = groupRepository.save(gg);
 
         return groupMapper.toDto(groupRepository.save(g));
@@ -210,8 +231,8 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<GroupDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Group");
+    public Page<GroupDTO> findAll(Module module, Pageable pageable) {
+        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
         return groupRepository.findAll(pageable)
             .map(groupMapper::toDto);
     }
@@ -221,7 +242,8 @@ public class GroupServiceImpl implements GroupService {
      *
      * @return the list of entities
      */
-    public Page<GroupDTO> findAllWithEagerRelationships(Pageable pageable) {
+    public Page<GroupDTO> findAllWithEagerRelationships(Module module, Pageable pageable) {
+        log.debug("Request to get module Group" + groupRepository.findAll(pageable));
         return groupRepository.findAllWithEagerRelationships(pageable).map(groupMapper::toDto);
     }
     
@@ -232,11 +254,18 @@ public class GroupServiceImpl implements GroupService {
      * @param id the id of the entity
      * @return the entity
      */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Optional<GroupDTO> findOne(GroupPK id) {
+//        log.debug("Request to get Group : {}", id);
+//        return groupRepository.findOneWithEagerRelationships(id)
+//            .map(groupMapper::toDto);
+//    }
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupDTO> findOne(GroupPK id) {
         log.debug("Request to get Group : {}", id);
-        return groupRepository.findOneWithEagerRelationships(id)
+        return groupRepository.findById(id)
             .map(groupMapper::toDto);
     }
 

@@ -182,17 +182,4 @@ public class StaffController {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
-    /*
-     * Helper methods
-     */
-    private Module getModule(String mdl) throws ServletRequestBindingException {
-        Optional<Module> module = this.moduleRepository.findById(mdl);
-
-        if(!module.isPresent()) {
-            throw new ServletRequestBindingException("Module[" + mdl + "] not found");
-        }
-
-        return module.get();
-    }
-
 }

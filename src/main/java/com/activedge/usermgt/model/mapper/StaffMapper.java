@@ -19,6 +19,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "hireDate", target = "hire_date")
     @Mapping(source = "makerChecker", target = "maker_checker")
     @Mapping(source = "redisKey", target = "redis_key")
+    @Mapping(target = "groups", ignore = true)
     StaffDTO toDto(Staff staff);
 
     Set<StaffDTO> toDtoSet(Set<Staff> staffs);

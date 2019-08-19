@@ -2,7 +2,9 @@ package com.activedge.usermgt.model;
 
 import com.activedge.usermgt.model.enumeration.MakerChecker;
 import com.activedge.usermgt.model.event.StaffEntityListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
@@ -95,6 +97,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
             }
     )
     @BatchSize(size = 10)
+    @JsonBackReference
     private Set<Group> groups = new HashSet<>();
 
     public Long getId() {

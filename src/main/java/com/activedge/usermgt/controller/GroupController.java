@@ -1,11 +1,14 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.controller.util.BaseEntity;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.GroupPK;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
+import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,7 +41,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/")
 @Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group.")
-public class GroupController {
+public class GroupController extends BaseEntity {
 
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
 
@@ -45,7 +49,10 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    public GroupController(GroupService groupService) {
+    private ModuleRepository moduleRepository;
+
+    public GroupController(GroupService groupService, ModuleRepository moduleRepository) {
+        super(moduleRepository);
         this.groupService = groupService;
     }
 
@@ -58,7 +65,7 @@ public class GroupController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> createGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> createGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors()) {
@@ -69,9 +76,10 @@ public class GroupController {
         }
 
         groupDTO.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+        groupDTO.setModule(module);
         GroupDTO result = groupService.save(groupDTO);
 
-        return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
+        return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -87,7 +95,7 @@ public class GroupController {
      */
     @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> updateGroups(@Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors() || groupDTO.getId() == null) {
@@ -97,6 +105,7 @@ public class GroupController {
                     .collect(Collectors.joining(",")));
         }
 
+        groupDTO.setModule(module);
         GroupDTO result = groupService.save(groupDTO, flag);
 
         return ResponseEntity.ok()
@@ -113,14 +122,18 @@ public class GroupController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String mdl, @RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
         log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
 
+        Module module = this.getModule(mdl);
+
+        log.debug("Module is: {}", module);
+
         if (eagerload) {
-            page = groupService.findAllWithEagerRelationships(pageable);
+            page = groupService.findAllWithEagerRelationships(module, pageable);
         } else {
-            page = groupService.findAll(pageable);
+            page = groupService.findAll(module, pageable);
         }
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/groups?eagerload=%b", eagerload));
@@ -136,15 +149,18 @@ public class GroupController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<GroupDTO> getGroups(@RequestParam(value = "app", defaultValue="all") String app, @PathVariable Long id) {
+    public ResponseEntity<GroupDTO> getGroups(@RequestHeader(value = "Module", required = true) String mdl, @RequestParam(value = "app", defaultValue="all") String app, @PathVariable String id) throws ServletRequestBindingException {
         log.debug("REST request to get Group :{}, App:{}", id, app);
-        Optional<GroupDTO> groupsDTO = groupService.findOne(new GroupPK());
+
+        Module module = this.getModule(mdl);
+
+        Optional<GroupDTO> groupsDTO = groupService.findOne(new GroupPK(module, id));
 
         if (!groupsDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/"+ENTITY_NAME+"/" + id);
+        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/auth-service/"+ENTITY_NAME+"/" + id);
 
         return new ResponseEntity<>(groupsDTO.get(), headers, HttpStatus.OK);
     }

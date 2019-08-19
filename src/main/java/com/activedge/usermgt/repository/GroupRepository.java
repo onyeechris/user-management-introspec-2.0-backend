@@ -22,6 +22,9 @@ public interface GroupRepository extends JpaRepository<Group, GroupPK> {
     @Query(value = "select distinct groups from Group groups left join fetch groups.permissions")
     List<Group> findAllWithEagerRelationships();
 
+//    @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")
+//    Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
+
     @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")
     Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
 

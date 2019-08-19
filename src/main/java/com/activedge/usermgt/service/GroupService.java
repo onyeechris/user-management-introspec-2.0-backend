@@ -3,6 +3,7 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.GroupPK;
+import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
@@ -31,14 +32,14 @@ public interface GroupService {
      * @param pageable the pagination information
      * @return the list of entities
      */
-    Page<GroupDTO> findAll(Pageable pageable);
+    Page<GroupDTO> findAll(Module module, Pageable pageable);
 
     /**
      * Get all the Group with eager load of many-to-many relationships.
      *
      * @return the list of entities
      */
-    Page<GroupDTO> findAllWithEagerRelationships(Pageable pageable);
+    Page<GroupDTO> findAllWithEagerRelationships(Module module, Pageable pageable);
     
     /**
      * Get the "id" groups.

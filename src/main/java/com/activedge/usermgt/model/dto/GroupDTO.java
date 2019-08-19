@@ -43,5 +43,4 @@ public class GroupDTO implements Serializable {
 //    @Valid
     private Set<StaffDTO> staffs = new HashSet<>();
 
-
 }

@@ -1,5 +1,6 @@
 package com.activedge.usermgt.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,8 @@ public class Module implements Serializable {
     @Column(length = 255)
     private String description;
 
-    @OneToMany(mappedBy = "module")
+    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER)
+    @JsonBackReference
     Set<StaffModule> staffModules;
 
 //    @OneToMany(mappedBy = "module")

@@ -1,5 +1,6 @@
 package com.activedge.usermgt.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ public class StaffModule {
 
     @ManyToOne
     @JoinColumn(name = "module")
+    @JsonManagedReference
     Module module;
 
     @ManyToOne
