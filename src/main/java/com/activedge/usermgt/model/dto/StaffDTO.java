@@ -1,23 +1,14 @@
 package com.activedge.usermgt.model.dto;
 
-import com.activedge.usermgt.model.enumeration.MakerChecker;
-import com.activedge.usermgt.model.log.MakerItem;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
-import com.activedge.usermgt.service.SpringUtil;
-import com.activedge.usermgt.service.StaffService;
+import com.activedge.usermgt.model.enumeration.Type;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.Setter;
 
-import java.time.Instant;
-import javax.persistence.Version;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -26,7 +17,8 @@ import java.util.*;
 /**
  * A DTO for the Staff entity.
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Staff Transfer Entity")
@@ -52,9 +44,9 @@ public class StaffDTO implements Serializable {
     @Email(message = "Please enter a correct email address")
     private String email;
 
-    @ApiModelProperty(notes = "The staff account type", required = true, example = "MAKER")
-    @NotNull(message = "Staff Maker or Checker role is required.")
-    private MakerChecker maker_checker;
+    @ApiModelProperty(notes = "The staff account type", required = true, example = "USER")
+    @NotNull(message = "Staff ADMIN or USER type is required.")
+    private Type user_type;
 
     @ApiModelProperty(notes = "The staff hired date", example = "MM/dd/yyyy")
     @JsonFormat(pattern = "MM/dd/yyyy")
@@ -67,7 +59,18 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
 
-    @ApiModelProperty(notes = "The redis reference number if available")
-    private String redis_key;
+    @Override
+    public String toString() {
+        return "StaffDTO{" +
+                "id=" + id +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", user_type=" + user_type +
+                ", hire_date=" + hire_date +
+                ", activated=" + activated +
+                '}';
+    }
 
 }

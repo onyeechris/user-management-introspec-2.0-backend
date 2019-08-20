@@ -14,4 +14,7 @@ import java.util.Optional;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, String> {
 
+    @Query("select modules from Module modules left join fetch modules.staffModules where modules.id =:id")
+    Optional<Module> findOneWithEagerRelationships(@Param("id") String id);
+
 }

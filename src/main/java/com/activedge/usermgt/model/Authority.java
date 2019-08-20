@@ -1,79 +1,39 @@
 package com.activedge.usermgt.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
+@ToString
 @Entity
+@Getter
+@Setter
 @Table(name = "introspec_authority")
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private AuthorityPK id;
+//    @EmbeddedId
+//    private AuthorityPK id;
+    @Id
+    @NotNull
+    @Size(min = 3)
+    @Column(name = "code")
+    private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "module",insertable = false, updatable = false)
-    private Module module;
+//    @ManyToOne
+//    @JoinColumn(name = "module",insertable = false, updatable = false)
+//    private Module module;
 
     @NotNull
     @Size(max = 50)
     @Column(length = 50/*, unique = true*/)
     private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Module getModule() {
-        return module;
-    }
-
-    public void setModule(Module module) {
-        this.module = module;
-    }
-
-    public AuthorityPK getId() {
-        return id;
-    }
-
-    public void setId(AuthorityPK id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Authority authority = (Authority) o;
-
-        return !(name != null ? !name.equals(authority.name) : authority.name != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "Authority{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", module='" + module.getCode() + '\'' +
-                '}';
-    }
 
 }
 

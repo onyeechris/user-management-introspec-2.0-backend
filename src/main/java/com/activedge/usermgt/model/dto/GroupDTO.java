@@ -1,10 +1,13 @@
 package com.activedge.usermgt.model.dto;
 
 import com.activedge.usermgt.model.GroupPK;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -16,7 +19,8 @@ import java.util.Objects;
 /**
  * A DTO for the Group entity.
  */
-@Data
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Group Transfer Entity")
 public class GroupDTO implements Serializable {
@@ -35,12 +39,22 @@ public class GroupDTO implements Serializable {
 
     @ApiModelProperty(notes = "The group module/app")
     @Size(min = 3, message = "group module length too short. Should be atleast 3 charaters")
-    private String module;
+    private String mod;
 
 //    @Valid
+//    @JsonBackReference
     private Set<PermissionDTO> permissions = new HashSet<>();
 
 //    @Valid
+//    @JsonBackReference
     private Set<StaffDTO> staffs = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "GroupDTO{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", module='" + mod + '\'' +
+                '}';
+    }
 }

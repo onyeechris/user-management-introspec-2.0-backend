@@ -69,11 +69,11 @@ public class GroupServiceImpl implements GroupService {
 //        Group group = groupMapper.toEntity(groupDTO);
         log.info("Request to save Group : {}", groupDTO);
         Group g;
-        GroupPK groupPK = new GroupPK(moduleMapper.fromId(groupDTO.getModule()), groupDTO.getId());
+        GroupPK groupPK = new GroupPK(moduleMapper.fromId(groupDTO.getMod()), groupDTO.getId());
 
         Optional<Group> group = this.findById(groupPK);
 
-        if(!group.isPresent()) throw new NotFoundException("No Group ["+groupDTO.getId()+"] found for module["+groupDTO.getModule()+"]!");
+        if(!group.isPresent()) throw new NotFoundException("No Group ["+groupDTO.getId()+"] found for module["+groupDTO.getMod()+"]!");
 
         g = group.get();
 
@@ -161,7 +161,7 @@ public class GroupServiceImpl implements GroupService {
 
         log.debug("Converted group ... {}", g);
 
-//      Enable MakerChecker
+//      Enable Type
 //        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
 //        spyGroupObj.checkModel();
 
@@ -209,7 +209,7 @@ public class GroupServiceImpl implements GroupService {
 
         g = groupMapper.toEntity(groupDTO);
 
-//      Enable MakerChecker
+//      Enable Type
 //        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
 //        spyGroupObj.checkModel();
 
@@ -231,9 +231,9 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<GroupDTO> findAll(Module module, Pageable pageable) {
-        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
-        return groupRepository.findAll(pageable)
+    public Page<GroupDTO> findAll(String module, Pageable pageable) {
+//        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
+        return groupRepository.findAllByModule_Code(module, pageable)
             .map(groupMapper::toDto);
     }
 
@@ -242,7 +242,7 @@ public class GroupServiceImpl implements GroupService {
      *
      * @return the list of entities
      */
-    public Page<GroupDTO> findAllWithEagerRelationships(Module module, Pageable pageable) {
+    public Page<GroupDTO> findAllWithEagerRelationships(Pageable pageable) {
         log.debug("Request to get module Group" + groupRepository.findAll(pageable));
         return groupRepository.findAllWithEagerRelationships(pageable).map(groupMapper::toDto);
     }

@@ -2,7 +2,7 @@ package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.config.JwtConfig;
 import com.activedge.usermgt.model.*;
-import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.LdapUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,8 +11,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -140,9 +137,14 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         String module = request.getHeader(jwtConfig.getModule());
 
-        List<String> allowedModules = staff.getAuthorities().stream().map(authority -> authority.getModule().getCode()).collect(Collectors.toList());;
+        List<String> allowedModules = staff.getAssignments()
+                .stream()
+                .map(userApp -> userApp.getModule().getCode())
+                .collect(Collectors.toList());
 
-        if(!allowedModules.contains(module) && !allowedModules.contains("ADMIN")) return "N/A";
+        System.out.println("Staff modules: " + allowedModules);
+
+//        if(!allowedModules.contains(module) && !allowedModules.contains("ADMIN")) return "N/A";
 
         return Jwts.builder()
                 .setSubject(auth.getName())
@@ -168,10 +170,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         String encryptedPassword = encoder.encode(ldapUser.getUsername() + "secret");
         newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(ldapUser.getUsername().split(" ")[0]);
-        newUser.setLastName(ldapUser.getUsername().split(" ")[1]);
+        newUser.setFirst_name(ldapUser.getUsername().split(" ")[0]);
+        newUser.setLast_name(ldapUser.getUsername().split(" ")[1]);
         newUser.setEmail(ldapUser.getUserid().toLowerCase() + "@default.com");
-        newUser.setMakerChecker(MakerChecker.NONE);
+        newUser.setType(Type.USER);
         // new user is active
         newUser.setActivated(true);
         // new user gets registration key

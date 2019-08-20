@@ -71,9 +71,6 @@ public class StaffController {
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    @ApiResponses(value = {
-            @ApiResponse(code=202, message = "Accepts request to create a new staff, pending the CHECKER's approval.")
-    })
     public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
         log.info("---REST request to save a {} : {}, token: {}", ENTITY_NAME, staffDTO, SecurityUtils.getCurrentUserLogin());
 

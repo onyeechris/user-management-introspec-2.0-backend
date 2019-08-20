@@ -19,7 +19,7 @@ public class BaseEntity {
      * Helper methods
      */
     protected Module getModule(String mdl) throws ServletRequestBindingException {
-        Optional<Module> module = this.moduleRepository.findById(mdl);
+        Optional<Module> module = this.moduleRepository.findOneWithEagerRelationships(mdl);
 
         if(!module.isPresent()) {
             throw new ServletRequestBindingException("Module[" + mdl + "] not found");

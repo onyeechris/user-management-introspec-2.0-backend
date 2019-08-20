@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,7 +18,8 @@ import java.util.Objects;
 /**
  * A DTO for the Permission entity.
  */
-@Data
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The Permission Transfer Entity")
 public class PermissionDTO implements Serializable {

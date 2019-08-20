@@ -1,26 +1,31 @@
 package com.activedge.usermgt.model;
 
-import com.activedge.usermgt.model.enumeration.MakerChecker;
+import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.event.StaffEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "staff")
 @EntityListeners(StaffEntityListener.class)
@@ -35,10 +40,10 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @NotNull
     @Column(name = "first_name", nullable = false)
-    private String firstName;
+    private String first_name;
 
     @Column(name = "last_name")
-    private String lastName;
+    private String last_name;
 
     @Column(name = "phone")
     @Size(min = 9, max = 13)
@@ -56,8 +61,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "maker_checker")
-    private MakerChecker makerChecker;
+    @Column(name = "type")
+    private Type type;
 
     @Column(name = "hire_date")
     @JsonFormat(pattern = "MM/dd/yyyy")
@@ -68,17 +73,15 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     // @ColumnDefault("1")
     private Boolean activated = false;
 
-    @Transient
-    private String redisKey;
-
-    @OneToMany(mappedBy = "staff")
+    @OneToMany(mappedBy = "staff", fetch = FetchType.EAGER)
     Set<StaffModule> assignments;
 
+//    @ManyToMany(cascade={PERSIST, MERGE, REFRESH, DETACH})
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
             @JoinColumn(name = "staff_id", referencedColumnName = "id") },
             inverseJoinColumns = {
-                    @JoinColumn(name = "module_id", referencedColumnName = "module"),
+//                    @JoinColumn(name = "module_id", referencedColumnName = "module"),
                     @JoinColumn(name = "authority_id", referencedColumnName = "code")
                 }
             )
@@ -99,7 +102,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @BatchSize(size = 10)
     @JsonBackReference
     private Set<Group> groups = new HashSet<>();
-
+/*
     public Long getId() {
         return id;
     }
@@ -108,30 +111,30 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public Staff firstName(String firstName) {
-        this.firstName = firstName;
+    public Staff first_name(String first_name) {
+        this.first_name = first_name;
         return this;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLast_name() {
+        return last_name;
     }
 
-    public Staff lastName(String lastName) {
-        this.lastName = lastName;
+    public Staff last_name(String last_name) {
+        this.last_name = last_name;
         return this;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public Set<Authority> getAuthorities() {
@@ -182,17 +185,17 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.password = password;
     }
 
-    public MakerChecker getMakerChecker() {
-        return makerChecker;
+    public Type getType() {
+        return type;
     }
 
-    public Staff makerChecker(MakerChecker makerChecker) {
-        this.makerChecker = makerChecker;
+    public Staff type(Type type) {
+        this.type = type;
         return this;
     }
 
-    public void setMakerChecker(MakerChecker makerChecker) {
-        this.makerChecker = makerChecker;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public LocalDate getHireDate() {
@@ -237,41 +240,45 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         this.activated = activated;
     }
 
-    public String getRedisKey() {
-        return redisKey;
+    public Set<StaffModule> getAssignments() {
+        return assignments;
     }
 
-    public void setRedisKey(String redisKey) {
-        this.redisKey = redisKey;
+    public void setAssignments(Set<StaffModule> assignments) {
+        this.assignments = assignments;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Staff staff = (Staff) o;
-        if (staff.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), staff.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
+    //    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//        Staff staff = (Staff) o;
+//        if (staff.getId() == null || getId() == null) {
+//            return false;
+//        }
+//        return Objects.equals(getId(), staff.getId());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hashCode(getId());
+//    }
 
     @Override
     public String toString() {
-        return "Staff{" + "id=" + getId() + ", firstName='" + getFirstName() + "'" + ", lastName='" + getLastName()
+        return "Staff{" + "id=" + getId() + ", first_name='" + getFirst_name() + "'" + ", last_name='" + getLast_name()
                 + "'" + ", phone='" + getPhone() + "'" + ", email='" + getEmail() + "'" + ", password='" + getPassword()
-                + "'" + ", makerChecker='" + getMakerChecker() + "'" + ", Authorities='" + getAuthorities() + "'"
-                + "'" + ", RedisKey='" + getRedisKey() + "'" + ", hireDate='" + getHireDate()
+//                + "'" + ", type='" + getType() + "'" + ", Authorities='" + getAuthorities() + "'"
+                + "'" + ", hireDate='" + getHireDate()
                 + "'" + "}";
+    }
+*/
+    public Boolean isActivated() {
+        return activated;
     }
 
 }

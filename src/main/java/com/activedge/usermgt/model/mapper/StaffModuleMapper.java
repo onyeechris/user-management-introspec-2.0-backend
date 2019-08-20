@@ -14,12 +14,14 @@ import org.mapstruct.Mapping;
 public interface StaffModuleMapper extends EntityMapper<StaffModuleDTO, StaffModule> {
 
     @Mapping(source = "module.code", target = "module")
-    @Mapping(source = "staff.id", target = "staff")
+//    @Mapping(source = "staff.id", target = "staff")
+    @Mapping(ignore = true, target = "staff.groups")
     @Mapping(source = "assignAt", target = "assign_at")
     StaffModuleDTO toDto(StaffModule staffModule);
 
     @Mapping(source = "module", target = "module.code")
-    @Mapping(source = "staff", target = "staff.id")
+//    @Mapping(source = "staff", target = "staff.id")
+    @Mapping(ignore = true, target = "staff.groups")
     @Mapping(source = "assign_at", target = "assignAt")
     StaffModule toEntity(StaffModuleDTO staffModuleDTO);
 
@@ -31,4 +33,5 @@ public interface StaffModuleMapper extends EntityMapper<StaffModuleDTO, StaffMod
         staffModule.setId(id);
         return staffModule;
     }
+
 }

@@ -21,13 +21,14 @@ public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
     ModuleMapper mapper = Mappers.getMapper( ModuleMapper.class );
 
     @Mapping(source = "id.id", target = "id")
-    @Mapping(source = "id.module.code", target = "module")
+    @Mapping(source = "id.module.code", target = "mod")
     @Mapping(target = "staffs", ignore = true)
+//    @Mapping(target = "staffs[].groups", ignore = true)
     GroupDTO toDto(Group group);
 
 //    @Mapping(target = "staff", ignore = true)
 //    @Mapping(source = "redis_key", target = "redisKey")
-    @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getModule()), groupDTO.getId()) )")
+    @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getMod()), groupDTO.getId()) )")
     Group toEntity(GroupDTO groupDTO);
 
 //    @Mappings({

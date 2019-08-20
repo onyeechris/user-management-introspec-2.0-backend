@@ -118,7 +118,7 @@ public class AccountController {
 //        if (!user.isPresent()) {
 //            throw new ValidationException("User could not be found");
 //        }
-//        userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
+//        userService.updateUser(userDTO.getFirst_name(), userDTO.getLast_name(), userDTO.getEmail(),
 //            userDTO.getLangKey(), userDTO.getImageUrl());
     }
 

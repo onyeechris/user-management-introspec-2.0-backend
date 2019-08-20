@@ -21,9 +21,9 @@ public class Module implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
     @NotNull
     @Size(max = 50)
-    @Id
     @Column(length = 50, unique = true)
     private String code;
 
@@ -35,8 +35,8 @@ public class Module implements Serializable {
     @Column(length = 255)
     private String description;
 
-    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER)
-    @JsonBackReference
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+//    @JsonBackReference
     Set<StaffModule> staffModules;
 
 //    @OneToMany(mappedBy = "module")

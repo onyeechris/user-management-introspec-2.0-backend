@@ -36,6 +36,7 @@ public class StaffSpy extends Spy implements RedisQueue {
     @Override
     void approveRequest() {
         log.info("Approving staff request... {}", this.staff);
+        /*
         if(this.staff.getRedisKey() != null && this.staff.getRedisKey().matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
             Optional<MakerItem> makerItem = makerItemRepository.findById(this.staff.getRedisKey());
             if(makerItem.isPresent()) {
@@ -45,14 +46,14 @@ public class StaffSpy extends Spy implements RedisQueue {
                 } catch (IOException e){e.printStackTrace();}
                 log.info("staf is {}", staf);
                 this.staff.setId(staf.getId());
-                this.staff.setFirstName(staf.getFirstName());
-                this.staff.setLastName(staf.getLastName());
+                this.staff.setFirst_name(staf.getFirst_name());
+                this.staff.setLast_name(staf.getLast_name());
                 this.staff.setPhone(staf.getPhone());
                 this.staff.setEmail(staf.getEmail());
                 this.staff.setPassword(staf.getPassword());
                 this.staff.setGroups(staf.getGroups());
                 this.staff.setHireDate(staf.getHireDate());
-                this.staff.setMakerChecker(staf.getMakerChecker());
+                this.staff.setType(staf.getType());
                 this.staff.setActivated(staf.isActivated());
                 this.staff.setAuthorities(staf.getAuthorities());
                 this.staff.setRedisKey(staf.getRedisKey());
@@ -73,6 +74,7 @@ public class StaffSpy extends Spy implements RedisQueue {
         } else {
             throw new ValidationException("Oops! wrong or incorrect redis key.");
         }
+        */
     }
 
     @Override

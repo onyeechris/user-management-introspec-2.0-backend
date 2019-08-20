@@ -28,4 +28,6 @@ public interface GroupRepository extends JpaRepository<Group, GroupPK> {
     @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")
     Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
 
+    Page<Group> findAllByModule_Code(String module, Pageable pageable);
+
 }

@@ -39,6 +39,6 @@ public class StaffModuleDTO implements Serializable {
 
 //    @JsonIgnore
     @ApiModelProperty(notes = "The staff in the module", required = true)
-    private Long staff;
+    private StaffDTO staff;
 
 }

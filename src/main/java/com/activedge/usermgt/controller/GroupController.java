@@ -76,7 +76,7 @@ public class GroupController extends BaseEntity {
         }
 
         groupDTO.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-        groupDTO.setModule(module);
+        groupDTO.setMod(module);
         GroupDTO result = groupService.save(groupDTO);
 
         return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getId()))
@@ -105,7 +105,7 @@ public class GroupController extends BaseEntity {
                     .collect(Collectors.joining(",")));
         }
 
-        groupDTO.setModule(module);
+        groupDTO.setMod(module);
         GroupDTO result = groupService.save(groupDTO, flag);
 
         return ResponseEntity.ok()
@@ -122,16 +122,16 @@ public class GroupController extends BaseEntity {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String mdl, @RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String module, @RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
         log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
 
-        Module module = this.getModule(mdl);
+//        Module module = this.getModule(mdl);
 
         log.debug("Module is: {}", module);
 
         if (eagerload) {
-            page = groupService.findAllWithEagerRelationships(module, pageable);
+            page = groupService.findAllWithEagerRelationships(pageable);
         } else {
             page = groupService.findAll(module, pageable);
         }

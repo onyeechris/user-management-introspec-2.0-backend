@@ -1,14 +1,18 @@
 package com.activedge.usermgt.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "staffmodule")
-@Data
+@Getter
+@Setter
 @SequenceGenerator(name = "smGenerator", allocationSize = 50)
 public class StaffModule {
 
@@ -18,11 +22,12 @@ public class StaffModule {
 
     @ManyToOne
     @JoinColumn(name = "module")
-    @JsonManagedReference
+//    @JsonBackReference
     Module module;
 
     @ManyToOne
     @JoinColumn(name = "staff")
+    @JsonBackReference
     Staff staff;
 
     LocalDateTime assignAt;

@@ -220,8 +220,8 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     public String toString() {
         return "User{" +
             "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
+            ", first_name='" + firstName + '\'' +
+            ", last_name='" + lastName + '\'' +
             ", email='" + email + '\'' +
             ", imageUrl='" + imageUrl + '\'' +
             ", activated='" + activated + '\'' +

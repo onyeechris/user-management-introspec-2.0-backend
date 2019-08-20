@@ -19,7 +19,7 @@ class Tables extends Component {
       // this.props.actions.fetchStaff("api/staff").then(result => {
       //   let responseJSON = result;
       //   console.log(responseJSON);
-      //   if (responseJSON.firstName) {
+      //   if (responseJSON.first_name) {
       //     //sessionStorage.setItem("userData", responseJSON);
       //     console.log("Home Page");
       //     this.setState({ staffData: responseJSON });

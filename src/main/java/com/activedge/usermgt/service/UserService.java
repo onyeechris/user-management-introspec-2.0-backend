@@ -79,8 +79,8 @@ public class UserService {
 //        newUser.setLogin(userDTO.getLogin().toLowerCase());
 //        // new user gets initially a generated password
 //        newUser.setPassword(encryptedPassword);
-//        newUser.setFirstName(userDTO.getFirstName());
-//        newUser.setLastName(userDTO.getLastName());
+//        newUser.setFirst_name(userDTO.getFirst_name());
+//        newUser.setLast_name(userDTO.getLast_name());
 //        newUser.setEmail(userDTO.getEmail().toLowerCase());
 //        newUser.setImageUrl(userDTO.getImageUrl());
 //        newUser.setLangKey(userDTO.getLangKey());
@@ -107,8 +107,8 @@ public class UserService {
 //    public User createUser(UserDTO userDTO) {
 //        User user = new User();
 //        user.setLogin(userDTO.getLogin().toLowerCase());
-//        user.setFirstName(userDTO.getFirstName());
-//        user.setLastName(userDTO.getLastName());
+//        user.setFirst_name(userDTO.getFirst_name());
+//        user.setLast_name(userDTO.getLast_name());
 //        user.setEmail(userDTO.getEmail().toLowerCase());
 //        user.setImageUrl(userDTO.getImageUrl());
 //        if (userDTO.getLangKey() == null) {
@@ -137,18 +137,18 @@ public class UserService {
 //    /**
 //     * Update basic information (first name, last name, email, language) for the current user.
 //     *
-//     * @param firstName first name of user
-//     * @param lastName last name of user
+//     * @param first_name first name of user
+//     * @param last_name last name of user
 //     * @param email email id of user
 //     * @param langKey language key
 //     * @param imageUrl image URL of user
 //     */
-//    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+//    public void updateUser(String first_name, String last_name, String email, String langKey, String imageUrl) {
 //        SecurityUtils.getCurrentUserLogin()
 //            .flatMap(ldapUserRepository::findOneByLogin)
 //            .ifPresent(user -> {
-//                user.setFirstName(firstName);
-//                user.setLastName(lastName);
+//                user.setFirst_name(first_name);
+//                user.setLast_name(last_name);
 //                user.setEmail(email.toLowerCase());
 //                user.setLangKey(langKey);
 //                user.setImageUrl(imageUrl);
@@ -169,8 +169,8 @@ public class UserService {
 //            .map(Optional::get)
 //            .map(user -> {
 //                user.setLogin(userDTO.getLogin().toLowerCase());
-//                user.setFirstName(userDTO.getFirstName());
-//                user.setLastName(userDTO.getLastName());
+//                user.setFirst_name(userDTO.getFirst_name());
+//                user.setLast_name(userDTO.getLast_name());
 //                user.setEmail(userDTO.getEmail().toLowerCase());
 //                user.setImageUrl(userDTO.getImageUrl());
 //                user.setActivated(userDTO.isActivated());
