@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -18,7 +20,7 @@ import java.util.Set;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(description = "The AppModule Entity")
-@Data
+@Getter @Setter
 public class ModuleDTO implements Serializable {
 
     @ApiModelProperty(notes = "The unique app module Id")
@@ -33,5 +35,8 @@ public class ModuleDTO implements Serializable {
     @ApiModelProperty(notes = "The module description text")
     @Size(min = 10, message = "module description length too short. Should be atleast 10 charaters")
     private String description;
+
+    @ApiModelProperty(notes = "The module key text")
+    private String key;
 
 }

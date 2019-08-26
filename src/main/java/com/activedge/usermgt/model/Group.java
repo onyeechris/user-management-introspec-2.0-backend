@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +23,9 @@ import java.util.Set;
 @Entity
 @Table(name = "groups", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "name" } ) } )
 @EntityListeners(GroupEntityListener.class)
+//@SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = CONCAT((SELECT name FROM groups where id = ?1 and module = ?0), '_', md5(random()::text)) WHERE id = ?0 and module = ?1")
+@SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = md5(random()::text) WHERE id = ? and module = ?")
+@Where(clause="is_deleted <> '1'")
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -73,8 +78,14 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
     private Set<Permission> permissions = new HashSet<>();
 
-    @Transient
-    private String redisKey;
+    @NotNull(message = "isDeleted cannot be null")
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @PreRemove
+    public void deleteGroup() {
+        this.isDeleted = true;
+    }
 
     public GroupPK getId() {
         return id;
@@ -93,12 +104,12 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
         return this;
     }
 
-    public String getRedisKey() {
-        return redisKey;
+    public Boolean getDeleted() {
+        return isDeleted;
     }
 
-    public void setRedisKey(String redisKey) {
-        this.redisKey = redisKey;
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 
     public void setName(String name) {

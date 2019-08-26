@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.DigestUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -111,6 +112,8 @@ public class AppModuleController {
     public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Module for app: {}", app);
         Page<ModuleDTO> page;
+
+        String md5Hex = DigestUtils.md5DigestAsHex("SETTLEMENT".getBytes());
 
         page = moduleService.findAll(pageable);
 

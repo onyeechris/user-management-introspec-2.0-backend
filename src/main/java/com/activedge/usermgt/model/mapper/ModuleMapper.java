@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {})
 public interface ModuleMapper extends EntityMapper<ModuleDTO, Module> {
 
-//    ModuleDTO toDto(Module module);
+    ModuleDTO toDto(Module module);
 
     Module toEntity(ModuleDTO moduleDTO);
 

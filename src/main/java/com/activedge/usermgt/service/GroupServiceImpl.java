@@ -282,6 +282,10 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void delete(GroupPK id) {
         log.debug("Request to delete Group : {}", id);
+//        GroupDTO gdto = findOne(id).get();
+//        Group grp = groupMapper.toEntity(gdto);
+//        grp.setIsDeleted(true);
+//        groupRepository.save(grp);
         groupRepository.deleteById(id);
     }
 }

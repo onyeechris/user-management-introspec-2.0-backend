@@ -55,9 +55,9 @@ public class GroupEntityListener {
     @PreRemove
     public void preRemove(Group target) throws ActivityRequiredException {
         System.out.println("...@preRemove()");
-        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
-            throw new ActivityRequiredException("Only Supervisors can delete!");
-        }
+//        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
+//            throw new ActivityRequiredException("Only Supervisors can delete!");
+//        }
         perform(target, DELETED);
     }
 

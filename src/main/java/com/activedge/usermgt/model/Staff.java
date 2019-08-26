@@ -76,8 +76,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @OneToMany(mappedBy = "staff", fetch = FetchType.EAGER)
     Set<StaffModule> assignments;
 
-//    @ManyToMany(cascade={PERSIST, MERGE, REFRESH, DETACH})
-    @ManyToMany
+    @ManyToMany(cascade={PERSIST, MERGE, REFRESH, DETACH})
+//    @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
             @JoinColumn(name = "staff_id", referencedColumnName = "id") },
             inverseJoinColumns = {

@@ -173,9 +173,13 @@ public class GroupController extends BaseEntity {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deleteGroups(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGroups(@RequestHeader(value = "Module", required = true) String mdl, @PathVariable String id) throws ServletRequestBindingException {
         log.debug("REST request to delete GROUP : {}", id);
-        groupService.delete(new GroupPK());
+
+        Module module = this.getModule(mdl);
+
+        groupService.delete(new GroupPK(module, id));
+
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 }

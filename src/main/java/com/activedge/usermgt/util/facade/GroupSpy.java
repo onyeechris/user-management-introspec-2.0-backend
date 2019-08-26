@@ -36,6 +36,7 @@ public class GroupSpy extends Spy implements RedisQueue {
 
     @Override
     void approveRequest() {
+        /*
         log.info("Approving group request... {}", this.group);
         if(this.group.getRedisKey() != null && this.group.getRedisKey().matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
             Optional<MakerItem> makerItem = makerItemRepository.findById(this.group.getRedisKey());
@@ -66,8 +67,9 @@ public class GroupSpy extends Spy implements RedisQueue {
         } else {
             throw new ValidationException("Oops! wrong or incorrect redis key.");
         }
-
+        */
     }
+
 
     @Override
     public void add2Queue(String action, Object target) {

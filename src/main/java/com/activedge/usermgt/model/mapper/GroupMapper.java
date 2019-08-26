@@ -4,49 +4,43 @@ package com.activedge.usermgt.model.mapper;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.GroupDTO;
-import com.activedge.usermgt.repository.ModuleRepository;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Mapper for the entity Group and its DTO GroupDTO.
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {ModuleMapper.class})
-public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
+public abstract class GroupMapper {
 
     ModuleMapper mapper = Mappers.getMapper( ModuleMapper.class );
 
+    @BeforeMapping
+    void enrichDTOWithFuelType(Group group, @MappingTarget GroupDTO groupDto) {
+        Set<Staff> stf = group.getStaffs();
+        group.setStaffs(new HashSet<>());
+
+        for(Staff staff: stf) {
+            staff.setGroups(null);
+            group.addStaff(staff);
+        }
+
+    }
+
     @Mapping(source = "id.id", target = "id")
     @Mapping(source = "id.module.code", target = "mod")
-    @Mapping(target = "staffs", ignore = true)
-//    @Mapping(target = "staffs[].groups", ignore = true)
-    GroupDTO toDto(Group group);
+//    @Mapping(target = "staffs", ignore = true)
+    public abstract GroupDTO toDto(Group group);
 
-//    @Mapping(target = "staff", ignore = true)
-//    @Mapping(source = "redis_key", target = "redisKey")
     @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getMod()), groupDTO.getId()) )")
-    Group toEntity(GroupDTO groupDTO);
+    public abstract Group toEntity(GroupDTO groupDTO);
 
-//    @Mappings({
-////         @Mapping(target = "father", expression = "java(null)"),
-//            @Mapping(target = "father", qualifiedByName = "fatherToFatherDto")})
-//    ChildDto childToChildDto(Child child);
-//
-//    @Named("fatherToFatherDto")
-//    @Mappings({
-//            @Mapping(target = "children", expression = "java(null)")})
-//    FatherDto fatherToFatherDto(Father father);
-
-//    @ObjectFactory
-//    default GroupPK createId(GroupDTO dto) {
-//        return dto == null ? null : new GroupPK(fromCode(dto.getModule()), dto.getId());
-//    }
-
-    default Group fromId(GroupPK id) {
+    Group fromId(GroupPK id) {
         if (id == null) {
             return null;
         }
@@ -55,7 +49,7 @@ public interface GroupMapper extends EntityMapper<GroupDTO, Group> {
         return group;
     }
 
-    default Module fromCode(String code) {
+    Module fromCode(String code) {
         if (code == null) {
             return null;
         }
