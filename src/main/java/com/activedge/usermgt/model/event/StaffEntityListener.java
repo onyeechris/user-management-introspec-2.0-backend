@@ -105,9 +105,9 @@ public class StaffEntityListener {
     @PreRemove
     public void preRemove(Staff target) throws ActivityRequiredException {
         System.out.println("...@preRemove()");
-        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
-            throw new ActivityRequiredException("Only Supervisors can delete!");
-        }
+//        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
+//            throw new ActivityRequiredException("Only Supervisors can delete!");
+//        }
         perform(target, DELETED);
     }
 

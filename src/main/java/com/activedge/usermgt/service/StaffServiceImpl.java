@@ -156,9 +156,11 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Staff : {}", id);
-        StaffDTO s = findOne(id).get();
-        Staff sf = staffMapper.toEntity(s);
-        sf.setActivated(false);
-        staffRepository.save(sf);
+//        Staff sf = staffRepository.findById(id).get();
+//        sf.setActivated(false);
+//        log.debug("Staff to save: {}", sf);
+//        staffRepository.save(sf);
+        staffRepository.deleteById(id);
     }
+
 }

@@ -10,6 +10,8 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -30,6 +32,8 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "staff")
 @EntityListeners(StaffEntityListener.class)
 @SequenceGenerator(name = "tabGenerator", initialValue = 5, allocationSize = 50)
+@SQLDelete(sql="UPDATE staff SET activated = '0' WHERE id = ?")
+@Where(clause="activated <> '0'")
 public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -102,6 +106,11 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @BatchSize(size = 10)
     @JsonBackReference
     private Set<Group> groups = new HashSet<>();
+
+    @PreRemove
+    public void deleteGroup() {
+        this.activated = false;
+    }
 /*
     public Long getId() {
         return id;
