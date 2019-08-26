@@ -159,6 +159,8 @@ public class GroupServiceImpl implements GroupService {
 
         g = groupMapper.toEntity(groupDTO);
 
+
+
         log.debug("Converted group ... {}", g);
 
 //      Enable Type
@@ -192,6 +194,8 @@ public class GroupServiceImpl implements GroupService {
 //        }
 //        g = groupRepository.save(gg);
 
+        g.setIsDeleted(false);
+
         return groupMapper.toDto(groupRepository.save(g));
     }
 
@@ -208,6 +212,8 @@ public class GroupServiceImpl implements GroupService {
         log.debug("Saving group... {}", groupDTO);
 
         g = groupMapper.toEntity(groupDTO);
+
+        g.setIsDeleted(false);
 
 //      Enable Type
 //        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
