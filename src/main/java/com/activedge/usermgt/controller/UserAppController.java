@@ -125,17 +125,17 @@ public class UserAppController {
 
         Page<StaffModuleDTO> page;
 
-        log.debug("REST request to get staffs on module {} for User Authority {}", module, SecurityUtils.getCurrentUserMap().get().get("authorities"));
+//        log.debug("REST request to get staffs on module {} for User Authority {}", module, SecurityUtils.getCurrentUserMap().get().get("authorities"));
 
-        List authorities = (List<String>) SecurityUtils.getCurrentUserMap().get().get("authorities");
+//        List authorities = (List<String>) SecurityUtils.getCurrentUserMap().get().get("authorities");
 
-        log.debug("authorities alone is {}", authorities);
+//        log.debug("authorities alone is {}", authorities);
 
-        if(authorities.stream().anyMatch(x -> x.toString().equals("ROLE_DEV") || x.toString().equals("ROLE_ADMIN"))) {
-             page = staffModuleService.findAll(pageable);
-        } else {
+//        if(authorities.stream().anyMatch(x -> x.toString().equals("ROLE_DEV") || x.toString().equals("ROLE_ADMIN"))) {
+//             page = staffModuleService.findAll(pageable);
+//        } else {
              page = staffModuleService.findAllByModule(module, pageable);
-        }
+//        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/auth-service/"+ENTITY_NAME);
 
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
