@@ -10,10 +10,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "staffmodule")
-@Getter
-@Setter
-@SequenceGenerator(name = "smGenerator", allocationSize = 50)
+@Getter @Setter
+@SequenceGenerator(name = "smGenerator")
+@Table(name = "staffmodule", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "staff" } ) })
 public class StaffModule {
 
     @Id
@@ -22,7 +21,6 @@ public class StaffModule {
 
     @ManyToOne
     @JoinColumn(name = "module")
-//    @JsonBackReference
     Module module;
 
     @ManyToOne

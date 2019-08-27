@@ -23,7 +23,6 @@ import java.util.Set;
 @Entity
 @Table(name = "groups", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "name" } ) } )
 @EntityListeners(GroupEntityListener.class)
-//@SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = CONCAT((SELECT name FROM groups where id = ?1 and module = ?0), '_', md5(random()::text)) WHERE id = ?0 and module = ?1")
 @SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = md5(random()::text) WHERE id = ? and module = ?")
 @Where(clause="is_deleted <> '1'")
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
@@ -71,7 +70,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
     private Set<Staff> staffs = new HashSet<>();
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
 //    @JsonManagedReference
     @JoinTable(name = "groups_permission",
             joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id"), @JoinColumn(name = "module", referencedColumnName = "module")},

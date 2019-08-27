@@ -161,7 +161,7 @@ public class GroupServiceImpl implements GroupService {
 
 
 
-        log.debug("Converted group ... {}", g);
+        log.debug("Converted group ... {} permissions...{}, staffs...{}", g, g.getPermissions(), g.getStaffs());
 
 //      Enable Type
 //        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);

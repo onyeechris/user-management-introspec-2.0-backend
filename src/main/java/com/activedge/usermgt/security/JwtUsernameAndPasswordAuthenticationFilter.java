@@ -129,33 +129,26 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     public String generateToken(Authentication auth, HttpServletRequest request, Staff staff) {
         Long now = System.currentTimeMillis();
+        Set<String> staffPermissions = new HashSet<>();
 
-        System.out.println("Staff permissions: --- " + staff.getGroups()
-                .stream()
-                .map(permission -> permission.getName())//permission.getAction())
-                .collect(Collectors.joining(",")));
+        for(Group group: staff.getGroups()) {
+            for(Permission permission: group.getPermissions()) {
+                staffPermissions.add(permission.getAction());
+            }
+        }
+
+//        System.out.println("Staff permissions: --- " + staffPermissions);
+//        System.out.println("Staff roles: --- " + auth.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
         String module = request.getHeader(jwtConfig.getModule());
-
-        List<String> allowedModules = staff.getAssignments()
-                .stream()
-                .map(userApp -> userApp.getModule().getCode())
-                .collect(Collectors.toList());
-
-        System.out.println("Staff modules: " + allowedModules);
-
-//        if(!allowedModules.contains(module) && !allowedModules.contains("ADMIN")) return "N/A";
 
         return Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.
-                // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList())) //.collect(Collectors.joining(",")
-                .claim("permissions", staff.getGroups()//staff.getGroup.getPermissions()
-                        .stream()
-                        .map(permission -> permission.getName())//permission.getAction())
-                        .collect(Collectors.toList()))
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .claim("permissions", staffPermissions)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())

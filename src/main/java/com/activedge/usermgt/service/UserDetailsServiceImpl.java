@@ -35,7 +35,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Optional<Staff> authUser = staffRepository.findOneWithAuthoritiesByEmail(username);
 
-        System.out.println(">>> findOneWithAuthoritiesByEmail: " + authUser.get());
+//        System.out.println(">>> findOneWithAuthoritiesByEmail: " + authUser.get());
 
         if(authUser.isPresent()) {
             List<GrantedAuthority> grantedAuthorities = authUser.get().getAuthorities().stream()

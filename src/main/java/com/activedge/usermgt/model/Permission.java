@@ -134,16 +134,16 @@ public class Permission implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Permission)) return false;
         Permission that = (Permission) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(action, that.action) &&
-                Objects.equals(description, that.description);
+        return Objects.equals(id, that.id);
+//                Objects.equals(action, that.action) &&
+//                Objects.equals(description, that.description);
 //                Objects.equals(authority, that.authority) &&
 //                Objects.equals(grps, that.grps);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, action, description /*, authority, grps*/);
+        return Objects.hash(id/*, action, description /*, authority, grps*/);
     }
 
 }

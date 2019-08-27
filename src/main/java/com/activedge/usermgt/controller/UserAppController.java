@@ -73,6 +73,7 @@ public class UserAppController {
         }
 
         staffModuleDTO.setId(null);
+        staffModuleDTO.setModule(mdl);
 
         StaffModuleDTO result = staffModuleService.save(staffModuleDTO);
 
@@ -101,6 +102,8 @@ public class UserAppController {
                     .map(x -> x.getDefaultMessage())
                     .collect(Collectors.joining(",")));
         }
+
+        staffModuleDTO.setModule(module);
 
         StaffModuleDTO result = staffModuleService.save(staffModuleDTO);
 
