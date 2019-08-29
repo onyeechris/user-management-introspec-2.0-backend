@@ -10,6 +10,7 @@ import rootReducer from './reducers'
 
 import './index.css';
 import App from './App';
+require('../node_modules/react-combo-select/style.css');
 
 let store = createStore(rootReducer, applyMiddleware(thunk));
 

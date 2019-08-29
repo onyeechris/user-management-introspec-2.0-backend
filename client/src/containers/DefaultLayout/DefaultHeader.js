@@ -49,6 +49,11 @@ class DefaultHeader extends Component {
   }
   logout() {
     sessionStorage.setItem("userData", "");
+    sessionStorage.setItem("userRole", "");
+    sessionStorage.setItem("loggedInUser", "");
+    sessionStorage.setItem("userModule", "");
+    sessionStorage.setItem("loggedInUserData", "");
+    sessionStorage.setItem("moduleData", "");
     //sessionStorage.clear();
     this.setState({ redirectToReferrer: true });
   }

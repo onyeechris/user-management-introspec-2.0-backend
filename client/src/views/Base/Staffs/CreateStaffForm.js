@@ -12,18 +12,11 @@ import { FormattedMessage } from "react-intl";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// let startDate = '';
-// let formatted_date = '';
-
-// const handleChange = (props, hireDate) => {
-//   console.log(props.currentDate);
-//   startDate = hireDate;
-//   formatted_date = (("0" + (hireDate.getMonth() + 1)).slice(-2)) + "/" + ("0" + hireDate.getDate()).slice(-2) + "/" + hireDate.getFullYear();
-//   // startDate = formatted_date;
-//   console.log(startDate);
-//   console.log(formatted_date);
-//   props.currentDate = hireDate;
-// }
+const translate = (pageString) => {
+  return (
+    <FormattedMessage id={pageString} defaultMessage={pageString} />
+  )
+}
 
 const required = value => value ? undefined : 'Required';
 // const maxLength = max => value =>
@@ -83,37 +76,42 @@ const renderDateField = ({ input, currentDate, handleChange, meta: { touched, er
   </div>
 )
 
-const renderGroupDropdown = ({ input, type, staffGroup, meta: { touched, error, warning } }) => (
-  <div>
-    <Input type={type} id="select" {...input}>
-      {/* <option value="0">Introspec Default</option> */}
-      {staffGroup.map(function (item, key) {
-        return (
-          <option value={item.id} key={key}>{item.name}</option>
-        )
-      })}
-    </Input>
-    {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
+// const renderGroupDropdown = ({ input, type, staffGroup, meta: { touched, error, warning } }) => (
+//   <div>
+//     <Input type={type} id="select" {...input}>
+//       {/* <option value="0">Introspec Default</option> */}
+//       {staffGroup.map(function (item, key) {
+//         return (
+//           <option value={item.id} key={key}>{item.name}</option>
+//         )
+//       })}
+//     </Input>
+//     {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
 
-  </div>
-)
+//   </div>
+// )
 
-const renderRoleRadio = ({ input, label, type, userRole, id, meta: { touched, error, warning } }) => (
-  <div>
-    <Input className="form-check-input" type={type} id={id} name="maker_checker" value={userRole} {...input} />
-    <Label check className="form-check-label" htmlFor={id}>{label}</Label>
-    {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
-
-  </div>
-)
+// const renderRoleRadio = ({ input, label, name, type, userRole, id, meta: { touched, error, warning } }) => (
+//   <div>
+//     {/* <Input className="form-check-input" type={type} name={name} id={id} value={userRole} /> */}
+//     {/* <Label check className="form-check-label" htmlFor={id}>{label}</Label> */}
+//     <label className="form-check-input">
+//       <input type="radio" value={userRole} name="user_type" {...input} /> <span> {label}</span>
+//     </label>
+//     {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
+//     <br />
+//   </div>
+// )
 
 let CreateStaffForm = (props) => {
-  const { handleSubmit, staffGroup, toggle, submitting, currentDate, handleChange } = props
+  const { handleSubmit,
+    // staffGroup, 
+    toggle, submitting, currentDate, handleChange, updateValue } = props
   return (
     <form onSubmit={handleSubmit} className="form-horizontal">
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="firstName"><FormattedMessage id="First Name" defaultMessage="First Name " /> <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="firstName">{translate("First Name")} <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="text" id="firstName" name="first_name" placeholder="Enter First Name"
@@ -129,7 +127,7 @@ let CreateStaffForm = (props) => {
 
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="lastName"><FormattedMessage id="Last Name" defaultMessage="Last Name " /></Label>
+          <Label htmlFor="lastName">{translate("Last Name")}</Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="text" id="lastName" name="last_name" placeholder="Enter Last Name" required
@@ -145,7 +143,7 @@ let CreateStaffForm = (props) => {
 
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="email-input"><FormattedMessage id="Email" defaultMessage="Email " /> <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="email-input">{translate("Email")} <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="email" id="email-input" name="email" placeholder="Enter Email" autoComplete="email"
@@ -160,7 +158,7 @@ let CreateStaffForm = (props) => {
       </FormGroup>
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="password"><FormattedMessage id="Password" defaultMessage="Password " /> <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="password">{translate("Password")} <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="password" id="password" name="password" placeholder="Password" required
@@ -177,7 +175,7 @@ let CreateStaffForm = (props) => {
 
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="phone"><FormattedMessage id="Phone" defaultMessage="Phone " /> </Label>
+          <Label htmlFor="phone">{translate("Phone")} </Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="number" size="11" id="phone" name="phone" placeholder="Enter Phone Number"
@@ -192,7 +190,7 @@ let CreateStaffForm = (props) => {
       </FormGroup>
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="date-hire"><FormattedMessage id="Hire Date" defaultMessage="Hire Date " /> <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="date-hire">{translate("Hire Date")}</Label>
         </Col>
         <Col xs="12" md="9">
           <Field name="hire_date"
@@ -201,25 +199,12 @@ let CreateStaffForm = (props) => {
             handleChange={handleChange}
           // validate={[required]}
           />
-          {/* <DatePicker
-            selected={currentDate}
-            onChange={handleChange}
-            className="form-control"
-            placeholderText="Select Date"
-            dateFormat="MM/dd/yyyy"
-            name="hire_date"
-          /> */}
-          {/* <DatePicker
-                selected={this.state.startDate}
-                onChange={this.handleChange}
-                className="form-control" placeholderText="Select Date"
-                dateFormat="MM/dd/yyyy"
-              /> */}
         </Col>
       </FormGroup>
-      <FormGroup row>
+
+      {/* <FormGroup row>
         <Col md="3">
-          <Label htmlFor="select"><FormattedMessage id="Group" defaultMessage="Group " />   <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="select">{translate("Group")}  <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col xs="12" md="9">
           <Field name="group_id" type="select"
@@ -228,68 +213,69 @@ let CreateStaffForm = (props) => {
             validate={[required]}
             staffGroup={staffGroup}
           />
-          {/* <Input type="select" name="group_id" id="select" {...input}>
-            <option value="0">Introspec Default</option>
-            {staffGroup.map(function (item, key) {
-              return (
-                <option value={item.id} key={key}>{item.name}</option>
-              )
-            })}
-          </Input> */}
         </Col>
-      </FormGroup>
-      <FormGroup row>
+      </FormGroup> */}
+
+      {/* <FormGroup row>
         <Col md="3">
-          <Label><FormattedMessage id="Role" defaultMessage="Role " /> <span style={{ color: 'red' }}>*</span></Label>
+          <Label>{translate("Role")} <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col md="9">
           <FormGroup check className="radio">
-            {/* <Input className="form-check-input" type="radio" id="radio1" name="maker_checker" value="MAKER" onChange={this.updateValue.bind(this, 'maker_checker')} /> */}
-            {/* <Input className="form-check-input" type="radio" id="radio1" name="maker_checker" value="MAKER" />
-            <Label check className="form-check-label" htmlFor="radio1">Initiator</Label> */}
-            <Field name="maker_checker" type="radio"
+            <Field type="radio"
+              name="user_type"
+              // component="input"
               component={renderRoleRadio}
               id="radio1"
-              label="Initiator"
-              userRole="MAKER"
+              label="Admin"
+              userRole="ADMIN"
             />
           </FormGroup>
           <FormGroup check className="radio">
-            {/* <Input className="form-check-input" type="radio" id="radio2" name="maker_checker" value="CHECKER" onChange={this.updateValue.bind(this, 'maker_checker')} /> */}
-            {/* <Input className="form-check-input" type="radio" id="radio2" name="maker_checker" value="CHECKER" />
-            <Label check className="form-check-label" htmlFor="radio2">Authorizer</Label> */}
-            <Field name="maker_checker" type="radio"
+            <Field type="radio"
+              name="user_type"
+              // component="input"
               component={renderRoleRadio}
               id="radio2"
-              label="Authorizer"
-              userRole="CHECKER"
+              label="User"
+              userRole="USER"
+            // checked={true}
             />
           </FormGroup>
-          {/* <FormGroup check className="radio"> */}
-          {/* <Input className="form-check-input" type="radio" id="radio3" name="maker_checker" value="NONE" onChange={this.updateValue.bind(this, 'maker_checker')} /> */}
-          {/* <Input className="form-check-input" type="radio" id="radio3" name="maker_checker" value="NONE" selected />
-            <Label check className="form-check-label" htmlFor="radio3">None</Label> */}
-          {/* <Field name="maker_checker" type="radio"
-              component={renderRoleRadio}
-              id="radio3"
-              label="None"
-              userRole="NONE"
-            />
-          </FormGroup> */}
+        </Col>
+      </FormGroup> */}
+
+
+      <FormGroup row>
+        <Col md="3">
+          <Label>Role <span style={{ color: 'red' }}>*</span></Label>
+        </Col>
+        <Col md="9">
+          <FormGroup check className="radio">
+            <Input className="form-check-input" type="radio" id="radio1" name="user_type" value="ADMIN" onChange={updateValue.bind(this, 'user_type')} />
+            <Label check className="form-check-label" htmlFor="radio1">Admin</Label>
+          </FormGroup>
+          <FormGroup check className="radio">
+            <Input className="form-check-input" type="radio" id="radio2" name="user_type" value="USER" onChange={updateValue.bind(this, 'user_type')} />
+            <Label check className="form-check-label" htmlFor="radio2">User</Label>
+          </FormGroup>
+          <FormGroup check className="radio">
+            <Input className="form-check-input" type="radio" id="radio3" name="user_type" value="DEV" onChange={updateValue.bind(this, 'user_type')} />
+            <Label check className="form-check-label" htmlFor="radio3">Dev</Label>
+          </FormGroup>
         </Col>
       </FormGroup>
       <ModalFooter>
-        {/* <Button color="primary" onClick={this.createStaff}>Submit</Button> */}
         <Button
           type="submit"
           color="primary"
           disabled={submitting}
         >
-          <FormattedMessage id="Submit" defaultMessage="Submit" />
+          {translate("Submit")}
         </Button>
         {' '}
         <Button color="secondary" onClick={toggle}>
-          <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+          {translate("Cancel")}
         </Button>
       </ModalFooter>
     </form>

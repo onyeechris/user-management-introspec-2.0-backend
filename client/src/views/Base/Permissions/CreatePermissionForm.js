@@ -19,6 +19,12 @@ const minLength = min => value => {
 
 const permissionName = minLength(4);
 
+const translate = (pageString) => {
+    return (
+        <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+}
+
 const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
     <div>
         <Input
@@ -36,7 +42,7 @@ let CreatePermissionForm = (props) => {
         <form onSubmit={handleSubmit} className="form-horizontal">
             <FormGroup row>
                 <Col md="3">
-                    <Label htmlFor="action"><FormattedMessage id="Name" defaultMessage="Name " /> <span style={{ color: 'red' }}>*</span></Label>
+                    <Label htmlFor="action">{translate("Action")}{' '} <span style={{ color: 'red' }}>*</span></Label>
                 </Col>
                 <Col xs="12" md="9">
                     <Field name="action" type="text"
@@ -49,7 +55,7 @@ let CreatePermissionForm = (props) => {
 
             <FormGroup row>
                 <Col md="3">
-                    <Label htmlFor="description"><FormattedMessage id="Description" defaultMessage="Description" /> </Label>
+                    <Label htmlFor="description">{translate("Description")} </Label>
                 </Col>
                 <Col xs="12" md="9">
                     <Field name="description" type="text"
@@ -65,11 +71,11 @@ let CreatePermissionForm = (props) => {
                     color="primary"
                     disabled={submitting}
                 >
-                    <FormattedMessage id="Submit" defaultMessage="Submit" />
+                    {translate("Submit")}
                 </Button>
                 {' '}
                 <Button color="secondary" onClick={toggle}>
-                    <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+                    {translate("Cancel")}
                 </Button>
             </ModalFooter>
         </form>

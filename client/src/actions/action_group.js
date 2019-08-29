@@ -2,7 +2,10 @@ import axios from 'axios';
 import {
   BASE_URL
 } from './types';
-import { errorSwitch, interceptor } from './utils';
+import {
+  errorSwitch,
+  // interceptor 
+} from './utils';
 
 export const GROUP_FETCHED = 'GROUP_FETCHED';
 export const GROUP_FETCH_ERROR = 'GROUP_FETCH_ERROR';
@@ -18,15 +21,30 @@ export const GROUP_SAVED = 'GROUP_SAVED';
 
 let apiUrl = BASE_URL + 'groups/';
 
-interceptor();
+// interceptor();
+
+let groupHeaders = {}
+
+const updateHeaders = () => {
+  let userModule = sessionStorage.getItem("userModule");
+  let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
+  console.log(userModule);
+  groupHeaders = {
+    Authorization: userToken,
+    Module: userModule ? userModule : "ADMIN"
+  }
+  console.log(groupHeaders);
+}
 
 export function fetchGroup(groupId) {
+  updateHeaders()
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + groupId);
       axios({
         method: 'GET',
-        url: apiUrl + groupId
+        url: apiUrl + groupId,
+        headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -47,12 +65,14 @@ export function fetchGroup(groupId) {
 }
 
 export function fetchGroups() {
+  updateHeaders()
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
       axios({
         method: 'GET',
-        url: apiUrl
+        url: apiUrl,
+        headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -77,7 +97,8 @@ export function createGroup(groupInfo) {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
       console.log(groupInfo);
-      axios.post(apiUrl, groupInfo)
+      axios.post(apiUrl, groupInfo,
+        { headers: groupHeaders })
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
@@ -102,7 +123,8 @@ export function deleteGroup(type) {
       console.log(apiUrl + type);
       axios({
         method: 'DELETE',
-        url: apiUrl + type
+        url: apiUrl + type,
+        headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -128,7 +150,8 @@ export function updateGroup(groupInfo, flag) {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + flag);
       console.log(groupInfo);
-      axios.put(apiUrl + flag, groupInfo)
+      axios.put(apiUrl + flag, groupInfo,
+        { headers: groupHeaders })
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({

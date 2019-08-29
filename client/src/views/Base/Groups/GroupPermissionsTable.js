@@ -11,7 +11,7 @@ import 'react-dual-listbox/lib/react-dual-listbox.css';
 import Pagination2 from "react-js-pagination";
 import { FormattedMessage } from 'react-intl';
 
-class GroupTable extends Component {
+class GroupPermissionsTable extends Component {
 
     // componentDidMount(){
     //     console.log(this.props);
@@ -49,7 +49,7 @@ class GroupTable extends Component {
 
     render() {
         const { hideField, initialPermissionData, activePage, itemsPerPage, changePageItem } = this.props
-        let permData = initialPermissionData.slice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage);
+        let permData = initialPermissionData ? initialPermissionData.slice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage) : [];
 
         const handlePageChange = (pageNumber) => {
             console.log(pageNumber);
@@ -75,20 +75,27 @@ class GroupTable extends Component {
             reloadTable();
         }
 
+        const translate = (pageString) => {
+            return (
+                <FormattedMessage id={pageString} defaultMessage={pageString} />
+            )
+        }
 
         return (
-            <div className="container">
+            <div>
                 <h5>
-                    <FormattedMessage id="Group Permissions" defaultMessage="Group Permissions" />: &nbsp;
-
-                    {initialPermissionData.length > 0 ? initialPermissionData.length : "None"}</h5>
+                    {translate("Group Permissions")}: &nbsp;
+                        {initialPermissionData ?
+                        initialPermissionData.length > 0 ? initialPermissionData.length : "None"
+                        : ""}
+                </h5>
 
                 <Table hover bordered striped responsive size="sm" style={permData.length > 0 ? {} : hideField}>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Action</th>
-                            <th>Description</th>
+                            <th>{translate("ID")}</th>
+                            <th>{translate("Action")}</th>
+                            <th>{translate("Description")}</th>
                         </tr>
                     </thead>
                     <tbody>{permData.map((item, key) => {
@@ -141,6 +148,6 @@ class GroupTable extends Component {
 //     }, dispatch)
 // }
 
-// export default connect(mapStateToProps, mapDispatchToProps)(GroupTable);
+// export default connect(mapStateToProps, mapDispatchToProps)(GroupPermissionsTable);
 
-export default GroupTable;
+export default GroupPermissionsTable;

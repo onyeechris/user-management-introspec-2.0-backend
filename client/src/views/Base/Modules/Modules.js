@@ -6,7 +6,6 @@ import {
   //  ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu
   // Nav, NavItem, NavLink, TabContent, TabPane
 } from 'reactstrap';
-// import axios from 'axios';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 
 import { connect } from 'react-redux';
@@ -174,9 +173,10 @@ class Modules extends Component {
   // Get specific module to view module Details
   findModuleView = (moduleCode) => {
     this.props.fetchModule(moduleCode).then(result => {
-      // console.log(result);
+      console.log(result);
       this.props.saveModuleInfo(result);
-      sessionStorage.setItem("userModule", moduleCode)
+      sessionStorage.setItem("userModule", moduleCode);
+      sessionStorage.setItem("moduleData", JSON.stringify(result.data));
       this.setState({ singleModuleData: result.data }, this.props.history.push('/apps/module_view'));
     }, error => {
       this.setState({ formError: error });
@@ -276,11 +276,11 @@ class Modules extends Component {
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      {/* <th><FormattedMessage id="tableId" defaultMessage="ID" /></th> */}
-                      <th><FormattedMessage id="Name" defaultMessage="Name" /></th>
-                      <th><FormattedMessage id="Code" defaultMessage="Code" /></th>
-                      <th><FormattedMessage id="Description" defaultMessage="Description" /></th>
-                      <th><FormattedMessage id="Action" defaultMessage="Action" /></th>
+                      {/* <th>{this.translate("tableId" defaultMessage="ID" /></th> */}
+                      <th>{this.translate("Name")}</th>
+                      <th>{this.translate("Code")}</th>
+                      <th>{this.translate("Description")}</th>
+                      <th>{this.translate("Action")}</th>
                     </tr>
                   </thead>
                   <tbody>{modules.map((item, key) => {
@@ -292,13 +292,13 @@ class Modules extends Component {
                         <td>{item.description}</td>
                         <td>
                           <Button style={showAction} size="sm" color="primary" onClick={e => this.findModule(item.code)}><i className="fa fa-dot-circle-o"></i>
-                            {' '}<FormattedMessage id="Update" defaultMessage="Update" />
+                            {' '}{this.translate("Update")}
                           </Button>{' '}
                           <Button style={showAction} size="sm" color="danger" onClick={e => this.findModuleDelete(item.code)}><i className="fa fa-ban"></i>
-                            {' '}<FormattedMessage id="Delete" defaultMessage="Delete" />
+                            {' '}{this.translate("Delete")}
                           </Button>{' '}
                           <Button size="sm" color="secondary" onClick={e => this.findModuleView(item.code)}><i className="fa fa-note"></i>
-                            {' '}<FormattedMessage id="View" defaultMessage="View" />
+                            {' '}{this.translate("View")}
                           </Button>{' '}
                         </td>
                       </tr>
@@ -316,11 +316,11 @@ class Modules extends Component {
 
         {/* Create Module Modal */}
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Create User Module</ModalHeader>
+          <ModalHeader toggle={this.toggle}>{this.translate("Create User Module")}</ModalHeader>
           <ModalBody>
             <Card>
               <CardHeader>
-                <strong></strong> Please fill the form below
+                <strong></strong> {this.translate("Please fill the form below")}
               </CardHeader>
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.formError}</p>
@@ -342,18 +342,18 @@ class Modules extends Component {
         {/*Modal to update modules*/}
 
         <Modal isOpen={this.state.editModal} toggle={this.toggleEdit} className={this.props.className}>
-          <ModalHeader toggle={this.toggleEdit}>View and Update Module</ModalHeader>
+          <ModalHeader toggle={this.toggleEdit}>{this.translate("View and Update Module")}</ModalHeader>
           <ModalBody>
             <Card>
               <CardHeader>
-                <strong></strong> Module details below
+                <strong></strong> {this.translate("Module details below")}
               </CardHeader>
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.formError}</p>
                 <Form action="" method="post" className="form-horizontal" >
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="name">Name <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="name">{this.translate("Name")} <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="name" name="name" placeholder="Enter Module Name"
@@ -364,7 +364,7 @@ class Modules extends Component {
 
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="description">Description</Label>
+                      <Label htmlFor="description">{this.translate("Description")}</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="description" name="description" placeholder="Enter Description" required
@@ -374,8 +374,8 @@ class Modules extends Component {
                   </FormGroup>
 
                   <ModalFooter>
-                    <Button color="primary" onClick={e => this.updateModule()} disabled={this.state.greyedOut ? true : false}>Update Module</Button>{' '}
-                    <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
+                    <Button color="primary" onClick={e => this.updateModule()} disabled={this.state.greyedOut ? true : false}>{this.translate("Update Module")}</Button>{' '}
+                    <Button color="secondary" onClick={this.toggleEdit}>{this.translate("Cancel")}</Button>
                   </ModalFooter>
 
                 </Form>
@@ -393,7 +393,7 @@ class Modules extends Component {
         {/*Modal to delete modules*/}
 
         <Modal isOpen={this.state.confirmModal} toggle={this.toggleConfirm} className={this.props.className}>
-          <ModalHeader toggle={this.toggleConfirm}>Confirm Delete</ModalHeader>
+          <ModalHeader toggle={this.toggleConfirm}>{this.translate("Confirm Delete")}</ModalHeader>
           <ModalBody>
 
             <Card>
@@ -401,11 +401,11 @@ class Modules extends Component {
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.formError}</p>
 
-                <p>Are you sure you want to delete module: {singleModuleData.name}?</p>
+                <p>{this.translate("Are you sure you want to delete module")}: {singleModuleData.name}?</p>
 
                 <ModalFooter>
-                  <Button color="primary" onClick={e => this.deleteModule(singleModuleData.code)}>Delete</Button>{' '}
-                  <Button color="secondary" onClick={this.toggleConfirm}>Cancel</Button>
+                  <Button color="primary" onClick={e => this.deleteModule(singleModuleData.code)}>{this.translate("Delete")}</Button>{' '}
+                  <Button color="secondary" onClick={this.toggleConfirm}>{this.translate("Cancel")}</Button>
                 </ModalFooter>
               </CardBody>
             </Card>

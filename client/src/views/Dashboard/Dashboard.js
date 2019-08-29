@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Widget04 from '../Widgets/Widget04';
+import Widget01 from '../Widgets/Widget01';
 import {
   Col,
-  Row
+  Row,
+  // CardGroup
+  Table, Button,
 } from "reactstrap";
 
 import { FormattedMessage } from "react-intl";
@@ -14,7 +17,7 @@ import { fetchTodos } from '../../actions/action_todo';
 import { fetchStaffs } from '../../actions/action_staff';
 import { fetchPermissions } from '../../actions/action_permission';
 import { fetchGroups } from '../../actions/action_group';
-import { fetchModules } from '../../actions/action_module';
+import { fetchModules, fetchModule, saveModuleInfo } from '../../actions/action_module';
 
 import { Redirect } from "react-router-dom";
 
@@ -22,12 +25,7 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 
-    this.toggle = this.toggle.bind(this);
-    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
-
     this.state = {
-      dropdownOpen: false,
-      radioSelected: 2,
       groupData: [],
       permissionData: [],
       staffData: [],
@@ -70,11 +68,10 @@ class Dashboard extends Component {
         }, error => {
           console.log(error);
           this.setState({ currentError: error });
-        }
-        )
+        })
 
-      //Staff Data
-      this.props.fetchStaffs("?size=1000")
+      //Staff Data 
+      this.props.fetchStaffs("?size=10")
         .then((response) => {
           this.setState({ staffData: response.data.payload });
         }).catch(err => {
@@ -87,21 +84,23 @@ class Dashboard extends Component {
 
   }
 
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen
-    });
-  }
-
-  onRadioBtnClick(radioSelected) {
-    this.setState({
-      radioSelected: radioSelected
-    });
-  }
-
   loading = () => (
     <div className="animated fadeIn pt-1 text-center">Loading...</div>
   );
+
+  // Get specific module to view module Details
+  findModuleView = (moduleCode) => {
+    this.props.fetchModule(moduleCode).then(result => {
+      // console.log(result);
+      this.props.saveModuleInfo(result);
+      sessionStorage.setItem("userModule", moduleCode);
+      sessionStorage.setItem("moduleData", JSON.stringify(result.data));
+      this.setState({ singleModuleData: result.data }, this.props.history.push('/apps/module_view'));
+    }, error => {
+      this.setState({ formError: error });
+    });
+  }
+
 
   render() {
     if (this.state.redirectToReferrer) {
@@ -110,12 +109,60 @@ class Dashboard extends Component {
     return (
       <div className="animated fadeIn">
         <Row>
-          <Col sm="6" md="6">
-            <Link to='/apps'>
+          <Col md="6">
+            {/* <Link to='/apps'>
               <Widget04 icon="icon-pie-chart" color="danger" header={this.state.appData ? this.state.appData.length : "0"} value="10">
                 <FormattedMessage id="App Modules" defaultMessage="App Modules" />
               </Widget04>
+            </Link> */}
+            <Row>
+              {this.state.appData.map((item, key) => {
+                return (
+                  <Col md="6" key={key} >
+                    <Link to="#" onClick={e => this.findModuleView(item.code)}>
+                      <Widget04 icon="icon-pie-chart" color="success" header={item.name} value="0">
+                        {item.description}
+                      </Widget04>
+                    </Link>
+                  </Col>
+
+                )
+              })}
+            </Row>
+          </Col>
+
+          <Col sm="6" md="6">
+            <Link to='/staffs'>
+              <Widget01 color="primary" variant="inverse" value="0" mainText="System Users" smallText="Click to view all users" header={this.state.staffData ? this.state.staffData.length : "0"} />
             </Link>
+
+            <Table hover bordered striped responsive size="sm">
+              <thead>
+                <tr>
+                  <th><FormattedMessage id="tableId" defaultMessage="ID" /></th>
+                  <th><FormattedMessage id="tableFirstName" defaultMessage="First Name" /></th>
+                  <th><FormattedMessage id="tableEmail" defaultMessage="Email" /></th>
+                  <th><FormattedMessage id="tableRoleName" defaultMessage="Role" /></th>
+                  <th><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
+                </tr>
+              </thead>
+              <tbody>{this.state.staffData.map((item, key) => {
+                return (
+                  <tr key={key}>
+                    <td>{item.id}</td>
+                    <td>{item.first_name}</td>
+                    <td>{item.email}</td>
+                    <td>{item.maker_checker}</td>
+                    <td>
+                      <Button size="sm" color="secondary" onClick={e => { console.log("Clicked!") }}><i className="fa fa-note"></i>
+                        {' '}<FormattedMessage id="View" defaultMessage="View" />
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              })}
+              </tbody>
+            </Table>
           </Col>
 
           {/* <Col sm="6" md="6">
@@ -127,13 +174,14 @@ class Dashboard extends Component {
           </Col> */}
         </Row>
         <Row>
-          <Col sm="6" md="6">
+
+          {/* <Col sm="6" md="6">
             <Link to='/staffs'>
-              <Widget04 icon="icon-user" color="info" header={this.state.staffData ? this.state.staffData.length : "0"} value="10">
+              <Widget04 icon="icon-user" color="success" header={this.state.staffData ? this.state.staffData.length : "0"} value="10">
                 <FormattedMessage id="Authorized Staffs" defaultMessage="Authorized Staffs" />
               </Widget04>
             </Link>
-          </Col>
+          </Col> */}
           {/* <Col sm="6" md="6">
             <Link to='/todos'>
               <Widget04 icon="icon-basket" color="primary" header={this.state.todoData ? this.state.todoData.length : "0"} value="10">
@@ -163,7 +211,9 @@ const mapDispatchToProps = (dispatch) => {
     fetchGroups,
     fetchPermissions,
     fetchStaffs,
-    fetchModules
+    fetchModules,
+    fetchModule,
+    saveModuleInfo
   }, dispatch)
 }
 

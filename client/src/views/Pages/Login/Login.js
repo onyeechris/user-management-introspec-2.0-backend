@@ -28,6 +28,7 @@ import LoginForm from "./LoginForm";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setLocale } from '../../../actions/action_locale';
+import { fetchAllStaffs } from '../../../actions/action_staff';
 
 class Login extends Component {
   constructor(props) {
@@ -38,11 +39,12 @@ class Login extends Component {
         password: ""
       },
       redirectToReferrer: false,
-      redirectToMainMenu: false,
       loginError: "",
-      value: 'en'
+      value: 'en',
+      staffData: {}
     };
-    this.login = this.login.bind(this);
+    // this.login = this.login.bind(this);
+    this.loginUser = this.loginUser.bind(this);
     this.onChange = this.onChange.bind(this);
   }
 
@@ -60,24 +62,24 @@ class Login extends Component {
     this.props.setLocale(event.target.value);
   }
 
-  login(event) {
-    event.preventDefault();
-    if (this.state.userLogin.username && this.state.userLogin.password) {
-      this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
-        sessionStorage.setItem("userData", JSON.stringify(result));
-        sessionStorage.setItem("loggedInUser", this.state.userLogin.username);
-        this.setState({ redirectToReferrer: true });
-        //decode the token
-        let userData = jwtDecode(result.token);
-        sessionStorage.setItem("userRole", userData.authorities[0]);
-      }, error => {
-        this.setState({ loginError: "Username or password incorrect!" })
-      }
-      )
-    } else {
-      this.setState({ loginError: "Please fill both fields!" })
-    }
-  }
+  // login(event) {
+  //   event.preventDefault();
+  //   if (this.state.userLogin.username && this.state.userLogin.password) {
+  //     this.props.actions.fetchUser("auth", this.state.userLogin).then(result => {
+  //       sessionStorage.setItem("userData", JSON.stringify(result));
+  //       sessionStorage.setItem("loggedInUser", this.state.userLogin.username);
+  //       this.setState({ redirectToReferrer: true });
+  //       //decode the token
+  //       let userData = jwtDecode(result.token);
+  //       sessionStorage.setItem("userRole", userData.authorities[0]);
+  //     }, error => {
+  //       this.setState({ loginError: "Username or password incorrect!" })
+  //     }
+  //     )
+  //   } else {
+  //     this.setState({ loginError: "Please fill both fields!" })
+  //   }
+  // }
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
@@ -91,20 +93,31 @@ class Login extends Component {
     // console.log(this.state.userLogin);
   }
 
-  menuHome() {
-    this.setState({ redirectToMainMenu: true });
-    this.props.currentModule = null;
-  }
-
   loginUser = (loginUserData) => {
     console.log(loginUserData);
     this.props.actions.fetchUser("auth", loginUserData).then(result => {
+      console.log(result);
       sessionStorage.setItem("userData", JSON.stringify(result));
       sessionStorage.setItem("loggedInUser", loginUserData.username);
       this.setState({ redirectToReferrer: true });
       //decode the token
       let userData = jwtDecode(result.token);
+      console.log(userData);
       sessionStorage.setItem("userRole", userData.authorities[0]);
+
+      // Get the user's role
+      this.props.fetchAllStaffs("?size=1000").then(result => {
+        console.log(result.data);
+        result.data.payload.forEach(staff => {
+          console.log(staff.first_name);
+          if (staff.email === loginUserData.username) {
+            console.log(staff);
+            sessionStorage.setItem("loggedInUserData", JSON.stringify(staff));
+          }
+        })
+      }, error => {
+        console.log(error);
+      })
     }, error => {
       this.setState({ loginError: "Username or password incorrect!" })
     }
@@ -144,9 +157,6 @@ class Login extends Component {
     }
     if (sessionStorage.getItem("userData")) {
       return <Redirect to={"/dashboard"} />;
-    }
-    if (this.state.redirectToMainMenu) {
-      return <Redirect to={"/menu"} />;
     }
     return (
       <div className="app flex-row align-items-center">
@@ -270,7 +280,7 @@ class Login extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('State is ', state)
+  // console.log('State is ', state)
   return {
     lang: state.locale.lang
   }
@@ -278,7 +288,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { setLocale },
+    {
+      setLocale,
+      fetchAllStaffs
+    },
     dispatch
   )
 }
