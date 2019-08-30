@@ -5,6 +5,7 @@ import {
 import {
   errorSwitch,
   // interceptor 
+  appInterceptor,
 } from './utils';
 
 export const PERMISSIONS_FETCHED = 'PERMISSIONS_FETCHED';
@@ -20,29 +21,32 @@ export const PERMISSION_UPDATE_ERROR = 'PERMISSION_UPDATE_ERROR';
 
 let apiUrl = BASE_URL + 'permissions/';
 // interceptor(userModule);
+appInterceptor()
 
-let permissionHeaders = {}
+// let permissionHeaders = {}
 
-const updateHeaders = () => {
-  let userModule = sessionStorage.getItem("userModule");
-  let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
-  console.log(userModule);
-  permissionHeaders = {
-    Authorization: userToken,
-    Module: userModule
-  }
-  console.log(permissionHeaders);
-}
+// const updateHeaders = () => {
+//   let userModule = sessionStorage.getItem("userModule");
+//   let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
+//   console.log(userModule);
+//   permissionHeaders = {
+//     Authorization: userToken,
+//     Module: userModule ? userModule : "ADMIN"
+//   }
+//   console.log(permissionHeaders);
+// }
 
 
 export function fetchPermissions(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
-      axios.get(apiUrl + type,
-        permissionHeaders
-      ).then((responseJSON) => {
+      axios({
+        method: 'GET',
+        url: apiUrl + type,
+        // headers: permissionHeaders
+      }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
           type: PERMISSIONS_FETCHED,
@@ -62,13 +66,14 @@ export function fetchPermissions(type) {
 }
 
 export function fetchPermission(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
       axios({
         method: 'GET',
-        url: apiUrl + type
+        url: apiUrl + type,
+        // headers: permissionHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -89,7 +94,7 @@ export function fetchPermission(type) {
 }
 
 export function deletePermission(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
@@ -117,7 +122,7 @@ export function deletePermission(type) {
 }
 
 export function createPermission(permissionInfo) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
@@ -142,7 +147,7 @@ export function createPermission(permissionInfo) {
 }
 
 export function updatePermission(permissionInfo) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);

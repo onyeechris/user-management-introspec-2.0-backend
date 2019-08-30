@@ -109,6 +109,9 @@ const routes = [
   { path: "/settings", name: translate("Settings"), component: Settings },
   { path: "/apps", exact: true, name: translate("Apps"), component: Modules },
   { path: "/apps/module_view", exact: true, name: translate("App View"), component: ModuleView },
+  { path: "/apps/module_view/groups", exact: true, name: translate("Groups"), component: Groups },
+  { path: "/apps/module_view/groups/group_view", exact: true, name: translate("Group View"), component: GroupView },
+  { path: "/apps/module_view/permissions", name: translate("Permissions"), component: Permissions },
 ];
 
 export default routes;

@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import {
   FormGroup, Label, Card, CardBody, CardHeader, Col, Row,
+  Button,
   //  Form, Table 
 } from 'reactstrap';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchGroup } from '../../../actions/action_group';
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 // import Pagination2 from "react-js-pagination";
 import { FormattedMessage } from 'react-intl';
 
-import GroupTable from "./GroupTable";
+import GroupPermissionsTable from "./GroupPermissionsTable";
+import GroupStaffsTable from './GroupStaffsTable';
 
 let firstPermissionsData = [];
 let initialPermissionData = [];
@@ -139,6 +141,12 @@ class GroupsView extends Component {
     }
   }
 
+  translate = (pageString) => {
+    return (
+      <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+  }
+
   render() {
     // let { singleGroupData } = this.state;
 
@@ -156,17 +164,18 @@ class GroupsView extends Component {
           <Col>
             <Card>
               <CardHeader>
-                <Link to='/groups'>
+                {/* <Link to='/apps/module_view/groups'> */}
+                <Button onClick={this.props.history.goBack}>
                   <i className="fa fa-arrow-left"></i> {' '}
-                  <FormattedMessage id="Back" defaultMessage="Back" />
-                  {/* {this.props.group.groupFetched.data.name} */}
-                </Link>
+                  {this.translate("Back")}
+                </Button>
+                {/* </Link> */}
               </CardHeader>
               <CardBody>
                 <FormGroup row>
                   <Col md="3">
                     <Label htmlFor="name"><strong>
-                      <FormattedMessage id="Name" defaultMessage="Name" />
+                      {this.translate("Name")}
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
@@ -177,7 +186,7 @@ class GroupsView extends Component {
                 <FormGroup row>
                   <Col md="3">
                     <Label htmlFor="description"><strong>
-                      <FormattedMessage id="Description" defaultMessage="Description" />
+                      {this.translate("Description")}
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
@@ -187,7 +196,7 @@ class GroupsView extends Component {
                 </FormGroup>
                 <br />
                 {/* <h5>
-                  <FormattedMessage id="Group Permissions" defaultMessage="Group Permissions" />: &nbsp;
+                  {this.translate("Group Permissions")}: &nbsp;
                     <div style={this.state.hideField}>
                     {this.props.groupData.groupFetched ? initialPermissionData = this.props.groupData.groupFetched.data.permissions : ""}
                     {this.props.groupData.groupFetched ? permData = this.props.groupData.groupFetched.data.permissions : ""}
@@ -235,15 +244,28 @@ class GroupsView extends Component {
                   </div>
 
                 </Table> */}
-
-                <GroupTable
-                  hideField={this.state.hideField}
-                  changePageItem={this.changePageItem}
-                  handlePageChange={this.handlePageChange}
-                  initialPermissionData={this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.permissions : []}
-                  itemsPerPage={this.state.itemsPerPage}
-                  activePage={this.state.activePage} />
-
+                <Row>
+                  <Col md="6">
+                    <GroupPermissionsTable
+                      hideField={this.state.hideField}
+                      changePageItem={this.changePageItem}
+                      handlePageChange={this.handlePageChange}
+                      initialPermissionData={this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.permissions : []}
+                      itemsPerPage={this.state.itemsPerPage}
+                      activePage={this.state.activePage}
+                    />
+                  </Col>
+                  <Col md="6">
+                    <GroupStaffsTable
+                      hideField={this.state.hideField}
+                      changePageItem={this.changePageItem}
+                      handlePageChange={this.handlePageChange}
+                      staffsData={this.props.groupData.groupFetched ? this.props.groupData.groupFetched.data.staffs : []}
+                      itemsPerPage={this.state.itemsPerPage}
+                      activePage={this.state.activePage}
+                    />
+                  </Col>
+                </Row>
               </CardBody>
             </Card>
           </Col>

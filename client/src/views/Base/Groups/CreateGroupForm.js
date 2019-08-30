@@ -19,6 +19,12 @@ const minLength = min => value => {
 
 const groupName = minLength(6);
 
+const translate = (pageString) => {
+    return (
+        <FormattedMessage id={pageString} defaultMessage={pageString} />
+    )
+}
+
 const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
     <div>
         <Input
@@ -37,7 +43,7 @@ let CreateGroupForm = (props) => {
 
             <FormGroup row>
                 <Col md="3">
-                    <Label htmlFor="name"><FormattedMessage id="Name" defaultMessage="Name " /> <span style={{ color: 'red' }}>*</span></Label>
+                    <Label htmlFor="name">{translate("Name")} <span style={{ color: 'red' }}>*</span></Label>
                 </Col>
                 <Col xs="12" md="9">
                     <Field name="name" type="text"
@@ -50,7 +56,7 @@ let CreateGroupForm = (props) => {
 
             <FormGroup row>
                 <Col md="3">
-                    <Label htmlFor="description"><FormattedMessage id="Description" defaultMessage="Description" /> </Label>
+                    <Label htmlFor="description">{translate("Description")} </Label>
                 </Col>
                 <Col xs="12" md="9">
                     <Field name="description" type="text"
@@ -66,11 +72,11 @@ let CreateGroupForm = (props) => {
                     color="primary"
                     disabled={submitting}
                 >
-                    <FormattedMessage id="Submit" defaultMessage="Submit" />
+                    {translate("Submit")}
                 </Button>
                 {' '}
                 <Button color="secondary" onClick={toggle}>
-                    <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+                    {translate("Cancel")}
                 </Button>
             </ModalFooter>
 

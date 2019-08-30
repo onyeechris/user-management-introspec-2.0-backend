@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Form, FormGroup, Input, Label, Alert } from 'reactstrap';
-import axios from 'axios';
+// import axios from 'axios';
 import Pagination2 from "react-js-pagination";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchPermissions, fetchPermission, deletePermission, createPermission, updatePermission } from '../../../actions/action_permission';
 import { FormattedMessage } from 'react-intl';
 import CreatePermissionForm from "./CreatePermissionForm";
+// import { Link } from "react-router-dom";
 
 let loggedInUser = "";
 let permissionsToLoad = [];
@@ -17,6 +18,7 @@ class Permissions extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      sessionModuleData: JSON.parse(sessionStorage.getItem("moduleData")),
       permissionData: [],
       permissionTableData: {},
       itemsPerPage: 10,
@@ -34,11 +36,12 @@ class Permissions extends Component {
       newCreatedPermission: {},
       visible: false,
       visibleUpdate: false,
-      baseUrl: 'http://localhost:9100/api/',
+      // baseUrl: 'http://localhost:9100/api/',
       formError: "",
       showAction: {
-        "display": "none"
+        "display": "block"
       },
+      greyedOut: true,
     };
     this.toggle = this.toggle.bind(this);
     this.updateValue = this.updateValue.bind(this);
@@ -69,15 +72,6 @@ class Permissions extends Component {
       console.log(this.props.permissionData.data.payload);
       permissionsToLoad = this.props.permissionData.data.payload;
     }
-
-    // let { baseUrl } = this.state;
-    // axios.get(baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } }).then((response) => {
-    //   //console.log(response.data)
-    //   this.setState({ permissionData: response.data.payload });
-    //   this.setState({ permissionTableData: response.data.meta });
-    // }).catch(err => {
-    //   //debugger;
-    // })
 
     loggedInUser = sessionStorage.getItem("loggedInUser");
     if (loggedInUser.toLowerCase().includes("sysdev")) {
@@ -133,6 +127,7 @@ class Permissions extends Component {
   }
 
   readUpdateValue(field, event) {
+    this.setState({ greyedOut: false });
     var newPermissionInfo = JSON.parse(JSON.stringify(this.state.singlePermissionData));
     newPermissionInfo[field] = event.target.value;
     this.setState({ singlePermissionData: newPermissionInfo });
@@ -145,14 +140,15 @@ class Permissions extends Component {
 
     if (newPermissionData.action && newPermissionData.description) {
 
-      let permissionUrl = 'permissions';
-      axios.post(this.state.baseUrl + permissionUrl,
-        this.state.newPermissionData,
-        {
-          headers: {
-            'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-          }
-        })
+      // let permissionUrl = 'permissions';
+      // axios.post(this.state.baseUrl + permissionUrl,
+      //   this.state.newPermissionData,
+      //   {
+      //     headers: {
+      //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
+      //     }
+      //   })
+      this.props.createPermission(this.state.newPermissionData)
         .then(response => {
           this.setState({ newCreatedPermission: response.data });
           console.log(this.state.newPermissionData);
@@ -176,10 +172,11 @@ class Permissions extends Component {
     console.log(newPermissionData);
     this.props.createPermission(newPermissionData)
       .then(response => {
+        console.log(response);
         this.setState({ newCreatedPermission: response.data });
-        this.state.permissionData.push(this.state.newPermissionData);
-        this.setState({ visible: true });
-        this.toggle();
+        let newPermission = this.state.permissionData
+        newPermission.push(response.data);
+        this.setState({ newPermission: newPermission }, this.setState({ visible: true }, this.toggle()));
       })
       .catch(err => {
         this.setState({ formError: err + "" })
@@ -192,8 +189,9 @@ class Permissions extends Component {
     }, error => {
       this.setState({ formError: error })
     }).then(this.toggleEdit);
+  }
 
-
+  findPermissionDelete(permissionId) {
     // let apiUrl = 'permissions/' + permissionId;
     // axios.get(this.state.baseUrl + apiUrl,
     //   {
@@ -201,27 +199,11 @@ class Permissions extends Component {
     //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
     //     }
     //   })
-    //   .then(response => {
-    //     this.setState({ singlePermissionData: response.data });
-
-    //   }).then(this.toggleEdit())
-    //   .catch(err => {
-    //   })
-  }
-
-  findPermissionDelete(permissionId) {
-    let apiUrl = 'permissions/' + permissionId;
-    axios.get(this.state.baseUrl + apiUrl,
-      {
-        headers: {
-          'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-        }
-      })
-      .then(response => {
-        this.setState({ singlePermissionData: response.data });
-
-      }).then(this.toggleConfirm())
-      .catch(err => {
+    this.props.fetchPermission(permissionId)
+      .then(result => {
+        this.setState({ singlePermissionData: result.data }, this.toggleConfirm());
+      }, error => {
+        console.log(error);
       })
   }
 
@@ -279,8 +261,9 @@ class Permissions extends Component {
   }
 
   fetchPermissions() {
-    let permissionUrl = 'permissions?size=' + this.state.itemsPerPage;
-    axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+    let permissionUrl = '?size=' + this.state.itemsPerPage;
+    // axios.get(this.state.baseUrl + permissionUrl, { headers: { 'Authorization': JSON.parse(sessionStorage.getItem("userData")).token } })
+    this.props.fetchPermissions(permissionUrl)
       .then((response) => {
         this.setState({ permissionData: response.data.payload });
       }).catch(err => {
@@ -333,12 +316,20 @@ class Permissions extends Component {
     }
     return (
       <div className="animated fadeIn">
+        {/* <Link to='/apps/module_view'> */}
+        <Button onClick={this.props.history.goBack}>
+          <i className="fa fa-arrow-left"></i> {' '}
+          {this.translate("Back")}
+        </Button>
+        {/* </Link> */}
+        <br />
+        <br />
 
         <Row>
           <Col>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i>{' '}{this.translate("All Permissions")}
+                <i className="fa fa-align-justify"></i>{' '} <strong style={{ fontSize: "20px" }}> {this.state.sessionModuleData.name} </strong> {' | '} {this.translate("All Permissions")}
                 <div className="pull-right">
                   <Button onClick={this.toggle} className="mr-1" style={showAction}>{this.translate("Create New Permission")}</Button>
                 </div>
@@ -349,20 +340,21 @@ class Permissions extends Component {
               </CardHeader>
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                  <FormattedMessage id="Permission" defaultMessage="Permission" />{' '}
-                  <strong>{this.state.newCreatedPermission.name}</strong> <FormattedMessage id="has been created" defaultMessage="has been created" />.
+                  {this.translate("Permission")}{' '}
+                  <strong>{this.state.newCreatedPermission.name}</strong> {this.translate("has been created")}.
                 </Alert>
                 <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
-                  <FormattedMessage id="Permission" defaultMessage="Permission" />{' '}
-                  <strong>{this.state.newCreatedPermission.action}</strong> <FormattedMessage id="has been updated" defaultMessage="has been updated" />.
+                  {this.translate("Permission")}{' '}
+                  <strong>{this.state.newCreatedPermission.action}</strong> {this.translate("has been updated")}.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th><FormattedMessage id="tableId" defaultMessage="ID" /></th>
-                      <th><FormattedMessage id="Name" defaultMessage="Name" /></th>
-                      <th><FormattedMessage id="Description" defaultMessage="Description" /></th>
-                      <th style={showAction}><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
+                      <th>{this.translate("tableId")}</th>
+                      <th>{this.translate("Name")}</th>
+                      <th>{this.translate("Description")}</th>
+                      <th style={showAction}>
+                        {this.translate("tableAction")}</th>
                     </tr>
                   </thead>
                   <tbody>{permissionsToLoad.map((item, key) => {
@@ -373,9 +365,9 @@ class Permissions extends Component {
                         <td>{item.description}</td>
                         <td style={showAction}>
                           <Button size="sm" color="primary" onClick={e => this.findPermission(item.id)}><i className="fa fa-dot-circle-o"></i>
-                            {' '}<FormattedMessage id="Update" defaultMessage="Update" /></Button>{' '}
+                            {' '}{this.translate("Update")}</Button>{' '}
                           <Button size="sm" color="danger" onClick={e => this.findPermissionDelete(item.id)}><i className="fa fa-ban"></i>
-                            {' '}<FormattedMessage id="Delete" defaultMessage="Delete" /></Button>
+                            {' '}{this.translate("Delete")}</Button>
                         </td>
                       </tr>
                     )
@@ -411,14 +403,14 @@ class Permissions extends Component {
 
         {/* Create Permission Modal */}
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Create Permission</ModalHeader>
+          <ModalHeader toggle={this.toggle}>{this.translate("Create Permission")}</ModalHeader>
           <ModalBody>
             <Card>
               <CardHeader>
-                <strong></strong> Please fill the form below
-      </CardHeader>
+                <strong></strong> {this.translate("Please fill the form below")}
+              </CardHeader>
               <CardBody>
-                <p style={{ color: 'red' }}>{this.props.permissionData.permissionCreateError}</p>
+                <p style={{ color: 'red' }}>{JSON.stringify(this.props.permissionData.permissionCreateError)}</p>
                 {/* <p style={{ color: 'red' }}>{this.state.formError}</p> */}
                 {/* <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
                   <FormGroup row>
@@ -459,12 +451,12 @@ class Permissions extends Component {
         {/*Modal to update permissions*/}
 
         <Modal isOpen={this.state.editModal} toggle={this.toggleEdit} className={this.props.className}>
-          <ModalHeader toggle={this.toggleEdit}>View and Update Permission</ModalHeader>
+          <ModalHeader toggle={this.toggleEdit}>{this.translate("View and Update Permission")}</ModalHeader>
           <ModalBody>
             <Card>
               <CardHeader>
-                <strong></strong> Permission details below
-      </CardHeader>
+                <strong></strong> {this.translate("Permission details below")}
+              </CardHeader>
               <CardBody>
 
                 <Form action="" method="post" className="form-horizontal" >
@@ -472,7 +464,7 @@ class Permissions extends Component {
                   <Input type="hidden" name="id" value={singlePermission.id} onChange={this.readUpdateValue.bind(this, 'id')} />
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="action">Action <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="action">{this.translate("Action")} <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="action" name="action" placeholder="Enter The Action"
@@ -482,7 +474,7 @@ class Permissions extends Component {
                   </FormGroup>
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="description">Description <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="description">{this.translate("Description")} <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="description" name="description" placeholder="Enter a Description" required
@@ -491,8 +483,8 @@ class Permissions extends Component {
                     </Col>
                   </FormGroup>
                   <ModalFooter>
-                    <Button color="primary" onClick={this.updatePermission}>Submit</Button>{' '}
-                    <Button color="secondary" onClick={this.toggleEdit}>Cancel</Button>
+                    <Button color="primary" onClick={this.updatePermission}>{this.translate("Submit")}</Button>{' '}
+                    <Button color="secondary" onClick={this.toggleEdit}>{this.translate("Cancel")}</Button>
                   </ModalFooter>
                 </Form>
               </CardBody>
@@ -510,7 +502,7 @@ class Permissions extends Component {
         {/*Modal to delete permissions*/}
 
         <Modal isOpen={this.state.confirmModal} toggle={this.toggleConfirm} className={this.props.className}>
-          <ModalHeader toggle={this.toggleConfirm}>Confirm Delete</ModalHeader>
+          <ModalHeader toggle={this.toggleConfirm}>{this.translate("Confirm Delete")}</ModalHeader>
           <ModalBody>
 
             <Card>
@@ -518,11 +510,11 @@ class Permissions extends Component {
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.formError}</p>
 
-                <p>Are you sure you want to delete permission: {singlePermission.action}?</p>
+                <p>{this.translate("Are you sure you want to delete permission")}: {singlePermission.action}?</p>
 
                 <ModalFooter>
-                  <Button color="primary" onClick={e => this.deletePermission(singlePermission.id)}>Yes</Button>{' '}
-                  <Button color="secondary" onClick={this.toggleConfirm}>Cancel</Button>
+                  <Button color="primary" onClick={e => this.deletePermission(singlePermission.id)}>{this.translate("Yes")}</Button>{' '}
+                  <Button color="secondary" onClick={this.toggleConfirm}>{this.translate("Cancel")}</Button>
                 </ModalFooter>
               </CardBody>
             </Card>
