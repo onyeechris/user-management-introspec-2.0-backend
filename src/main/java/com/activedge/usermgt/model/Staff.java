@@ -5,6 +5,7 @@ import com.activedge.usermgt.model.event.StaffEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
@@ -96,16 +97,16 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 //    @ManyToOne
 //    // @JsonIgnoreProperties("staff")
 //    private Group group;
-    @ManyToMany
-    @JoinTable(name = "staff_group", joinColumns = {
-            @JoinColumn(name = "staff_id", referencedColumnName = "id") },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "module", referencedColumnName = "module"),
-                    @JoinColumn(name = "group_id", referencedColumnName = "id")
-            }
-    )
-    @BatchSize(size = 10)
-    @JsonBackReference
+    @ManyToMany(mappedBy = "staffs")
+//    @JoinTable(name = "staff_group", joinColumns = {
+//            @JoinColumn(name = "staff_id", referencedColumnName = "id") },
+//            inverseJoinColumns = {
+//                    @JoinColumn(name = "module", referencedColumnName = "module"),
+//                    @JoinColumn(name = "group_id", referencedColumnName = "id")
+//            }
+//    )
+//    @BatchSize(size = 10)
+//    @JsonBackReference
     private Set<Group> groups = new HashSet<>();
 
     @PreRemove

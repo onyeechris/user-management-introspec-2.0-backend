@@ -69,16 +69,19 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/permissions/**").hasAnyRole("ADMIN", "DEV")
+                .antMatchers(HttpMethod.GET, "/permissions/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/permissions/**").hasRole("DEV")
 
+                .antMatchers(HttpMethod.GET, "/groups/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/groups/**").hasRole("ADMIN")
 
+                .antMatchers(HttpMethod.GET, "/staffs/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/staffs/**").hasRole("ADMIN")
 
+                .antMatchers(HttpMethod.GET, "/appmodule/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/appmodule/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/userapps/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers(HttpMethod.GET, "/userapps/**").hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
                 .antMatchers("/userapps/**").hasRole("ADMIN")
 
                 .antMatchers(HttpMethod.GET, "/management/audits/**").hasAnyRole("AUDITOR", "ADMIN")
