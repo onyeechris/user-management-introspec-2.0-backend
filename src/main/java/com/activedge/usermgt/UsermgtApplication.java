@@ -1,5 +1,7 @@
 package com.activedge.usermgt;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -19,9 +21,22 @@ public class UsermgtApplication implements WebMvcConfigurer {
 
                 SpringApplication application = new SpringApplication(UsermgtApplication.class);
                 // little hack to initialize schemas on first application startup
-                DataSource dataSource = DataSourceBuilder.create().username("postgres").password("passadmin")
-                                .url("jdbc:postgresql://localhost:5432/usermgt")
-                                .driverClassName("org.postgresql.Driver").build();
+
+                HikariConfig hikariConfig = new HikariConfig();
+                hikariConfig.setDriverClassName("org.postgresql.Driver");
+                hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/usermgt");
+                hikariConfig.setUsername("postgres");
+                hikariConfig.setPassword("passadmin");
+
+                hikariConfig.setMaximumPoolSize(2);
+
+                HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+
+//                DataSource dataSource = DataSourceBuilder.create()
+//                        .username("postgres")
+//                        .password("passadmin")
+//                        .url("jdbc:postgresql://localhost:5432/usermgt?maximum-pool-size=2")
+//                        .driverClassName("org.postgresql.Driver").build();
 
                 Properties properties = new Properties();
 

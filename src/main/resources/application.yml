@@ -23,10 +23,10 @@ spring:
                 lob:
                   non_contextual_creation: true
 
-  redis:
-    host: localhost
-    port: 6379
-    embedded: true
+#  redis:
+#    host: localhost
+#    port: 6379
+#    embedded: true
 
   datasource:
       driverClassName: org.postgresql.Driver

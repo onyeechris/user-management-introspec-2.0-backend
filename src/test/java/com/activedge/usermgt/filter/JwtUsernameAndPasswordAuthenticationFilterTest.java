@@ -42,15 +42,13 @@ public class JwtUsernameAndPasswordAuthenticationFilterTest {
     public void testLogin() {
 
         Map<String, String> req = new HashMap<>();
-//        req.put("username", "admean");
-//        req.put("password", "56789");
-        req.put("username", "john");
-        req.put("password", "secret");
+        req.put("username", "admin");
+        req.put("password", "adminsecret");
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(req, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/auth"),
+                createURLWithPort("/auth-service/auth"),
                 HttpMethod.POST, entity, String.class);
 
         assertEquals(response.getStatusCodeValue(), 200);
