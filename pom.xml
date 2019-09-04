@@ -101,23 +101,6 @@
 			<artifactId>hibernate-envers</artifactId>
 		</dependency>
 
-        <!-- Redis -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.caryyu</groupId>
-            <artifactId>spring-embedded-redis-server</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>${jedis.version}</version>
-            <type>jar</type>
-        </dependency>
-
         <!-- documentation -->
         <dependency>
             <groupId>com.google.guava</groupId>

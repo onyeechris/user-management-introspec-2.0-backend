@@ -7,7 +7,6 @@ import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.StaffRepository;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,17 +32,14 @@ public class StaffServiceImpl implements StaffService {
 
     private final StaffRepository staffRepository;
 
-    private MakerItemRepository makerItemRepository;
-
     private final BCryptPasswordEncoder encoder;
 
     private final StaffMapper staffMapper;
 
-    public StaffServiceImpl(StaffRepository staffRepository, StaffMapper staffMapper, BCryptPasswordEncoder encoder, MakerItemRepository makerItemRepository) {
+    public StaffServiceImpl(StaffRepository staffRepository, StaffMapper staffMapper, BCryptPasswordEncoder encoder) {
         this.staffRepository = staffRepository;
         this.staffMapper = staffMapper;
         this.encoder = encoder;
-        this.makerItemRepository = makerItemRepository;
     }
 
     /**

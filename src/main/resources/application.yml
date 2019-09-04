@@ -28,15 +28,23 @@ spring:
 #    port: 6379
 #    embedded: true
 
+  datasource.driver-class-name: org.postgresql.Driver
+  datasource.type: com.zaxxer.hikari.HikariDataSource
+  datasource.url: jdbc:postgresql://localhost:5432/usermgt
+  datasource.username: postgres
+  datasource.password: passadmin
   datasource:
-      driverClassName: org.postgresql.Driver
-      type: com.zaxxer.hikari.HikariDataSource
-      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
-      username: postgres
-      password: passadmin
+#      driverClassName: org.postgresql.Driver
+#      type: com.zaxxer.hikari.HikariDataSource
+#      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
+#      username: postgres
+#      password: passadmin
       hikari:
           auto-commit: false
-#      initialization-mode: always
+          minimum-idle: 3
+          maximum-pool-size: 5
+
+    #      initialization-mode: always
       data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
 
   jackson:

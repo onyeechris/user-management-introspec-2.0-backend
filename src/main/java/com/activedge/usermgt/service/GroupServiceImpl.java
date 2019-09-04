@@ -14,7 +14,6 @@ import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.util.Lambda;
 import com.activedge.usermgt.util.facade.GroupSpy;
 import com.activedge.usermgt.util.facade.Spy;
@@ -42,20 +41,17 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
 
-    private MakerItemRepository makerItemRepository;
-
     private final GroupMapper groupMapper;
     private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
     private final StaffMapper staffMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper, MakerItemRepository makerItemRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
         this.staffMapper = staffMapper;
         this.moduleMapper = moduleMapper;
-        this.makerItemRepository = makerItemRepository;
     }
 
     /**

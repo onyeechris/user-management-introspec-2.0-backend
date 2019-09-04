@@ -3,10 +3,7 @@ package com.activedge.usermgt.model.event;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.enumeration.Action;
-import com.activedge.usermgt.model.log.MakerItem;
 import com.activedge.usermgt.model.log.StaffLog;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
-import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.BeanUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,10 +24,6 @@ import static javax.transaction.Transactional.TxType.MANDATORY;
 @Slf4j
 public class StaffEntityListener {
 
-    @Autowired
-    private MakerItemRepository makerItemRepository;
-
-    private static MakerItem makerItem = null;
     private static ObjectMapper mapper = null;
 
     @Value("${makerChecker.enabled}")

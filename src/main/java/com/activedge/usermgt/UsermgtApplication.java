@@ -9,6 +9,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -17,18 +22,24 @@ import java.util.Properties;
 // public class UsermgtApplication extends WebMvcConfigurerAdapter {
 public class UsermgtApplication implements WebMvcConfigurer {
 
-        public static void main(String[] args) throws SQLException {
+        public static void main(String[] args) throws SQLException, IOException {
 
                 SpringApplication application = new SpringApplication(UsermgtApplication.class);
+
+                Properties prop = new Properties();
+
+                // load a properties file
+                prop.load(new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/application.yml"));
+
                 // little hack to initialize schemas on first application startup
-
                 HikariConfig hikariConfig = new HikariConfig();
-                hikariConfig.setDriverClassName("org.postgresql.Driver");
-                hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/usermgt");
-                hikariConfig.setUsername("postgres");
-                hikariConfig.setPassword("passadmin");
+                hikariConfig.setDriverClassName(prop.getProperty("datasource.driver-class-name"));
+                hikariConfig.setJdbcUrl(prop.getProperty("datasource.url"));
+                hikariConfig.setUsername(prop.getProperty("datasource.username"));
+                hikariConfig.setPassword(prop.getProperty("datasource.password"));
 
-                hikariConfig.setMaximumPoolSize(2);
+                hikariConfig.setMaximumPoolSize(5);
+                hikariConfig.setMinimumIdle(3);
 
                 HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 

@@ -1,27 +1,18 @@
 package com.activedge.usermgt.util.facade;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
-import com.activedge.usermgt.model.log.MakerItem;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.validation.ValidationException;
-import java.io.IOException;
-import java.io.InputStream;
 
 @Slf4j
 public abstract class Spy {
 
-    private static MakerItem makerItem = null;
     private static ObjectMapper mapper = null;
 
     @Value("${makerChecker.enabled}")
@@ -56,13 +47,6 @@ public abstract class Spy {
     abstract void logRequest() throws ActivityRequiredException;
 
     abstract void approveRequest();
-
-    protected static MakerItem getMakerItem() {
-        if(makerItem == null) {
-            makerItem = new MakerItem();
-        }
-        return makerItem;
-    }
 
     protected static ObjectMapper getMapper() {
         if(mapper == null) {

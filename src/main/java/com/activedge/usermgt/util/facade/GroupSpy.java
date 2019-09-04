@@ -2,27 +2,18 @@ package com.activedge.usermgt.util.facade;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
-import com.activedge.usermgt.model.Staff;
-import com.activedge.usermgt.model.log.MakerItem;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.ValidationException;
-import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 public class GroupSpy extends Spy implements RedisQueue {
 
-    private MakerItemRepository makerItemRepository;
-
     private Group group;
 
-    public GroupSpy(Group group, MakerItemRepository makerItemRepository) {
-        this.makerItemRepository = makerItemRepository;
+    public GroupSpy(Group group) {
         this.group = group;
     }
 
@@ -74,22 +65,10 @@ public class GroupSpy extends Spy implements RedisQueue {
     @Override
     public void add2Queue(String action, Object target) {
         log.info("Action:{} - target:{}", action, target);
-        MakerItem makerItem = getMakerItem();
-        makerItem.setId(UUID.randomUUID().toString());
-        makerItem.setAction(action);
-        try {
-            makerItem.setPayload(getMapper().writeValueAsString(target));
-        } catch (JsonProcessingException e) { e.printStackTrace(); }
-        makerItem.setMaker(SecurityUtils.getCurrentUserLogin().get());
-        makerItem.setAt(java.time.LocalDateTime.now());
-        makerItemRepository.save(makerItem);
-
-        log.info("Redis ref: {}", makerItem);
     }
 
     @Override
     public void delete4rmQueue(String id) {
         log.info("Deleting from queue...");
-        makerItemRepository.deleteById(id);
     }
 }

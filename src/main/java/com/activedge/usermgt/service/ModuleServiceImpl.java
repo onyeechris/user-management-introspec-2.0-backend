@@ -8,7 +8,6 @@ import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.repository.ModuleRepository;
-import com.activedge.usermgt.repository.redis.MakerItemRepository;
 import com.activedge.usermgt.util.facade.Spy;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
@@ -32,16 +31,13 @@ public class ModuleServiceImpl implements ModuleService {
 
     private final ModuleRepository moduleRepository;
 
-    private MakerItemRepository makerItemRepository;
-
     private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
 
-    public ModuleServiceImpl(ModuleRepository moduleRepository, ModuleMapper moduleMapper, PermissionMapper permissionMapper, MakerItemRepository makerItemRepository) {
+    public ModuleServiceImpl(ModuleRepository moduleRepository, ModuleMapper moduleMapper, PermissionMapper permissionMapper) {
         this.moduleRepository = moduleRepository;
         this.moduleMapper = moduleMapper;
         this.permissionMapper = permissionMapper;
-        this.makerItemRepository = makerItemRepository;
     }
 
     @Override
