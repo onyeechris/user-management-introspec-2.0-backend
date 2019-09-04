@@ -34,6 +34,8 @@ public class PermissionDTO implements Serializable {
 
     private String description;
 
+    private String modul;
+
 //    @JsonIgnore
 //    private Authority authority;
 

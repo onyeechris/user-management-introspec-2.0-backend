@@ -72,6 +72,7 @@ public class PermissionController {
         }
 
         permissionDTO.setId(null);
+        permissionDTO.setModul(module);
 //
 //        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
 //        Authority auth;
