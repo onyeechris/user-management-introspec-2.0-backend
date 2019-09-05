@@ -26,7 +26,7 @@ export const errorSwitch = (error) => {
         }
     }
     else {
-        return error;
+        return JSON.stringify(error);
     }
 }
 

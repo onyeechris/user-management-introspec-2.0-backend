@@ -21,7 +21,7 @@ export const PERMISSION_UPDATE_ERROR = 'PERMISSION_UPDATE_ERROR';
 
 let apiUrl = BASE_URL + 'permissions/';
 // interceptor(userModule);
-appInterceptor()
+appInterceptor();
 
 // let permissionHeaders = {}
 

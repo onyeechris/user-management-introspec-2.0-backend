@@ -4,7 +4,7 @@ import {
 } from './types';
 import {
   errorSwitch,
-  // interceptor 
+  appInterceptor
 } from './utils';
 
 export const STAFFS_FETCHED = 'STAFFS_FETCHED';
@@ -30,31 +30,31 @@ export const USER_ADD_ERROR = 'USER_ADD_ERROR';
 
 let apiUrl = BASE_URL + 'staffs/';
 
-// interceptor();
+appInterceptor();
 
-let staffHeaders = {}
+// let staffHeaders = {}
 
-const updateHeaders = () => {
-  let userModule = sessionStorage.getItem("userModule");
-  let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
-  console.log(userModule);
-  staffHeaders = {
-    Authorization: userToken,
-    // Module: "ADMIN"
-    Module: userModule ? userModule : "ADMIN"
-  }
-  console.log(staffHeaders);
-}
+// const updateHeaders = () => {
+//   let userModule = sessionStorage.getItem("userModule");
+//   let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
+//   console.log(userModule);
+//   staffHeaders = {
+//     Authorization: userToken,
+//     // Module: "ADMIN"
+//     Module: userModule ? userModule : "ADMIN"
+//   }
+//   console.log(staffHeaders);
+// }
 
 export function fetchStaffs(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
       axios({
         method: 'GET',
         url: apiUrl + type,
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -176,14 +176,14 @@ export function updateStaff(staffInfo) {
 }
 
 export function fetchAllStaffs(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + type);
       axios({
         method: 'GET',
         url: apiUrl + type,
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -207,14 +207,14 @@ export function fetchAllStaffs(type) {
 // Fetch users by app
 let userApi = BASE_URL + 'userapps/';
 export function fetchAppUsers(type) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(userApi + type);
       axios({
         method: 'GET',
         url: userApi + type,
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -236,13 +236,13 @@ export function fetchAppUsers(type) {
 
 // Add users to app
 export function addUserToApp(user) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(userApi);
       console.log(user);
       axios.post(userApi, user, {
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -264,7 +264,7 @@ export function addUserToApp(user) {
 
 // Fetch a user from app
 export function fetchUserApp(user) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(userApi);
@@ -272,7 +272,7 @@ export function fetchUserApp(user) {
       axios({
         method: 'GET',
         url: userApi + user,
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -295,7 +295,7 @@ export function fetchUserApp(user) {
 
 // Remove users from app
 export function removeFromApp(user) {
-  updateHeaders();
+  // updateHeaders();
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(userApi);
@@ -303,7 +303,7 @@ export function removeFromApp(user) {
       axios({
         method: 'DELETE',
         url: userApi + user,
-        headers: staffHeaders
+        // headers: staffHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({

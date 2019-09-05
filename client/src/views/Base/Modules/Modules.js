@@ -50,7 +50,7 @@ class Modules extends Component {
       formError: "",
       // Change this back to 'none' for role access security
       showAction: {
-        "display": "inline-block"
+        "display": "none"
       },
       hideField: {
         "display": "none"

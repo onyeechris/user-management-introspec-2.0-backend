@@ -168,6 +168,14 @@ class ModulesView extends Component {
       console.log(error);
       // this.setState({ currentError: error });
     })
+
+    let loggedInUserRole = sessionStorage.getItem("userRole");
+    if (loggedInUserRole.toLowerCase().includes("admin")) {
+      let makeVisible = {
+        "display": "inline-block"
+      }
+      this.setState({ showAction: makeVisible });
+    }
   }
 
 
@@ -448,6 +456,8 @@ class ModulesView extends Component {
     let staffArray = this.state.staffArray;
     let groupArray = this.state.groupArray;
 
+    let { showAction } = this.state;
+
     return (
       <div className="animated fadeIn">
         {/* <Link to='/apps'> */}
@@ -551,7 +561,10 @@ class ModulesView extends Component {
               <CardHeader>
                 <i className="fa fa-align-justify"></i> {this.translate("Authorized Staffs")}
                 <div className="pull-right">
-                  <Button onClick={this.toggle} className="mr-1">{this.translate("Import User")}</Button>
+                  <Button onClick={this.toggle} className="mr-1" style={showAction}>
+                    <i className="fa fa-plus-square-o"></i>&nbsp;&nbsp;
+                    {this.translate("Import User")}
+                  </Button>
                 </div>
               </CardHeader>
               <CardBody>
@@ -576,10 +589,10 @@ class ModulesView extends Component {
                         <td>{item.grade}</td>
                         <td>{item.assign_at}</td>
                         <td>
-                          <Button size="sm" color="secondary" onClick={e => this.findStaffRemove(item.id)}><i className="fa fa-note"></i>
+                          <Button size="sm" color="danger" onClick={e => this.findStaffRemove(item.id)} style={showAction}><i className="fa fa-trash"></i>
                             {' '}{this.translate("Remove")}
                           </Button>{' '}
-                          <Button size="sm" color="secondary" onClick={e => this.findStaffView(item.staff.id)}><i className="fa fa-note"></i>
+                          <Button size="sm" color="secondary" onClick={e => this.findStaffView(item.staff.id)}><i className="fa fa-sign-in"></i>
                             {' '}{this.translate("View")}
                           </Button>
                         </td>

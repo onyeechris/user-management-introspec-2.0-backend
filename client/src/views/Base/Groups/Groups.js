@@ -225,7 +225,6 @@ class Groups extends Component {
   }
 
   createNewGroup = (newGroupData) => {
-    // newGroupData.staffs = [{ id: 4 }];
     this.props.createGroup(newGroupData).then(result => {
       console.log(result);
       let groupList = this.state.groupData;
@@ -271,13 +270,6 @@ class Groups extends Component {
 
   // Get specific group details for deleting
   findGroupDelete(groupId) {
-    // let apiUrl = 'groups/' + groupId;
-    // axios.get(this.state.baseUrl + apiUrl,
-    //   {
-    //     headers: {
-    //       'Authorization': JSON.parse(sessionStorage.getItem("userData")).token
-    //     }
-    //   })
     this.props.fetchGroup(groupId)
       .then(result => {
         this.setState({ singleGroupData: result.data }, this.toggleConfirm());
@@ -461,7 +453,7 @@ class Groups extends Component {
     const groups = this.state.groupData ? this.state.groupData : {};
 
     let { singleGroupData } = this.state;
-    // let { showAction } = this.state;
+    let { showAction } = this.state;
 
 
     return (
@@ -482,7 +474,7 @@ class Groups extends Component {
                 <i className="fa fa-align-justify"></i> {' '} <strong style={{ fontSize: "20px" }}> {this.state.sessionModuleData.name} </strong> {' | '}{this.translate("All Groups")}
                 <div className="pull-right">
                   <Button onClick={this.toggle} className="mr-1"
-                  // style={showAction}
+                    style={showAction}
                   >
                     {this.translate("Create Group")}
                   </Button>
@@ -498,7 +490,7 @@ class Groups extends Component {
                 <Table hover bordered striped responsive size="sm">
                   <thead>
                     <tr>
-                      <th>{this.translate("ID")}</th>
+                      {/* <th>{this.translate("ID")}</th> */}
                       <th>{this.translate("Name")}</th>
                       <th>{this.translate("Description")}</th>
                       <th>{this.translate("Action")}</th>
@@ -507,17 +499,17 @@ class Groups extends Component {
                   <tbody>{groups.map((item, key) => {
                     return (
                       <tr key={key}>
-                        <td>{item.id}</td>
+                        {/* <td>{item.id}</td> */}
                         <td>{item.name}</td>
                         <td>{item.description}</td>
                         <td>
                           <Button
-                            // style={showAction} 
+                            style={showAction}
                             size="sm" color="primary" onClick={e => this.findGroup(item.id)}><i className="fa fa-dot-circle-o"></i>
                             {' '}{this.translate("Update")}
                           </Button>{' '}
                           <Button
-                            // style={showAction} 
+                            style={showAction}
                             size="sm" color="danger" onClick={e => this.findGroupDelete(item.id)}><i className="fa fa-ban"></i>
                             {' '}{this.translate("Delete")}
                           </Button>{' '}

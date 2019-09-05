@@ -39,7 +39,7 @@ class Permissions extends Component {
       // baseUrl: 'http://localhost:9100/api/',
       formError: "",
       showAction: {
-        "display": "block"
+        "display": "none"
       },
       greyedOut: true,
     };
@@ -73,8 +73,8 @@ class Permissions extends Component {
       permissionsToLoad = this.props.permissionData.data.payload;
     }
 
-    loggedInUser = sessionStorage.getItem("loggedInUser");
-    if (loggedInUser.toLowerCase().includes("sysdev")) {
+    loggedInUser = sessionStorage.getItem("loggedInUserData");
+    if (JSON.parse(loggedInUser).user_type.toLowerCase().includes("dev")) {
       let visible = {
         "display": "block"
       }
@@ -170,6 +170,8 @@ class Permissions extends Component {
 
   createNewPermission = (newPermissionData) => {
     console.log(newPermissionData);
+    // newPermissionData.module = sessionStorage.getItem("userModule");
+    // console.log(newPermissionData);
     this.props.createPermission(newPermissionData)
       .then(response => {
         console.log(response);
@@ -341,7 +343,7 @@ class Permissions extends Component {
               <CardBody>
                 <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
                   {this.translate("Permission")}{' '}
-                  <strong>{this.state.newCreatedPermission.name}</strong> {this.translate("has been created")}.
+                  <strong>{this.state.newCreatedPermission.action}</strong> {this.translate("has been created")}.
                 </Alert>
                 <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
                   {this.translate("Permission")}{' '}

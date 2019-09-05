@@ -4,7 +4,7 @@ import {
 } from './types';
 import {
   errorSwitch,
-  // interceptor 
+  appInterceptor
 } from './utils';
 
 export const GROUP_FETCHED = 'GROUP_FETCHED';
@@ -21,30 +21,30 @@ export const GROUP_SAVED = 'GROUP_SAVED';
 
 let apiUrl = BASE_URL + 'groups/';
 
-// interceptor();
+appInterceptor();
 
-let groupHeaders = {}
+// let groupHeaders = {}
 
-const updateHeaders = () => {
-  let userModule = sessionStorage.getItem("userModule");
-  let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
-  console.log(userModule);
-  groupHeaders = {
-    Authorization: userToken,
-    Module: userModule ? userModule : "ADMIN"
-  }
-  console.log(groupHeaders);
-}
+// const updateHeaders = () => {
+//   let userModule = sessionStorage.getItem("userModule");
+//   let userToken = JSON.parse(sessionStorage.getItem("userData")).token ? JSON.parse(sessionStorage.getItem("userData")).token : "";
+//   console.log(userModule);
+//   groupHeaders = {
+//     Authorization: userToken,
+//     Module: userModule ? userModule : "ADMIN"
+//   }
+//   console.log(groupHeaders);
+// }
 
 export function fetchGroup(groupId) {
-  updateHeaders()
+  // updateHeaders()
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl + groupId);
       axios({
         method: 'GET',
         url: apiUrl + groupId,
-        headers: groupHeaders
+        // headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -65,14 +65,14 @@ export function fetchGroup(groupId) {
 }
 
 export function fetchGroups() {
-  updateHeaders()
+  // updateHeaders()
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       console.log(apiUrl);
       axios({
         method: 'GET',
         url: apiUrl,
-        headers: groupHeaders
+        // headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -98,7 +98,8 @@ export function createGroup(groupInfo) {
       console.log(apiUrl);
       console.log(groupInfo);
       axios.post(apiUrl, groupInfo,
-        { headers: groupHeaders })
+        // { headers: groupHeaders }
+      )
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({
@@ -124,7 +125,7 @@ export function deleteGroup(type) {
       axios({
         method: 'DELETE',
         url: apiUrl + type,
-        headers: groupHeaders
+        // headers: groupHeaders
       }).then((responseJSON) => {
         resolve(responseJSON);
         dispatch({
@@ -151,7 +152,8 @@ export function updateGroup(groupInfo, flag) {
       console.log(apiUrl + flag);
       console.log(groupInfo);
       axios.put(apiUrl + flag, groupInfo,
-        { headers: groupHeaders })
+        // { headers: groupHeaders }
+      )
         .then((responseJSON) => {
           resolve(responseJSON);
           dispatch({

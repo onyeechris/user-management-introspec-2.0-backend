@@ -1,4 +1,14 @@
-import { MODULE_FETCHED, MODULE_FETCH_ERROR, MODULES_FETCHED, MODULES_FETCH_ERROR, MODULE_CREATED, MODULE_CREATE_ERROR, MODULE_DELETED, MODULE_DELETE_ERROR, MODULE_UPDATED, MODULE_UPDATE_ERROR, MODULE_SAVED } from '../actions/action_module';
+import {
+  MODULE_FETCHED, MODULE_FETCH_ERROR,
+  MODULES_FETCHED, MODULES_FETCH_ERROR,
+  MODULE_CREATED, MODULE_CREATE_ERROR,
+  MODULE_DELETED, MODULE_DELETE_ERROR,
+  MODULE_UPDATED, MODULE_UPDATE_ERROR,
+  // USERS_BY_APP_FETCHED, USERS_BY_APP_FETCH_ERROR,
+  // GROUPS_BY_APP_FETCHED, GROUPS_BY_APP_FETCH_ERROR,
+  // PERMISSIONS_BY_APP_FETCHED, PERMISSIONS_BY_APP_FETCH_ERROR,
+  MODULE_SAVED
+} from '../actions/action_module';
 
 const module = (state = {}, action) => {
   switch (action.type) {
@@ -22,6 +32,18 @@ const module = (state = {}, action) => {
       return { ...state, moduleUpdated: action.payload }
     case MODULE_UPDATE_ERROR:
       return { ...state, moduleUpdateError: action.payload }
+    // case USERS_BY_APP_FETCHED:
+    //   return { ...state, usersByAppFetched: action.payload }
+    // case USERS_BY_APP_FETCH_ERROR:
+    //   return { ...state, usersByAppFetchError: action.payload }
+    // case GROUPS_BY_APP_FETCHED:
+    //   return { ...state, groupsByAppFetched: action.payload }
+    // case GROUPS_BY_APP_FETCH_ERROR:
+    //   return { ...state, groupsByAppFetchError: action.payload }
+    // case PERMISSIONS_BY_APP_FETCHED:
+    //   return { ...state, permissionsByAppFetched: action.payload }
+    // case PERMISSIONS_BY_APP_FETCH_ERROR:
+    //   return { ...state, permissionsByAppFetchError: action.payload }
     case MODULE_SAVED:
       return { ...state, moduleSaved: action.payload }
     default:

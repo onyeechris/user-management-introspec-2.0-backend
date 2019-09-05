@@ -97,31 +97,37 @@ class Login extends Component {
     console.log(loginUserData);
     this.props.actions.fetchUser("auth", loginUserData).then(result => {
       console.log(result);
-      sessionStorage.setItem("userData", JSON.stringify(result));
-      sessionStorage.setItem("loggedInUser", loginUserData.username);
-      this.setState({ redirectToReferrer: true });
-      //decode the token
-      let userData = jwtDecode(result.token);
-      console.log(userData);
-      sessionStorage.setItem("userRole", userData.authorities[0]);
+      if (JSON.stringify(result).includes("401")) {
+        this.setState({ loginError: "Username or password incorrect!" });
+      } else {
 
-      // Get the user's role
-      this.props.fetchAllStaffs("?size=1000").then(result => {
-        console.log(result.data);
-        result.data.payload.forEach(staff => {
-          console.log(staff.first_name);
-          if (staff.email === loginUserData.username) {
-            console.log(staff);
-            sessionStorage.setItem("loggedInUserData", JSON.stringify(staff));
-          }
+        sessionStorage.setItem("userData", JSON.stringify(result));
+        sessionStorage.setItem("loggedInUser", loginUserData.username);
+        this.setState({ redirectToReferrer: true });
+
+        //decode the token
+        let userData = jwtDecode(result.token);
+        console.log(userData);
+        sessionStorage.setItem("userRole", userData.authorities[0]);
+
+        // Get the user's data to store in session storage
+        this.props.fetchAllStaffs("?size=1000").then(result => {
+          console.log(result.data);
+          result.data.payload.forEach(staff => {
+            console.log(staff.first_name);
+            if (staff.email === loginUserData.username) {
+              console.log(staff);
+              sessionStorage.setItem("loggedInUserData", JSON.stringify(staff));
+            }
+          })
+        }, error => {
+          console.log(error);
         })
-      }, error => {
-        console.log(error);
-      })
+      }
+
     }, error => {
       this.setState({ loginError: "Username or password incorrect!" })
-    }
-    )
+    })
   }
 
   render() {
@@ -184,7 +190,7 @@ class Login extends Component {
                   <CardBody>
                     <h1><FormattedMessage id="Login" defaultMessage="Login" /></h1>
                     <p className="text-muted"><FormattedMessage id="Sign In to your application" defaultMessage="Sign In to your application" /></p>
-                    <p style={errorStyle}>{this.props.profile.userFetchError}</p>
+                    <p style={errorStyle}>{this.props.profile.userFetchError ? this.props.profile.userFetchError : this.state.loginError}</p>
                     {/* <form action="" method="post">
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">

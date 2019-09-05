@@ -51,6 +51,11 @@ class GroupPermissionsTable extends Component {
         const { hideField, initialPermissionData, activePage, itemsPerPage, changePageItem } = this.props
         let permData = initialPermissionData ? initialPermissionData.slice((itemsPerPage * activePage) - itemsPerPage, itemsPerPage) : [];
 
+        let checkboxStyle = {
+            "overflowY": "auto",
+            "height": "370px"
+        }
+
         const handlePageChange = (pageNumber) => {
             console.log(pageNumber);
             let permDataNew = [];
@@ -89,27 +94,30 @@ class GroupPermissionsTable extends Component {
                         initialPermissionData.length > 0 ? initialPermissionData.length : "None"
                         : ""}
                 </h5>
+                <div style={permData.length > 0 ? {} : hideField}>
+                    <div style={checkboxStyle}>
+                        <Table hover bordered striped responsive size="sm">
+                            {/* <Table hover bordered striped responsive size="sm" style={permData.length > 0 ? {} : hideField}> */}
+                            <thead>
+                                <tr>
+                                    {/* <th>{translate("ID")}</th> */}
+                                    <th>{translate("Action")}</th>
+                                    <th>{translate("Description")}</th>
+                                </tr>
+                            </thead>
+                            <tbody>{permData.map((item, key) => {
+                                return (
+                                    <tr key={key}>
+                                        {/* <td>{item.id}</td> */}
+                                        <td>{item.action}</td>
+                                        <td>{item.description}</td>
 
-                <Table hover bordered striped responsive size="sm" style={permData.length > 0 ? {} : hideField}>
-                    <thead>
-                        <tr>
-                            <th>{translate("ID")}</th>
-                            <th>{translate("Action")}</th>
-                            <th>{translate("Description")}</th>
-                        </tr>
-                    </thead>
-                    <tbody>{permData.map((item, key) => {
-                        return (
-                            <tr key={key}>
-                                <td>{item.id}</td>
-                                <td>{item.action}</td>
-                                <td>{item.description}</td>
-
-                            </tr>
-                        )
-                    })}
-                    </tbody>
-
+                                    </tr>
+                                )
+                            })}
+                            </tbody>
+                        </Table>
+                    </div>
                     <nav>
                         <Pagination2
                             activePage={activePage}
@@ -128,8 +136,7 @@ class GroupPermissionsTable extends Component {
                             <option value="50">50</option>
                         </select>
                     </div>
-
-                </Table>
+                </div>
             </div>
         );
     }

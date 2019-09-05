@@ -52,6 +52,10 @@ class GroupStaffsTable extends Component {
             )
         }
 
+        let checkboxStyle = {
+            "overflowY": "auto",
+            "height": "370px"
+        }
 
         return (
             <div>
@@ -59,25 +63,29 @@ class GroupStaffsTable extends Component {
                     {translate("Group Users")}: &nbsp;
 
                     {staffsData.length > 0 ? staffsData.length : "None"}</h5>
+                <div style={staffsData.length > 0 ? {} : hideField}>
+                    <div style={checkboxStyle}>
+                        <Table hover bordered striped responsive size="sm">
+                            <thead>
+                                <tr>
+                                    <th>{translate("ID")}</th>
+                                    <th>{translate("First Name")}</th>
+                                    <th>{translate("Email")}</th>
+                                </tr>
+                            </thead>
+                            <tbody>{staffsData.map((item, key) => {
+                                return (
+                                    <tr key={key}>
+                                        <td>{item.id}</td>
+                                        <td>{item.first_name}</td>
+                                        <td>{item.email}</td>
+                                    </tr>
+                                )
+                            })}
+                            </tbody>
 
-                <Table hover bordered striped responsive size="sm" style={staffsData.length > 0 ? {} : hideField}>
-                    <thead>
-                        <tr>
-                            <th>{translate("ID")}</th>
-                            <th>{translate("First Name")}</th>
-                            <th>{translate("Email")}</th>
-                        </tr>
-                    </thead>
-                    <tbody>{staffsData.map((item, key) => {
-                        return (
-                            <tr key={key}>
-                                <td>{item.id}</td>
-                                <td>{item.first_name}</td>
-                                <td>{item.email}</td>
-                            </tr>
-                        )
-                    })}
-                    </tbody>
+                        </Table>
+                    </div>
                     <nav>
                         <Pagination2
                             activePage={activePage}
@@ -96,8 +104,7 @@ class GroupStaffsTable extends Component {
                             <option value="50">50</option>
                         </select>
                     </div>
-                </Table>
-
+                </div>
             </div>
         );
     }

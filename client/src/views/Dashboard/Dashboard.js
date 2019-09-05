@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Widget04 from '../Widgets/Widget04';
+// import Widget05 from "../Widgets/Widget05";
 import Widget01 from '../Widgets/Widget01';
 import {
   Col,
@@ -17,9 +17,15 @@ import { fetchTodos } from '../../actions/action_todo';
 import { fetchStaffs } from '../../actions/action_staff';
 import { fetchPermissions } from '../../actions/action_permission';
 import { fetchGroups } from '../../actions/action_group';
-import { fetchModules, fetchModule, saveModuleInfo } from '../../actions/action_module';
+import {
+  fetchModules, fetchModule, saveModuleInfo
+} from '../../actions/action_module';
+// import {
+//   fetchUsersByApp, fetchGroupsByApp, fetchPermissionsByApp
+// } from '../../actions/action_module_data';
 
 import { Redirect } from "react-router-dom";
+import AppWidget from "./AppWidget";
 
 class Dashboard extends Component {
   constructor(props) {
@@ -32,25 +38,37 @@ class Dashboard extends Component {
       todoData: [],
       appData: [],
     };
+    // this.getTotalUsers = this.getTotalUsers.bind(this);
+    // this.getTotalGroups = this.getTotalGroups.bind(this);
+    // this.getTotalPermissions = this.getTotalPermissions.bind(this);
   }
 
 
   componentWillMount() {
     if (sessionStorage.getItem("userData")) {
-      //Group Data
-      this.props.fetchGroups()
-        .then((response) => {
-          this.setState({ groupData: response.data.payload });
-        }).catch(err => {
-          console.log(err);
-        });
+      // //Group Data
+      // this.props.fetchGroups()
+      //   .then((response) => {
+      //     this.setState({ groupData: response.data.payload });
+      //   }).catch(err => {
+      //     console.log(err);
+      //   });
 
-      //Permission Data
+      // //Permission Data
       // this.props.fetchPermissions("?size=1000")
       //   .then((response) => {
       //     this.setState({ permissionData: response.data.payload });
       //   }).catch(err => {
       //     console.log(err);
+      //   })
+
+      //ToDo Data
+      // this.props.fetchTodos()
+      //   .then(result => {
+      //     this.setState({ todoData: result.data.payload });
+      //   }, error => {
+      //     console.log(error);
+      //     this.setState({ currentError: error });
       //   })
 
       // Application Data
@@ -59,15 +77,6 @@ class Dashboard extends Component {
           this.setState({ appData: response.data.payload });
         }).catch(err => {
           console.log(err);
-        })
-
-      //ToDo Data
-      this.props.fetchTodos()
-        .then(result => {
-          this.setState({ todoData: result.data.payload });
-        }, error => {
-          console.log(error);
-          this.setState({ currentError: error });
         })
 
       //Staff Data 
@@ -101,11 +110,43 @@ class Dashboard extends Component {
     });
   }
 
+  // getTotalUsers = (moduleCode) => {
+  //   let totalUsers = '';
+  //   this.props.fetchUsersByApp(moduleCode).then(result => {
+  //     totalUsers = result.data.payload;
+  //   }, error => {
+  //     console.log(error);
+  //   })
+  //   return totalUsers.length;
+  // }
+
+  // getTotalGroups = (moduleCode) => {
+  //   let totalGroups = '';
+  //   this.props.fetchGroupsByApp(moduleCode).then(result => {
+  //     totalGroups = result.data.payload;
+  //   }, error => {
+  //     console.log(error);
+  //   })
+  //   return totalGroups.length;
+  // }
+
+  // getTotalPermissions = (moduleCode) => {
+  //   let totalPermissions = '';
+  //   this.props.fetchPermissionsByApp(moduleCode).then(result => {
+  //     totalPermissions = result.data.payload;
+  //     console.log(totalPermissions.length);
+  //   }, error => {
+  //     console.log(error);
+  //   })
+  //   return totalPermissions.length;
+  // }
+
 
   render() {
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/login"} />;
     }
+
     return (
       <div className="animated fadeIn">
         <Row>
@@ -120,9 +161,23 @@ class Dashboard extends Component {
                 return (
                   <Col md="6" key={key} >
                     <Link to="#" onClick={e => this.findModuleView(item.code)}>
-                      <Widget04 icon="icon-pie-chart" color="success" header={item.name} value="0">
+                      {/* <Widget05
+                        metric1={this.getTotalUsers(item.code)}
+                        icon1="icon-user"
+                        metric2={this.getTotalGroups(item.code)}
+                        icon2="icon-people"
+                        metric3={this.getTotalPermissions(item.code)}
+                        icon3="icon-pie-chart"
+                        color="success"
+                        header={item.name}
+                        value="0">
                         {item.description}
-                      </Widget04>
+                      </Widget05> */}
+                      <AppWidget
+                        moduleName={item.name}
+                        moduleDescription={item.description}
+                        moduleCode={item.code}
+                      />
                     </Link>
                   </Col>
 
@@ -133,7 +188,7 @@ class Dashboard extends Component {
 
           <Col sm="6" md="6">
             <Link to='/staffs'>
-              <Widget01 color="primary" variant="inverse" value="0" mainText="System Users" smallText="Click to view all users" header={this.state.staffData ? this.state.staffData.length : "0"} />
+              <Widget01 color="primary" variant="inverse" value="0" mainText="System Users" smallText="Click to view all users" header={this.state.staffData ? this.state.staffData.length + '' : "0"} />
             </Link>
 
             <Table hover bordered striped responsive size="sm">
@@ -196,7 +251,7 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('State is ', state)
+  // console.log('State is ', state)
   return {
     todo: state.todo,
     staff: state.staff,

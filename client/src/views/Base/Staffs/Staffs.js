@@ -6,7 +6,9 @@ import {
   FormGroup, Label,
   Alert
 } from 'reactstrap';
-import DatePicker from "react-datepicker";
+
+// import DatePicker from "react-datepicker";
+
 // import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/material_green.css'
 import "react-datepicker/dist/react-datepicker.css";
@@ -62,7 +64,7 @@ class Staffs extends Component {
       userRole: "",
       // Change this back to 'none' for role access security
       showAction: {
-        "display": "block"
+        "display": "none"
       },
       startDate: '',
       currentError: ''
@@ -112,7 +114,7 @@ class Staffs extends Component {
     let loggedInUserRole = sessionStorage.getItem("userRole");
     if (loggedInUserRole.toLowerCase().includes("admin")) {
       let makeVisible = {
-        "display": "block"
+        "display": "inline-block"
       }
       this.setState({ showAction: makeVisible });
     }
@@ -156,14 +158,15 @@ class Staffs extends Component {
   }
 
   toggleEdit() {
-    this.setState({ formError: "" });
-    this.setState({ startDate: this.state.singleStaffData.hire_date });
-    this.setState({ greyedOut: true });
-    this.setState({
-      editModal: !this.state.editModal,
-    });
+    this.setState({ formError: "" },
+      this.setState({ greyedOut: true },
+        this.setState({ startDate: this.state.singleStaffData.hire_date },
+          this.setState({
+            editModal: !this.state.editModal,
+          }))));
   }
   toggleConfirm() {
+    console.log("hello");
     this.setState({ formError: "" });
     this.setState({
       confirmModal: !this.state.confirmModal,
@@ -254,10 +257,12 @@ class Staffs extends Component {
 
   findStaff(staffId) {
     this.props.fetchStaff(staffId).then(result => {
-      this.setState({ singleStaffData: result.data });
+      this.setState({ singleStaffData: {} },
+        this.setState({ singleStaffData: result.data },
+          this.toggleEdit()));
     }, error => {
       this.setState({ formError: error });
-    }).then(this.toggleEdit());
+    })
   }
 
   findStaffDelete(staffId) {
@@ -412,10 +417,10 @@ class Staffs extends Component {
               </CardHeader>
               <CardBody>
                 <p style={{ color: 'red' }}>{this.state.currentError}</p>
-                <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
+                <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
                   {this.translate("User")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been created successfully")}.
                 </Alert>
-                <Alert color="warning" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
+                <Alert color="success" isOpen={this.state.visibleUpdate} toggle={this.onDismissUpdate}>
                   {this.translate("User")} <strong>{this.state.newCreatedStaff.first_name}</strong> {' '}{this.translate("has been updated successfully")}.
                 </Alert>
                 <Table hover bordered striped responsive size="sm">
@@ -426,7 +431,7 @@ class Staffs extends Component {
                       <th>{this.translate("Email")}</th>
                       <th>{this.translate("Role")}</th>
                       {/* <th>{this.translate("tableGroupName")}</th> */}
-                      <th style={showAction}>{this.translate("tableAction")}</th>
+                      <th>{this.translate("tableAction")}</th>
                     </tr>
                   </thead>
                   <tbody>{staff.map((item, key) => {
@@ -437,12 +442,12 @@ class Staffs extends Component {
                         <td>{item.email}</td>
                         <td>{item.user_type}</td>
                         {/* <td>{showGroup(item.group_id)}</td> */}
-                        <td style={showAction}>
-                          <Button size="sm" color="primary" onClick={e => this.findStaff(item.id)}><i className="fa fa-dot-circle-o"></i>
+                        <td>
+                          <Button size="sm" color="primary" onClick={e => this.findStaff(item.id)} style={showAction}><i className="fa fa-edit"></i>
                             {' '}{this.translate("Update")}</Button>{' '}
-                          <Button size="sm" color="danger" onClick={e => this.findStaffDelete(item.id)}><i className="fa fa-ban"></i>
+                          <Button size="sm" color="danger" onClick={e => this.findStaffDelete(item.id)} style={showAction}><i className="fa fa-trash-o"></i>
                             {' '}{this.translate("Delete")}</Button>{' '}
-                          <Button size="sm" onClick={e => this.findStaffView(item.id)}>
+                          <Button size="sm" onClick={e => this.findStaffView(item.id)}><i className="fa fa-eye"></i>
                             {' '}{this.translate("View Groups")}</Button>
                         </td>
                       </tr>
@@ -612,11 +617,10 @@ class Staffs extends Component {
               </CardHeader>
               <CardBody>
                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
-                  <Input type="hidden" name="id" value={singleStaff.id} onChange={this.readUpdateValue.bind(this, 'id')} />
                   <p style={{ color: 'red' }}>{this.state.formError}</p>
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="firstName">First Name <span style={{ color: 'red' }}>*</span></Label>
+                      <Label htmlFor="firstName">{this.translate("First Name")} <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input type="text" id="firstName" name="first_name" placeholder="Enter First Name"
@@ -654,7 +658,7 @@ class Staffs extends Component {
                       />
                     </Col>
                   </FormGroup>
-                  <FormGroup row>
+                  {/* <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="date-hire">{this.translate("Hire Date")} <span style={{ color: 'red' }}>*</span></Label>
                     </Col>
@@ -667,7 +671,7 @@ class Staffs extends Component {
                         value={singleStaff.hire_date}
                       />
                     </Col>
-                  </FormGroup>
+                  </FormGroup> */}
                   {/* <FormGroup row>
                     <Col md="3">
                       <Label htmlFor="select">Group  <span style={{ color: 'red' }}>*</span></Label>
@@ -706,7 +710,7 @@ class Staffs extends Component {
                     </Col>
                   </FormGroup>
                   <ModalFooter>
-                    <Button color="primary" onClick={this.updateStaff} disabled={this.state.greyedOut ? true : false}>{this.translate("Submit")}</Button>{' '}
+                    <Button color="primary" onClick={e => this.updateStaff} disabled={this.state.greyedOut ? true : false}>{this.translate("Submit")}</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEdit}>{this.translate("Cancel")}</Button>
                   </ModalFooter>
                 </Form>
