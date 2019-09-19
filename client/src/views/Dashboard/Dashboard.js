@@ -6,7 +6,8 @@ import {
   Col,
   Row,
   // CardGroup
-  Table, Button,
+  Table,
+  // Button,
 } from "reactstrap";
 
 import { FormattedMessage } from "react-intl";
@@ -24,6 +25,7 @@ import {
 //   fetchUsersByApp, fetchGroupsByApp, fetchPermissionsByApp
 // } from '../../actions/action_module_data';
 
+import './css/dashboard.css';
 import { Redirect } from "react-router-dom";
 import AppWidget from "./AppWidget";
 
@@ -198,7 +200,7 @@ class Dashboard extends Component {
                   <th><FormattedMessage id="tableFirstName" defaultMessage="First Name" /></th>
                   <th><FormattedMessage id="tableEmail" defaultMessage="Email" /></th>
                   <th><FormattedMessage id="tableRoleName" defaultMessage="Role" /></th>
-                  <th><FormattedMessage id="tableAction" defaultMessage="Action" /></th>
+                  {/* <th><FormattedMessage id="tableAction" defaultMessage="Action" /></th> */}
                 </tr>
               </thead>
               <tbody>{this.state.staffData.map((item, key) => {
@@ -207,12 +209,12 @@ class Dashboard extends Component {
                     <td>{item.id}</td>
                     <td>{item.first_name}</td>
                     <td>{item.email}</td>
-                    <td>{item.maker_checker}</td>
-                    <td>
+                    <td>{item.user_type}</td>
+                    {/* <td>
                       <Button size="sm" color="secondary" onClick={e => { console.log("Clicked!") }}><i className="fa fa-note"></i>
                         {' '}<FormattedMessage id="View" defaultMessage="View" />
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 )
               })}

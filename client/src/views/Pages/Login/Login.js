@@ -89,14 +89,14 @@ class Login extends Component {
     var userInfo = JSON.parse(JSON.stringify(this.state.userLogin));
     userInfo[field] = event.target.value;
     this.setState({ userLogin: userInfo });
-    // this.setState({ userLogin: userInfo }, e => console.log(this.state.userLogin));
-    // console.log(this.state.userLogin);
+    // this.setState({ userLogin: userInfo }, e => //console.log(this.state.userLogin));
+    // //console.log(this.state.userLogin);
   }
 
   loginUser = (loginUserData) => {
-    console.log(loginUserData);
+    //console.log(loginUserData);
     this.props.actions.fetchUser("auth", loginUserData).then(result => {
-      console.log(result);
+      //console.log(result);
       if (JSON.stringify(result).includes("401")) {
         this.setState({ loginError: "Username or password incorrect!" });
       } else {
@@ -107,21 +107,21 @@ class Login extends Component {
 
         //decode the token
         let userData = jwtDecode(result.token);
-        console.log(userData);
+        //console.log(userData);
         sessionStorage.setItem("userRole", userData.authorities[0]);
 
         // Get the user's data to store in session storage
         this.props.fetchAllStaffs("?size=1000").then(result => {
-          console.log(result.data);
+          //console.log(result.data);
           result.data.payload.forEach(staff => {
-            console.log(staff.first_name);
+            //console.log(staff.first_name);
             if (staff.email === loginUserData.username) {
-              console.log(staff);
+              //console.log(staff);
               sessionStorage.setItem("loggedInUserData", JSON.stringify(staff));
             }
           })
         }, error => {
-          console.log(error);
+          //console.log(error);
         })
       }
 
@@ -156,7 +156,7 @@ class Login extends Component {
       'color': 'red'
     }
 
-    console.log(this.props);
+    //console.log(this.props);
 
     if (this.state.redirectToReferrer) {
       return <Redirect to={"/dashboard"} />;
@@ -286,7 +286,7 @@ class Login extends Component {
 }
 
 const mapStateToProps = (state) => {
-  // console.log('State is ', state)
+  // //console.log('State is ', state)
   return {
     lang: state.locale.lang
   }

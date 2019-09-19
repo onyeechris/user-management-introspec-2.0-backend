@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import {
   BASE_URL,
   userToken
@@ -15,98 +15,122 @@ export const PERMISSIONS_BY_APP_FETCH_ERROR = 'PERMISSIONS_BY_APP_FETCH_ERROR';
 // App MetaData
 
 // Fetch users by app
-let userApi = BASE_URL + 'userapps/';
+let userApi = BASE_URL + 'userapps/?size=10000';
 export function fetchUsersByApp(moduleCode) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(userApi);
-      console.log(moduleCode);
-      axios({
+      // axios({
+      //   method: 'GET',
+      //   url: userApi,
+      //   headers: {
+      //     Authorization: userToken,
+      //     Module: moduleCode
+      //   }
+      // })
+      fetch(userApi, {
         method: 'GET',
-        url: userApi,
         headers: {
           Authorization: userToken,
           Module: moduleCode
         }
-      }).then((responseJSON) => {
-        resolve(responseJSON);
-        dispatch({
-          type: USERS_BY_APP_FETCHED,
-          payload: responseJSON
-        });
-      }).catch((error) => {
-        reject(errorSwitch(error));
-        dispatch({
-          type: USERS_BY_APP_FETCH_ERROR,
-          payload: errorSwitch(error)
-        });
-        console.log('Rejected.. Couldn\'t fetch users');
-        console.log(errorSwitch(error));
       })
+        .then((response) => response.json())
+        .then((responseJSON) => {
+          resolve(responseJSON);
+          dispatch({
+            type: USERS_BY_APP_FETCHED,
+            payload: responseJSON
+          });
+        }).catch((error) => {
+          reject(errorSwitch(error));
+          dispatch({
+            type: USERS_BY_APP_FETCH_ERROR,
+            payload: errorSwitch(error)
+          });
+          console.log('Rejected.. Couldn\'t fetch users');
+          console.log(errorSwitch(error));
+        })
     })
   }
 }
 
 // Fetch groups by app
-let groupApi = BASE_URL + 'groups/';
+let groupApi = BASE_URL + 'groups/?size=10000';
 export function fetchGroupsByApp(moduleCode) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(groupApi);
-      axios({
+      // axios({
+      //   method: 'GET',
+      //   url: groupApi,
+      //   headers: {
+      //     Authorization: userToken,
+      //     Module: moduleCode
+      //   }
+      // })
+      fetch(groupApi, {
         method: 'GET',
-        url: groupApi,
         headers: {
           Authorization: userToken,
           Module: moduleCode
         }
-      }).then((responseJSON) => {
-        resolve(responseJSON);
-        dispatch({
-          type: GROUPS_BY_APP_FETCHED,
-          payload: responseJSON
-        });
-      }).catch((error) => {
-        reject(errorSwitch(error));
-        dispatch({
-          type: GROUPS_BY_APP_FETCH_ERROR,
-          payload: errorSwitch(error)
-        });
-        console.log('Rejected.. Couldn\'t fetch groups');
-        console.log(errorSwitch(error));
       })
+        .then((response) => response.json())
+        .then((responseJSON) => {
+          resolve(responseJSON);
+          dispatch({
+            type: GROUPS_BY_APP_FETCHED,
+            payload: responseJSON
+          });
+        }).catch((error) => {
+          reject(errorSwitch(error));
+          dispatch({
+            type: GROUPS_BY_APP_FETCH_ERROR,
+            payload: errorSwitch(error)
+          });
+          console.log('Rejected.. Couldn\'t fetch groups');
+          console.log(errorSwitch(error));
+        })
     })
   }
 }
 
 // Fetch permissions by app
-let permissionApi = BASE_URL + 'permissions/';
+let permissionApi = BASE_URL + 'permissions/?size=10000';
 export function fetchPermissionsByApp(moduleCode) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
-      console.log(permissionApi);
-      axios({
+      // axios({
+      //   method: 'GET',
+      //   url: permissionApi,
+      //   headers: {
+      //     Authorization: userToken,
+      //     Module: moduleCode
+      //   }
+      // })
+
+      fetch(permissionApi, {
         method: 'GET',
-        url: permissionApi,
         headers: {
           Authorization: userToken,
-          Module: "SETTLEMENT"
+          Module: moduleCode
         }
-      }).then((responseJSON) => {
-        resolve(responseJSON);
-        dispatch({
-          type: PERMISSIONS_BY_APP_FETCHED,
-          payload: responseJSON
-        });
-      }).catch((error) => {
-        reject(errorSwitch(error));
-        dispatch({
-          type: PERMISSIONS_BY_APP_FETCH_ERROR,
-          payload: errorSwitch(error)
-        });
-        console.log('Rejected.. Couldn\'t fetch groups');
-        console.log(errorSwitch(error));
       })
+        .then((response) => response.json())
+        .then((responseJSON) => {
+          resolve(responseJSON);
+          dispatch({
+            type: PERMISSIONS_BY_APP_FETCHED,
+            payload: responseJSON
+          });
+        }).catch((error) => {
+          reject(errorSwitch(error));
+          dispatch({
+            type: PERMISSIONS_BY_APP_FETCH_ERROR,
+            payload: errorSwitch(error)
+          });
+          console.log('Rejected.. Couldn\'t fetch groups');
+          console.log(errorSwitch(error));
+        })
     })
   }
 }

@@ -6,7 +6,7 @@ export const USER_FETCHED = 'USER_FETCHED';
 export const USER_FETCH_ERROR = 'USER_FETCH_ERROR';
 
 export function fetchUser(type, appUser) {
-  console.log(appUser);
+  // console.log(appUser);
   return (dispatch) => {
     return new Promise((resolve, reject) => {
 

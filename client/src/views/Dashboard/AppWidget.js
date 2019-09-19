@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import Widget05 from "../Widgets/Widget05";
 
 import { connect } from 'react-redux';
@@ -8,55 +8,70 @@ import {
 } from '../../actions/action_module_data';
 
 
-const AppWidget = (props) => {
-  const { moduleName, moduleDescription, moduleCode } = props;
-  let totalUsers = '';
-  let totalGroups = '';
-  let totalPermissions = '';
-  // console.log(moduleCode);
-  // console.log(props);
-  props.fetchUsersByApp(moduleCode).then(result => {
-    totalUsers = result.data.payload;
-    console.log(totalUsers);
-    console.log(result);
-  }, error => {
-    console.log(error);
-  });
+class AppWidget extends Component {
+  // const AppWidget = (props) => {
 
-  props.fetchGroupsByApp(moduleCode).then(result => {
-    totalGroups = result.data.payload;
-  }, error => {
-    console.log(error);
-  });
+  constructor(props) {
+    super(props);
+    this.state = {
+      totalUsers: '',
+      totalGroups: '',
+      totalPermissions: '',
+      appName: '',
+      appDesc: '',
+    };
+  }
+  componentDidMount() {
+    const { moduleCode } = this.props;
 
-  props.fetchPermissionsByApp(moduleCode).then(result => {
-    totalPermissions = result.data.payload;
-  }, error => {
-    console.log(error);
-  });
+    // console.log(moduleCode);
+    // console.log(this.props);
+
+    this.props.fetchUsersByApp(moduleCode).then(result => {
+      this.setState({ totalUsers: result.payload })
+    }, error => {
+      console.log(error);
+    });
+
+    this.props.fetchGroupsByApp(moduleCode).then(result => {
+      this.setState({ totalGroups: result.payload });
+    }, error => {
+      console.log(error);
+    });
+
+    this.props.fetchPermissionsByApp(moduleCode).then(result => {
+      this.setState({ totalPermissions: result.payload });
+    }, error => {
+      console.log(error);
+    });
+  }
 
 
-  return (
-    <Widget05
-      metric1={totalUsers.length}
-      icon1="icon-user"
-      metric2={totalGroups.length}
-      icon2="icon-people"
-      metric3={totalPermissions.length}
-      icon3="icon-pie-chart"
-      color="warning"
-      header={moduleName}
-      value="100"
-    >
-      {moduleDescription}
-    </Widget05>
-  )
+  render() {
+    const { totalPermissions, totalGroups, totalUsers } = this.state;
+    const { moduleName, moduleDescription } = this.props;
+    return (
+      <Widget05
+        metric1={totalUsers.length}
+        icon1="icon-user"
+        metric2={totalGroups.length}
+        icon2="icon-people"
+        metric3={totalPermissions.length}
+        icon3="icon-pie-chart"
+        color="default"
+        header={moduleName}
+        value="00"
+      >
+        {moduleDescription}
+      </Widget05>
+    )
+  }
 }
 
 const mapStateToProps = (state) => {
-  console.log('State is ', state)
+  // console.log('State is ', state)
   return {
-    // moduleData: state.moduleData
+    moduleData: state.moduleData
   }
 }
 

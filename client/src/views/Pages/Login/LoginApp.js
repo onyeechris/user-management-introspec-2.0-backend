@@ -60,7 +60,7 @@ class LoginApp extends Component {
     login = (loginUserData) => {
         // event.preventDefault();
         this.props.actions.fetchUser("auth", loginUserData).then(result => {
-            console.log(result);
+            //console.log(result);
             if (JSON.stringify(result).includes("401")) {
                 this.setState({ loginError: "Username or password incorrect!" });
             } else {
@@ -80,7 +80,7 @@ class LoginApp extends Component {
         var userInfo = JSON.parse(JSON.stringify(this.state.userLogin));
         userInfo[field] = event.target.value;
         this.setState({ userLogin: userInfo });
-        //console.log(this.state.userLogin);
+        ////console.log(this.state.userLogin);
     }
 
     redirectUser() {
@@ -117,21 +117,20 @@ class LoginApp extends Component {
             const redirectUrl = sessionStorage.getItem("redirectUrl");
             const appLang = sessionStorage.getItem("appLang");
             const myToken = JSON.parse(sessionStorage.getItem("extUserData")).token;
-            //console.log(myToken);
+            ////console.log(myToken);
 
             // Encypt Token
             let ciphertext = CryptoJS.AES.encrypt(myToken, 'introspecAppToken').toString();
-            //console.log("Encrypted:" + ciphertext);
+            ////console.log("Encrypted:" + ciphertext);
 
 
             // Decrypt
             //let bytes = CryptoJS.AES.decrypt(ciphertext, 'introspecAppToken');
             //let decryptedToken = bytes.toString(CryptoJS.enc.Utf8);
 
-            //console.log("Decrypted:" + decryptedToken); // 'my token'
-
-            const urlParam = "?var=" + ciphertext;
-            window.location.href = redirectUrl + urlParam + "&lang=" + appLang;
+            ////console.log("Decrypted:" + decryptedToken); // 'my token'
+            // debugger;
+            window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang;
         }
         if (this.state.redirectToUrl) {
             // Redirect to the calling URL
@@ -251,7 +250,7 @@ class LoginApp extends Component {
 
 
 const mapStateToProps = state => {
-    console.log(state);
+    //console.log(state);
     return {
         lang: state.locale.lang,
         profile: state.profile

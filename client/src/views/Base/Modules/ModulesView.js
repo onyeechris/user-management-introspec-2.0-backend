@@ -25,6 +25,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import DropdownTreeSelect from 'react-dropdown-tree-select';
 import 'react-dropdown-tree-select/dist/styles.css';
+import '../../Dashboard/css/dashboard.css';
 
 let myStaticStaffs = [];
 
@@ -330,7 +331,7 @@ class ModulesView extends Component {
           console.log(formatted_date);
           staffToAdd.assign_at = formatted_date;
           staffToAdd.staff = appUser;
-          staffToAdd.grade = 2; // hard coded (To change)
+          // staffToAdd.grade = 2; // hard coded (To change)
           staffToAdd.module = sessionStorage.getItem("userModule");
           console.log(staffToAdd);
           this.props.addUserToApp(staffToAdd).then(result => {
@@ -399,7 +400,11 @@ class ModulesView extends Component {
   findStaffView(staffId) {
     this.props.fetchStaff(staffId).then(result => {
       console.log(result);
-      this.setState({ singleStaffData: result.data }, this.toggleUserGroup());
+      let staffData = result.data;
+      let initStaffDataGroups = staffData.groups;
+      let finalStaffDataGroups = initStaffDataGroups.filter(group => group.mod === this.state.sessionModuleData.code);
+      staffData.groups = finalStaffDataGroups;
+      this.setState({ singleStaffData: staffData }, this.toggleUserGroup());
     }, error => {
       console.log(error);
       this.setState({ formError: error });
@@ -430,13 +435,29 @@ class ModulesView extends Component {
     selectedUsers = selectedNodes;
     // greyedOut = false;
     console.log(selectedUsers);
+    console.log(selectedNodes[0].value);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let appUsers = this.state.appStaffData;
+    console.log(appUsers);
+    // if (selectedNodes[0].value) {
+    //   appUsers.forEach(appUser => {
+    //     if (selectedNodes[0].value === appUser.staff.id) {
+    //       this.setState({ addError: "User " + appUser.staff.first_name + " has already been authorized." },
+    //         this.setState({ greyedOut: true }));
+    //     } else {
+    //       this.setState({ addError: "" },
+    //         this.setState({ greyedOut: false }));
+    //     }
+    //   });
+    // }
   }
 
   onGroupSelect = (currentNode, selectedNodes) => {
     console.log('onChange::', currentNode);
     console.log('selected nodes::', selectedNodes);
     selectedGroups = selectedNodes;
-    // greyedOut = false;
+    let groupSelectedBool = true;
+    console.log(groupSelectedBool);
     console.log(selectedGroups);
   }
 
@@ -575,7 +596,7 @@ class ModulesView extends Component {
                       <th>{this.translate("ID")}</th>
                       <th>{this.translate("First Name")}</th>
                       <th>{this.translate("Email")}</th>
-                      <th>{this.translate("Grade")}</th>
+                      {/* <th>{this.translate("Grade")}</th> */}
                       <th>{this.translate("Date Assigned")}</th>
                       <th>{this.translate("Action")}</th>
                     </tr>
@@ -586,7 +607,7 @@ class ModulesView extends Component {
                         <td>{item.id}</td>
                         <td>{item.staff.first_name}</td>
                         <td>{item.staff.email}</td>
-                        <td>{item.grade}</td>
+                        {/* <td>{item.grade}</td> */}
                         <td>{item.assign_at}</td>
                         <td>
                           <Button size="sm" color="danger" onClick={e => this.findStaffRemove(item.id)} style={showAction}><i className="fa fa-trash"></i>
@@ -625,7 +646,7 @@ class ModulesView extends Component {
         </Row>
 
 
-        {/** Add Users Module */}
+        {/** Add Users Modal */}
 
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.translate("Import Users to")}{" "} {this.state.appName}</ModalHeader>

@@ -40,7 +40,7 @@ class DefaultHeader extends Component {
   }
   componentWillMount() {
     if (sessionStorage.getItem("userData")) {
-      console.log("call User Feed");
+      console.log("User Management Access");
     } else if (sessionStorage.getItem("extUserData")) {
       console.log("External Application Access");
     } else {
@@ -48,14 +48,17 @@ class DefaultHeader extends Component {
     }
   }
   logout() {
-    sessionStorage.setItem("userData", "");
-    sessionStorage.setItem("userRole", "");
-    sessionStorage.setItem("loggedInUser", "");
-    sessionStorage.setItem("userModule", "");
-    sessionStorage.setItem("loggedInUserData", "");
-    sessionStorage.setItem("moduleData", "");
-    //sessionStorage.clear();
+    // sessionStorage.setItem("userData", "");
+    // sessionStorage.setItem("userRole", "");
+    // sessionStorage.setItem("loggedInUser", "");
+    // sessionStorage.setItem("userModule", "");
+    // sessionStorage.setItem("loggedInUserData", "");
+    // sessionStorage.setItem("moduleData", "");
+    // window.history.pushState({}, document.title, "/" + "#/login");
+
+    sessionStorage.clear();
     this.setState({ redirectToReferrer: true });
+    window.location.reload();
   }
   render() {
     if (this.state.redirectToReferrer) {

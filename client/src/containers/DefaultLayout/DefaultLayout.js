@@ -44,9 +44,9 @@ class DefaultLayout extends Component {
 
   componentDidMount() {
     if (sessionStorage.getItem("userData")) {
-      console.log("User Logged In");
+      console.log("User Management Access");
     } else if (sessionStorage.getItem("extUserData")) {
-      console.log("External Application : User Logged In");
+      console.log("External Application Access");
     } else {
       this.setState({ redirectToReferrer: true });
     }
@@ -69,7 +69,11 @@ class DefaultLayout extends Component {
     if (/applogin/.test(window.location.href)) {
       let url_string = window.location.href;
       let url = new URL(url_string);
-      let UrlParam = url.searchParams.get("redirectUrl");
+      console.log(url);
+      let lastIndexInHash = url.hash.indexOf("/");
+      let urlEndpoint = url.hash.substring(lastIndexInHash + 1, url.hash.length + 1);
+      let UrlParam = url.searchParams.get("redirectUrl") + urlEndpoint;
+      // let UrlParam = url.searchParams.get("redirectUrl") + url.hash;
       let appLang = url.searchParams.get("lang");
       this.props.setLocale(appLang);
       localStorage.se8lementLang = appLang;
