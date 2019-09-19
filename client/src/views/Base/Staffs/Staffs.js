@@ -256,10 +256,10 @@ class Staffs extends Component {
   }
 
   findStaff(staffId) {
+    // this.setState({ singleStaffData: {} });
     this.props.fetchStaff(staffId).then(result => {
-      this.setState({ singleStaffData: {} },
-        this.setState({ singleStaffData: result.data },
-          this.toggleEdit()));
+      this.setState({ singleStaffData: result.data },
+        this.toggleEdit());
     }, error => {
       this.setState({ formError: error });
     })
@@ -280,14 +280,21 @@ class Staffs extends Component {
     //validation
     if (singleStaffData.first_name
       && singleStaffData.email
-      && singleStaffData.hire_date
-      && singleStaffData.maker_checker) {
+      && singleStaffData.user_type) {
 
       console.log('Something eventually happened here');
-      this.props.updateStaff(this.state.singleStaffData).then(result => {
-        this.setState({ newCreatedStaff: this.state.singleStaffData });
+      this.props.updateStaff(singleStaffData).then(result => {
+        this.setState({ newCreatedStaff: singleStaffData });
         this.setState({ visibleUpdate: true });
-        this.toggleEdit();
+        // live update the table
+        let allStaffs = this.state.staffData;
+        allStaffs.forEach((staff, index) => {
+          console.log("Index:: " + index, staff)
+          if (staff.id === singleStaffData.id) {
+            allStaffs[index] = singleStaffData;
+          }
+        });
+        this.setState({ staffData: allStaffs }, this.toggleEdit());
       }, error => {
         this.setState({ formError: error });
       })
@@ -710,7 +717,7 @@ class Staffs extends Component {
                     </Col>
                   </FormGroup>
                   <ModalFooter>
-                    <Button color="primary" onClick={e => this.updateStaff} disabled={this.state.greyedOut ? true : false}>{this.translate("Submit")}</Button>{' '}
+                    <Button color="primary" onClick={this.updateStaff} disabled={this.state.greyedOut ? true : false}>{this.translate("Submit")}</Button>{' '}
                     <Button color="secondary" onClick={this.toggleEdit}>{this.translate("Cancel")}</Button>
                   </ModalFooter>
                 </Form>
