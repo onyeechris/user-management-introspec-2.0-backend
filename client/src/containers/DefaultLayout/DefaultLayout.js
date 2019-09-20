@@ -70,6 +70,7 @@ class DefaultLayout extends Component {
       let url_string = window.location.href;
       let url = new URL(url_string);
       console.log(url);
+      sessionStorage.setItem("urlObject", url);
       let lastIndexInHash = url.hash.indexOf("/");
       let urlEndpoint = url.hash.substring(lastIndexInHash + 1, url.hash.length + 1);
       let UrlParam = url.searchParams.get("redirectUrl") + urlEndpoint;

@@ -114,7 +114,8 @@ class LoginApp extends Component {
 
         if (this.state.redirectToReferrer) {
             // return <Redirect to={"/appredirect"} />;
-            const redirectUrl = sessionStorage.getItem("redirectUrl");
+            // const redirectUrl = sessionStorage.getItem("redirectUrl");
+            const referralUrl = new URL(sessionStorage.getItem("urlObject"));
             const appLang = sessionStorage.getItem("appLang");
             const myToken = JSON.parse(sessionStorage.getItem("extUserData")).token;
             ////console.log(myToken);
@@ -130,7 +131,20 @@ class LoginApp extends Component {
 
             ////console.log("Decrypted:" + decryptedToken); // 'my token'
             // debugger;
-            window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang;
+
+            console.log(referralUrl);
+            console.log(referralUrl.hash);
+
+            let lastIndexInHash = referralUrl.hash.indexOf("/");
+            let urlEndpoint = referralUrl.hash.substring(lastIndexInHash + 1, referralUrl.hash.length + 1);
+            let redirectUrl = referralUrl.searchParams.get("redirectUrl");
+
+            console.log(urlEndpoint);
+            console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint);
+
+
+            window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint;
+            // window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang;
         }
         if (this.state.redirectToUrl) {
             // Redirect to the calling URL

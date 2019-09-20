@@ -27,8 +27,6 @@ import DropdownTreeSelect from 'react-dropdown-tree-select';
 import 'react-dropdown-tree-select/dist/styles.css';
 import '../../Dashboard/css/dashboard.css';
 
-let myStaticStaffs = [];
-
 // import ComboSelect from 'react-combo-select';
 // let standardArray = ["JA007D", "JA008D", "JA009D", "JA010D"];
 
@@ -63,7 +61,6 @@ class ModulesView extends Component {
       singleViewModuleData: this.props.moduleData.moduleSaved ? this.props.moduleData.moduleSaved : "",
       groupData: [],
       permissionData: [],
-      allStaffData: [],
       appStaffData: [],
       staffTableData: {},
       newAddedStaff: {},
@@ -107,14 +104,11 @@ class ModulesView extends Component {
     this.props.fetchStaffs('?size=1000').then(result => {
       this.setState({ staffArray: [] });
       let staffObj = {};
-      let staffArray = [];
       console.log(result);
-      this.setState({ allStaffData: result.data.payload });
-      myStaticStaffs = result.data.payload;
       this.setState({ staffList: result.data.payload });
 
-      staffArray = result.data.payload;
-      staffArray.forEach(staff => {
+      // logic to populate the add users select widget
+      result.data.payload.forEach(staff => {
         let currentStaffArray = this.state.staffArray;
         staffObj = {};
         staffObj.label = staff.first_name + " - " + staff.email;
@@ -254,32 +248,25 @@ class ModulesView extends Component {
     reloadTable();
   }
 
-  // Add staff search box
-  filterStaffs = (filterText) => {
-    let filterTextValue = filterText.target.value;
-    // console.log(filterTextValue);
-    // console.log(myStaticStaffs);
-    let newStaffsArray = myStaticStaffs.filter(staffItem => {
-      let staffToFilter = JSON.stringify(staffItem);
-      let filteredObject = staffToFilter.toLowerCase().includes(filterTextValue.toLowerCase());
-      return JSON.parse(filteredObject);
-    });
-    // console.log(newStaffsArray);
-    this.setState({ staffList: newStaffsArray });
-  }
 
 
 
-
-  // Function to add multiple groups to staffs and then to app
+  // Function to add multiple groups to a staff and then add the staff to app
   addGroupsToUserAndToApp = () => {
-    console.log("Reached Here!");
     if (selectedUsers.length > 0) {
       let currentUser = {};
       this.props.fetchStaff(selectedUsers[0].value).then(result => {
         currentUser = result.data;
         console.log(currentUser);
 
+        // logic to check if the user already exists
+        let userIds = [];
+        this.state.staffList.forEach(staff => {
+          userIds.push(staff.id);
+          userIds.indexOf(currentUser.id)
+        })
+
+        // if (userIds.indexOf(currentUser.id) < 0) {
 
         const addGroupsToUser = () => {
           const populateGroups = () => {
@@ -361,6 +348,10 @@ class ModulesView extends Component {
           }
         }
         addUser();
+
+        // } else {
+        //   this.setState({ addError: "User " + currentUser.first_name + " has already been authorized." });
+        // }
 
       }, error => {
         console.log(error);
