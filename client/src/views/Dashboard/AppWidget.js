@@ -48,8 +48,8 @@ class AppWidget extends Component {
 
 
   render() {
-    const { totalPermissions, totalGroups, totalUsers } = this.state;
-    const { moduleName, moduleDescription } = this.props;
+    let { totalPermissions, totalGroups, totalUsers } = this.state;
+    let { moduleName, moduleDescription } = this.props;
     return (
       <Widget05
         metric1={totalUsers.length}
