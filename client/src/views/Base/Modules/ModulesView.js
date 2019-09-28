@@ -263,10 +263,13 @@ class ModulesView extends Component {
         let userIds = [];
         this.state.staffList.forEach(staff => {
           userIds.push(staff.id);
-          userIds.indexOf(currentUser.id)
         })
 
-        // if (userIds.indexOf(currentUser.id) < 0) {
+        console.log(userIds);
+        console.log(currentUser.id);
+        console.log(userIds.indexOf(currentUser.id));
+
+        // if (userIds.indexOf(currentUser.id) === -1) {
 
         const addGroupsToUser = () => {
           const populateGroups = () => {
