@@ -1,4 +1,3 @@
-###
 spring:
   main:
     allow-bean-definition-overriding: true
@@ -22,37 +21,22 @@ spring:
               jdbc:
                 lob:
                   non_contextual_creation: true
-
-#  redis:
-#    host: localhost
-#    port: 6379
-#    embedded: true
-
   datasource.driver-class-name: org.postgresql.Driver
   datasource.type: com.zaxxer.hikari.HikariDataSource
-  datasource.url: jdbc:postgresql://localhost:5432/usermgt
-  datasource.username: postgres
-  datasource.password: passadmin
+  datasource.url: ${introspec_sso_db_url:jdbc:postgresql://localhost:5432/introspec_sso}
+  datasource.username: ${introspec_sso_db_user}
+  datasource.password: ${introspec_sso_db_password}
   datasource:
-#      driverClassName: org.postgresql.Driver
-#      type: com.zaxxer.hikari.HikariDataSource
-#      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
-#      username: postgres
-#      password: passadmin
       hikari:
           auto-commit: false
           minimum-idle: 3
           maximum-pool-size: 5
-
-    #      initialization-mode: always
       data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
-
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   ldap:
-
     # Spring LDAP
     #
     # In this example we use an embedded ldap server. When using a real one,
@@ -62,7 +46,6 @@ spring:
     # base: dc=memorynotfound,dc=com
     # username: uid=admin
     # password: secret
-
     # Embedded Spring LDAP
     embedded:
       base-dn: dc=memorynotfound,dc=com
@@ -76,24 +59,19 @@ spring:
 
 app:
   jwtExpirationInMs: '604800000'
-  jwtSecret: JWTSuperSecretKey
+  jwtSecret: ${introspec_sso_jwt_secret}
 logging:
   level:
     org:
       hibernate:
         SQL: DEBUG
-#    root: DEBUG
     com:
       activedge:
         usermgt: DEBUG
-#    root: DEBUG
-#  file: ${java.io.tmpdir}/${spring.application.name}.log
-
-#  using for JavaSE:  java -Dspring.redis.embedded=true
 makerChecker:
   enabled: true
 
 server:
-  port: 9100
+  port: ${introspec_sso_port:9100}
   servlet:
     context-path: /${spring.application.name}
