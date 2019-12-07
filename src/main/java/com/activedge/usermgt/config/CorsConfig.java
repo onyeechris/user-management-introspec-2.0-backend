@@ -28,7 +28,7 @@ public class CorsConfig implements Filter {
             chain.doFilter(req, res);
         }
     }
-
+    
     @Override
     public void destroy() {
     }

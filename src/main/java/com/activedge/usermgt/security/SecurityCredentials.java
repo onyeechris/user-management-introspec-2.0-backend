@@ -136,7 +136,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 registry.addMapping("/auth-service/**")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedOrigins("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*, Authorization");
             }
         };
     }
@@ -146,5 +146,4 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
         return  new DefaultSpringSecurityContextSource(
                 Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
     }
-
 }
