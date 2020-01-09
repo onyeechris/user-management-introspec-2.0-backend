@@ -4,6 +4,10 @@ spring:
     allow-bean-definition-overriding: true
   application:
       name: auth-service
+
+  data:
+    rest:
+      basePath: /auth-service
   jpa:
       database-platform: org.hibernate.dialect.PostgreSQL9Dialect
       database: POSTGRESQL
@@ -76,7 +80,7 @@ spring:
 
 app:
   jwtExpirationInMs: '604800000'
-  jwtSecret: JWTSuperSecretKey
+  jwtSecret: JWTSuperSecretKeyy
 logging:
   level:
     org:
@@ -92,6 +96,10 @@ logging:
 #  using for JavaSE:  java -Dspring.redis.embedded=true
 makerChecker:
   enabled: true
+
+security:
+  jwt:
+    secret: JwtSecretKey123
 
 server:
   port: 9100

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -67,7 +70,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
+                .antMatchers("/", "/index.html", "/static/**", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
                 .antMatchers(HttpMethod.GET, "/permissions/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/permissions/**").hasRole("DEV")
@@ -89,7 +92,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
 
                 // any other requests must be authenticated
-                .anyRequest().authenticated().and().cors();
+                .anyRequest().authenticated();
 
     }
 
@@ -100,16 +103,33 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
         auth
+                .ldapAuthentication()
+//                .userDnPatterns("uid={0},ou=users,ou=guests")
+                .userSearchBase("ou=users")
+                .userSearchFilter("uid={0}")
+                .contextSource(contextSource())
+                .passwordCompare()
+//                .passwordEncoder()
+                .passwordAttribute("mail");
+
+
+/*
+        auth
             .ldapAuthentication()
             .userDnPatterns("uid={0},ou=people")
             .userSearchBase("ou=people")
             .userSearchFilter("uid={0}")
             .groupSearchBase("ou=group") // map LDAP groups to roles in Spring
-            .groupSearchFilter("uniqueMember={0}")
+//            .groupSearchFilter("uniqueMember={0}")
             .contextSource(contextSource())
-            .passwordCompare()
-            .passwordEncoder(new LdapShaPasswordEncoder())
-            .passwordAttribute("userPassword");
+//            .contextSource()
+//                .url("ldap://localhost:12345/dc=memorynotfound,dc=com")
+//                .and()
+            .passwordCompare();
+//            .passwordEncoder(new LdapShaPasswordEncoder())
+//            .passwordEncoder(passwordEncoder())
+//            .passwordAttribute("userPassword");
+        */
 
     }
 
@@ -142,9 +162,17 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public DefaultSpringSecurityContextSource contextSource() {
-        return  new DefaultSpringSecurityContextSource(
-                Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
+    public LdapContextSource contextSource() {
+//        return  new DefaultSpringSecurityContextSource(
+//                Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
+//                Collections.singletonList("ldap://ldap.forumsys.com:389"), "dc=example,dc=com");
+//                Collections.singletonList("ldap://www.zflexldap.com:389"), "cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
+            LdapContextSource contextSource = new LdapContextSource();
+            contextSource.setUrl("ldap://www.zflexldap.com:389");
+            contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
+            contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
+            contextSource.setPassword("zflexpass");
+            return contextSource;
     }
 
 }

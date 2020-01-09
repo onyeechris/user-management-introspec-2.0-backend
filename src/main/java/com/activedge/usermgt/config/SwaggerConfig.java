@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.RedirectViewControllerRegistration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.*;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -23,7 +20,7 @@ import static springfox.documentation.builders.PathSelectors.regex;
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean
     public Docket productApi() {
@@ -34,13 +31,15 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .build()
                 .apiInfo(metaData());
     }
+
     @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
-
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+//        registry.addResourceHandler("/static/**")
+//                .addResourceLocations("classpath:/resources/static/");
     }
 
     private ApiInfo metaData() {
@@ -54,11 +53,11 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .build();
     }
 
-    @Override
-    public void addViewControllers (ViewControllerRegistry registry) {
-        RedirectViewControllerRegistration r = registry.addRedirectViewController("/", "/swagger-ui.html");
-        r.setStatusCode(HttpStatus.SEE_OTHER);
-    }
+//    @Override
+//    public void addViewControllers (ViewControllerRegistry registry) {
+//        RedirectViewControllerRegistration r = registry.addRedirectViewController("/", "/swagger-ui.html");
+//        r.setStatusCode(HttpStatus.SEE_OTHER);
+//    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

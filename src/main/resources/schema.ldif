@@ -21,7 +21,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 cn: John Doe
 uid: john
-userPassword: {SHA}5en6G6MezRroT3XKqkdPOmY/BfQ=
+password: password
 
 dn: cn=developers,ou=group,dc=memorynotfound,dc=com
 objectclass: top

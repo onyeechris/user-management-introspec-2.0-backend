@@ -172,13 +172,16 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         // new user gets registration key
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
+        authority.setCode(AuthoritiesConstants.USER);
         authority.setName(AuthoritiesConstants.USER);
         authorities.add(authority);
         newUser.setAuthorities(authorities);
         // assign new user group
         Group group = new Group();
         group.setId(new GroupPK());
-        newUser.setGroups(null);
+        newUser.setGroups(new HashSet<Group>());
+
+        log.debug("about to create staff: {}", newUser);
 
         staffRepository.save(newUser);
 

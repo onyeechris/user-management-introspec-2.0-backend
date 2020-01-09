@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * REST controller for managing Module.
  */
 @RestController
-@RequestMapping("/")
+//@RequestMapping("/")
 @Api(value="appmodule", description="Various App Module")
 public class AppModuleController {
 

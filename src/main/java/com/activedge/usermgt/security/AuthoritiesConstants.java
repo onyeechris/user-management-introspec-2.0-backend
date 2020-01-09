@@ -5,11 +5,11 @@ package com.activedge.usermgt.security;
  */
 public final class AuthoritiesConstants {
 
-    public static final String ADMIN = "ROLE_INTROSPEC-SYSADMIN";
+    public static final String ADMIN = "ROLE_ADMIN";
 
-    public static final String USER = "ROLE_INTROSPEC-SYSUSER";
+    public static final String USER = "ROLE_USER";
 
-    public static final String DEVELOPER = "ROLE_INTROSPEC-SYSDEV";
+    public static final String DEVELOPER = "ROLE_DEV";
 
     private AuthoritiesConstants() {
     }
