@@ -100,6 +100,11 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-envers</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.fernandonogueira</groupId>
+			<artifactId>ox</artifactId>
+			<version>1.1.3</version>
+		</dependency>
 
         <!-- documentation -->
         <dependency>
@@ -141,30 +146,20 @@
 		</dependency>
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-            <!--<plugin>-->
-                <!--<artifactId>maven-resources-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>copy-resources</id>-->
-                        <!--<phase>validate</phase>-->
-                        <!--<goals><goal>copy-resources</goal></goals>-->
-                        <!--<configuration>-->
-                            <!--<outputDirectory>${basedir}/target/classes/static/</outputDirectory >-->
-                            <!--<resources>-->
-                                <!--<resource>-->
-                                    <!--<directory>${basedir}/client/build</directory >-->
-                                <!--</resource>-->
-                            <!--</resources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
 		</plugins>
 	</build>
 
