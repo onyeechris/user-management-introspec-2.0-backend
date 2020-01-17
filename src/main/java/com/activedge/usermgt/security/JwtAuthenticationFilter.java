@@ -1,11 +1,13 @@
 package com.activedge.usermgt.security;
 
-import com.activedge.usermgt.config.JwtConfig;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.activedge.usermgt.service.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -13,35 +15,49 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
+import static com.activedge.usermgt.config.Constants.HEADER_STRING;
+import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
-    private final JwtConfig jwtConfig;
+@Component
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public JwtTokenAuthenticationFilter(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-    }
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
             throws ServletException, IOException {
+        try {
+            String jwt = getJWTFromRequest(httpServletRequest);
 
-        // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
-        String header = request.getHeader(jwtConfig.getHeader());
+            if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                String username = tokenProvider.getUsernameFromJWT(jwt);
+                if(username != null) {
+                    List<String> authorities = tokenProvider.getAuthoritiesFromJWT(jwt);
+                    List permissions = tokenProvider.getPermissionFromJWT(jwt);
 
-        // 2. validate the header and check the prefix
-        if(header == null || !header.startsWith(jwtConfig.getPrefix())) {
-            chain.doFilter(request, response);  		// If not valid, go to the next filter.
-            return;
+                    System.out.println(">>> Authorities: " + authorities);
+                    System.out.println(">>> Permissions: " + permissions);
+
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            username, null,authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                    );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+
+            }
+        } catch (Exception ex) {
+            logger.error("Could not set user authentication in security context", ex);
         }
 
-        // 3. Get the token
-        String token = header.replace(jwtConfig.getPrefix(), "");
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
 
+        /*
         try {	// exceptions might be thrown in creating the claims if for example the token is expired
 
             // 4. Validate the token
@@ -75,8 +91,19 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
         }
         // go to the next filter in the filter chain
-        chain.doFilter(request, response);
+        chain.doFilter(httpServletRequest, httpServletResponse);
+        */
 
+    }
+
+    private String getJWTFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader(HEADER_STRING);
+
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
+            return bearerToken.substring(7, bearerToken.length());
+        }
+
+        return null;
     }
 
 }

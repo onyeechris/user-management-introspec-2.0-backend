@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames={"module", "action"})
 )
 @SequenceGenerator(name = "permGenerator", initialValue = 200, allocationSize = 1)
+@Document(collection = "permissions")
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;

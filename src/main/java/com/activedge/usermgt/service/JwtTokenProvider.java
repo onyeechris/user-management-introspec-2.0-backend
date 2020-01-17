@@ -1,38 +1,89 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.model.*;
+import com.activedge.usermgt.model.enumeration.Type;
+import com.activedge.usermgt.repository.StaffRepository;
+import com.activedge.usermgt.security.AuthoritiesConstants;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.stream.Collectors;
 
-//@Component
+@Slf4j
+@Component
 public class JwtTokenProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+    @Autowired
+    private StaffRepository staffRepository;
 
-    @Value("${app.jwtSecret}")
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
+    @Value("${security.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwtExpirationInMs}")
+    @Value("${security.jwt.expiration}")
     private int jwtExpirationInMs;
 
-    public String generateToken(Authentication authentication) {
+    public String getJwtToken(Authentication authentication) {
+        Set<String> staffPermissions = new HashSet<>();
+        String token = "";
 
-        LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
+        if(authentication.getPrincipal() instanceof LdapUserDetailsImpl) {
+            // do LDAP
+            LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
+            token = staffRepository.findOneWithAuthoritiesByEmail(userPrincipal.getUsername().toLowerCase())
+                    .map(staff -> {
+                        for(Group group: staff.getGroups()) {
+                            for(Permission permission: group.getPermissions()) {
+                                staffPermissions.add(permission.getAction());
+                            }
+                        }
+                        return generateToken(authentication, staffPermissions);
+                    })
+                    .orElse(createNewUserToken(authentication, staffPermissions));
+        } else {
+            // do JDBC
+            User user = (User) authentication.getPrincipal();
+            token = staffRepository.findOneWithAuthoritiesByEmail(user.getUsername().toLowerCase())
+                    .map(staff -> {
+                        for(Group group: staff.getGroups()) {
+                            for(Permission permission: group.getPermissions()) {
+                                staffPermissions.add(permission.getAction());
+                            }
+                        }
+                        return generateToken(authentication, staffPermissions);
+                    }).orElse("null");
+        }
 
-        Date now = new Date();
+        return token;
+    }
+
+    private String generateToken(Authentication authentication, Set<String> staffPermissions) {
+        Date now = new Date(System.currentTimeMillis());
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(userPrincipal.getUsername())
-                .setIssuedAt(new Date())
+                .setSubject(authentication.getPrincipal().toString())
+                .claim("authorities", authentication.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .claim("permissions", staffPermissions)
+                .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes())
                 .compact();
     }
 
@@ -45,21 +96,74 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    public List getAuthoritiesFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("authorities", List.class);
+    }
+
+    public List getPermissionFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("permissions", List.class);
+    }
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature");
+            log.error("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            log.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            log.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty.");
+            log.error("JWT claims string is empty.");
         }
         return false;
     }
+
+    private String createNewUserToken(Authentication auth, Set<String> staffPermissions) {
+        Staff newUser = new Staff();
+
+        String usr = auth.getPrincipal().toString();
+
+        String encryptedPassword = encoder.encode(auth.getPrincipal().toString());
+        newUser.setPassword(encryptedPassword);
+        newUser.setFirst_name(auth.getPrincipal().toString());
+        newUser.setLast_name(auth.getPrincipal().toString());
+        newUser.setEmail(auth.getPrincipal().toString().toLowerCase() + "@default.com");
+        newUser.setType(Type.USER);
+        // new user is active
+        newUser.setActivated(true);
+        // new user gets registration key
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = new Authority();
+        authority.setCode(AuthoritiesConstants.USER);
+        authority.setName(AuthoritiesConstants.USER);
+        authorities.add(authority);
+        newUser.setAuthorities(authorities);
+        // assign new user group
+        Group group = new Group();
+        group.setId(new GroupPK());
+        newUser.setGroups(new HashSet<Group>());
+
+        log.debug("about to create new staff - {}", newUser);
+
+        Staff staff = staffRepository.save(newUser);
+
+        log.debug("Created new staff - {}", staff);
+
+        return generateToken(auth, staffPermissions);
+    }
+
 }

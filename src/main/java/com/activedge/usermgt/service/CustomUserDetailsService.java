@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
  * meaning it loads the user from the database (or any data source).
  * It doesn’t do authentication. It just loads the user given his username.
  */
-@Service
 @Slf4j
-public class UserDetailsServiceImpl implements UserDetailsService {
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private StaffRepository staffRepository;

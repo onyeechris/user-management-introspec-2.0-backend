@@ -1,0 +1,45 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+  data:
+    mongodb:
+      repositories:
+        type: none
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: true
+
+    hibernate:
+      ddl-auto: update #  never use ddl generation in production
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  datasource.driver-class-name: org.postgresql.Driver
+  datasource.type: com.zaxxer.hikari.HikariDataSource
+  datasource.url: jdbc:postgresql://localhost:5432/usermgt
+  datasource.username: postgres
+  datasource.password: passadmin
+  datasource:
+    #      driverClassName: org.postgresql.Driver
+    #      type: com.zaxxer.hikari.HikariDataSource
+    #      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
+    #      username: postgres
+    #      password: passadmin
+    hikari:
+      auto-commit: false
+      minimum-idle: 3
+      maximum-pool-size: 5
+
+    #      initialization-mode: always
+    data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql

@@ -12,9 +12,8 @@ public final class Constants {
 
     public static final int PASSWORD_MAX_LENGTH = 100;
 
-    public static final String SYSTEM_ACCOUNT = "system";
-    public static final String ANONYMOUS_USER = "anonymoususer";
-    public static final String DEFAULT_LANGUAGE = "en";
+    public static final String HEADER_STRING = "Authorization";
+    public static final String TOKEN_PREFIX = "Bearer ";
 
     private Constants() {
     }

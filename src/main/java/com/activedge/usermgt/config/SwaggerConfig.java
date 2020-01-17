@@ -53,11 +53,11 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .build();
     }
 
-//    @Override
-//    public void addViewControllers (ViewControllerRegistry registry) {
-//        RedirectViewControllerRegistration r = registry.addRedirectViewController("/", "/swagger-ui.html");
-//        r.setStatusCode(HttpStatus.SEE_OTHER);
-//    }
+    @Override
+    public void addViewControllers (ViewControllerRegistry registry) {
+        RedirectViewControllerRegistration r = registry.addRedirectViewController("/", "/swagger-ui.html");
+        r.setStatusCode(HttpStatus.SEE_OTHER);
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

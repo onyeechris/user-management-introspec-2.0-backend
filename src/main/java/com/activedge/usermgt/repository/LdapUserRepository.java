@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.ldap.repository.LdapRepository;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.naming.Name;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Repository
 public interface LdapUserRepository extends CrudRepository<LdapUser, Name> {
+//public interface LdapUserRepository extends PagingAndSortingRepository<LdapUser, Name> {
 
     LdapUser findByUserid(String userid);
 

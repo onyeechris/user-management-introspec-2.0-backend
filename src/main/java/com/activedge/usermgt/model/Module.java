@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter @Setter
 @Table(name = "introspec_module")
+@Document(collection = "introspec_module")
 public class Module implements Serializable {
 
     private static final long serialVersionUID = 1L;

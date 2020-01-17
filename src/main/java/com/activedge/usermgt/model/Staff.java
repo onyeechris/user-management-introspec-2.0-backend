@@ -13,6 +13,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -36,6 +37,7 @@ import static javax.persistence.CascadeType.*;
 @SequenceGenerator(name = "tabGenerator", initialValue = 5, allocationSize = 50)
 @SQLDelete(sql="UPDATE staff SET activated = '0' WHERE id = ?")
 @Where(clause="activated <> '0'")
+@Document(collection = "staffs")
 public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;

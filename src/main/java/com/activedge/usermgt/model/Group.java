@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,6 +26,7 @@ import java.util.Set;
 @EntityListeners(GroupEntityListener.class)
 @SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = md5(random()::text) WHERE id = ? and module = ?")
 @Where(clause="is_deleted <> '1'")
+@Document(collection = "groups")
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;

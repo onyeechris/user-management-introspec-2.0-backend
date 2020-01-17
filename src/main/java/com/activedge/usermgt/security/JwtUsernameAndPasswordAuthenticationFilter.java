@@ -1,6 +1,5 @@
 package com.activedge.usermgt.security;
 
-import com.activedge.usermgt.config.JwtConfig;
 import com.activedge.usermgt.model.*;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.repository.StaffRepository;
@@ -20,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,30 +30,27 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
+public class JwtUsernameAndPasswordAuthenticationFilter {
+/*
     private BCryptPasswordEncoder encoder;
 
     private AuthenticationManager authManager;
-
-    private final JwtConfig jwtConfig;
 
     private LdapUserService ldapUserService;
 
     private StaffRepository staffRepository;
 
-    public JwtUsernameAndPasswordAuthenticationFilter(StaffRepository staffRepository, AuthenticationManager authManager, JwtConfig jwtConfig, LdapUserService ldapUserService, BCryptPasswordEncoder encoder) {
+    public JwtUsernameAndPasswordAuthenticationFilter(StaffRepository staffRepository, AuthenticationManager authManager, LdapUserService ldapUserService, BCryptPasswordEncoder encoder) {
         this.staffRepository = staffRepository;
         this.authManager = authManager;
-        this.jwtConfig = jwtConfig;
         this.ldapUserService = ldapUserService;
         this.encoder = encoder;
         // By default, UsernamePasswordAuthenticationFilter listens to "/login" path.
         // In our case, we use "/auth". So, we need to override the defaults.
-        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri(), "POST"));
+        // this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/auth", "POST"));
     }
 
-    @Override
+    // @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         try {
@@ -78,7 +72,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     // Upon successful authentication, generate a token.
     // The 'auth' passed to successfulAuthentication() is the current authenticated user.
-    @Override
+    // @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
@@ -121,7 +115,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //        log.info("Authentication successful from {}", auth.getPrincipal().getClass());
     }
 
-    @Override
+    // @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         SecurityContextHolder.clearContext();
         this.displayToken(failed.getMessage(), "401", response);
@@ -141,7 +135,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 //        System.out.println("Staff roles: --- " + auth.getAuthorities().stream()
 //                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
-        String module = request.getHeader(jwtConfig.getModule());
+//        String module = request.getHeader(jwtConfig.getModule());
 
         return Jwts.builder()
                 .setSubject(auth.getName())
@@ -150,8 +144,8 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .claim("permissions", staffPermissions)
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
-                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
+//                .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
+//                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();
 
     }
@@ -194,10 +188,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     private void displayToken(String token, String whois, HttpServletResponse response) {
         // Add token to header
-        response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
+        response.addHeader("Authorization", "Bearer " + token);
 
         Map<String, String> res = new HashMap<>();
-        res.put("token", jwtConfig.getPrefix() + token);
+        res.put("token", "Bearer " + token);
         res.put("status", whois);
 
         String json = new Gson().toJson(res);
@@ -223,5 +217,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     private static class UserCredentials {
         private String username, password;
     }
+    */
 }
 

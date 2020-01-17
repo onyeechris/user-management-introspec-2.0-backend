@@ -5,6 +5,8 @@ import com.activedge.usermgt.config.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.validation.constraints.Email;
 
 import javax.persistence.*;
@@ -22,8 +24,8 @@ import java.time.Instant;
  * A user.
  */
 @Entity
-@Table(name = "i_user")
-
+@Table(name = "i_users")
+@Document(collection = "i_users")
 public class User extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;

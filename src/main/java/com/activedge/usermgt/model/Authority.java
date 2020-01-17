@@ -3,6 +3,7 @@ package com.activedge.usermgt.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,13 +15,15 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Table(name = "introspec_authority")
+@Document
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//    @EmbeddedId
-//    private AuthorityPK id;
     @Id
+    // @org.springframework.data.annotation.Id
+    // @GeneratedValue(generator = "system-uuid")
+    // @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @NotNull
     @Size(min = 3)
     @Column(name = "code")

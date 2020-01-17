@@ -1,56 +1,19 @@
-###
+server:
+  port: 9100
+  servlet:
+    context-path: /${spring.application.name}
+
 spring:
-  main:
-    allow-bean-definition-overriding: true
+  profiles:
+    active: mongo # comma-separated e.g mongo | jpa
+#  main:
+#    allow-bean-definition-overriding: true
   application:
       name: auth-service
 
-  data:
-    rest:
-      basePath: /auth-service
-  jpa:
-      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-      database: POSTGRESQL
-      show-sql: true
-      generate-ddl: true
-
-      hibernate:
-          ddl-auto: update #  never use ddl generation in production
-      properties:
-          hibernate.id.new_generator_mappings: true
-          hibernate.connection.provider_disables_autocommit: true
-          hibernate.cache.use_second_level_cache: false
-          hibernate.cache.use_query_cache: false
-          hibernate.generate_statistics: false
-          hibernate:
-              jdbc:
-                lob:
-                  non_contextual_creation: true
-
-#  redis:
-#    host: localhost
-#    port: 6379
-#    embedded: true
-
-  datasource.driver-class-name: org.postgresql.Driver
-  datasource.type: com.zaxxer.hikari.HikariDataSource
-  datasource.url: jdbc:postgresql://localhost:5432/usermgt
-  datasource.username: postgres
-  datasource.password: passadmin
-  datasource:
-#      driverClassName: org.postgresql.Driver
-#      type: com.zaxxer.hikari.HikariDataSource
-#      url: jdbc:postgresql://localhost:5432/usermgt?createDatabaseIfNotExist=true
-#      username: postgres
-#      password: passadmin
-      hikari:
-          auto-commit: false
-          minimum-idle: 3
-          maximum-pool-size: 5
-
-    #      initialization-mode: always
-      data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
-
+#  data:
+#    rest:
+#      basePath: /auth-service
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -89,19 +52,11 @@ logging:
 #    root: DEBUG
     com:
       activedge:
-        usermgt: DEBUG
+        usermgt: INFO
 #    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
-
-#  using for JavaSE:  java -Dspring.redis.embedded=true
-makerChecker:
-  enabled: true
 
 security:
   jwt:
     secret: JwtSecretKey123
-
-server:
-  port: 9100
-  servlet:
-    context-path: /${spring.application.name}
+    expiration: 60_000 # 60secs
