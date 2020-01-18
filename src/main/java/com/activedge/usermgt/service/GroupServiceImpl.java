@@ -14,6 +14,7 @@ import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
+import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.util.Lambda;
 import com.activedge.usermgt.util.facade.GroupSpy;
 import com.activedge.usermgt.util.facade.Spy;
@@ -41,18 +42,20 @@ public class GroupServiceImpl implements GroupService {
     private final Logger log = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     private final GroupRepository groupRepository;
+    private final ModuleRepository moduleRepository;
 
     private final GroupMapper groupMapper;
     private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
     private final StaffMapper staffMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
+    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
         this.staffMapper = staffMapper;
         this.moduleMapper = moduleMapper;
+        this.moduleRepository = moduleRepository;
     }
 
     /**
@@ -206,11 +209,12 @@ public class GroupServiceImpl implements GroupService {
         groupDTO.setPermissions(new HashSet<>());
         groupDTO.setStaffs(new HashSet<>());
 
-        log.debug("Saving group... {}", groupDTO);
-
         g = groupMapper.toEntity(groupDTO);
 
         g.setIsDeleted(false);
+
+        log.debug("Saving group... {}", g);
+
 
 //      Enable Type
 //        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);

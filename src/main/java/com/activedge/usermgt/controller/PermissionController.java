@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -154,7 +155,7 @@ public class PermissionController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<PermissionDTO> getPermission(@PathVariable Long id) {
+    public ResponseEntity<PermissionDTO> getPermission(@PathVariable BigInteger id) {
         log.debug("REST request to get Permission : {}", id);
         Optional<PermissionDTO> permissionDTO = permissionService.findOne(id);
 
@@ -175,7 +176,7 @@ public class PermissionController {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePermission(@PathVariable BigInteger id) {
         log.debug("REST request to delete Permission : {}", id);
         permissionService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();

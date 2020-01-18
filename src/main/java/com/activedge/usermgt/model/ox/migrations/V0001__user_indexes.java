@@ -29,6 +29,10 @@ public class V0001__user_indexes implements Migration {
         admin_authorities.add(new DBRef("introspec_authorities", "ROLE_ADMIN"));
         admin_authorities.add(new DBRef("introspec_authorities", "ROLE_USER"));
 
+        List<DBRef> sysdev_authorities = new ArrayList<>();
+        sysdev_authorities.add(new DBRef("introspec_authorities", "ROLE_DEV"));
+        sysdev_authorities.add(new DBRef("introspec_authorities", "ROLE_USER"));
+
         List<DBRef> user_authorities = new ArrayList<>();
         user_authorities.add(new DBRef("introspec_authorities", "ROLE_USER"));
 
@@ -82,7 +86,7 @@ public class V0001__user_indexes implements Migration {
                 .add("approved_by", "default")
                 .add("approved_date", "2019-01-17")
                 .add("activated", true)
-                .add("authorities", user_authorities)
+                .add("authorities", sysdev_authorities)
                 .get());
 
     }

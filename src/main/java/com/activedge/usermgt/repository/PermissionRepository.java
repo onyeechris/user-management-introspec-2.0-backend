@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+
 @Repository
-public interface PermissionRepository extends PagingAndSortingRepository<Permission, Long> {
+public interface PermissionRepository extends PagingAndSortingRepository<Permission, BigInteger> {
 
     Page<Permission> findAllByModule_Id(Pageable pageable, String module);
 

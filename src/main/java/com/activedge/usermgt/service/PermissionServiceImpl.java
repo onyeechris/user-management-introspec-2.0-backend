@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.util.Optional;
 
 /**
@@ -88,7 +89,7 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<PermissionDTO> findOne(Long id) {
+    public Optional<PermissionDTO> findOne(BigInteger id) {
         log.debug("Request to get Permission : {}", id);
         return permissionRepository.findById(id)
             .map(permissionMapper::toDto);
@@ -100,7 +101,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(Long id) {
+    public void delete(BigInteger id) {
         log.debug("Request to delete Permission : {}", id);
         permissionRepository.deleteById(id);
     }

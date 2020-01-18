@@ -6,6 +6,7 @@ import com.activedge.usermgt.model.dto.PermissionDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 /**
@@ -36,12 +37,12 @@ public interface PermissionService {
      * @param id the id of the entity
      * @return the entity
      */
-    Optional<PermissionDTO> findOne(Long id);
+    Optional<PermissionDTO> findOne(BigInteger id);
 
     /**
      * Delete the "id" permission.
      *
      * @param id the id of the entity
      */
-    void delete(Long id);
+    void delete(BigInteger id);
 }

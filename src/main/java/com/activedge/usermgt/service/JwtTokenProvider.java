@@ -86,13 +86,13 @@ public class JwtTokenProvider {
                 .claim("permissions", staffPermissions)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes())
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret.getBytes())
+                .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -101,7 +101,7 @@ public class JwtTokenProvider {
 
     public List getAuthoritiesFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret.getBytes())
+                .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -110,7 +110,7 @@ public class JwtTokenProvider {
 
     public List getPermissionFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret.getBytes())
+                .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -119,7 +119,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret.getBytes()).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");

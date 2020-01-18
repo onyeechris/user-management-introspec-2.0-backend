@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class Permission implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permGenerator")
-    private Long id;
+    private BigInteger id;
 
     @NotNull(message = "Permission action is required")
     @Size(min = 3)
@@ -62,11 +63,11 @@ public class Permission implements Serializable {
     @JsonIgnore
     private Set<Group> grps = new HashSet<>();
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

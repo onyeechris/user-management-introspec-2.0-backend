@@ -38,6 +38,7 @@ public abstract class GroupMapper {
     public abstract GroupDTO toDto(Group group);
 
     @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getMod()), groupDTO.getId()) )")
+    @Mapping(source = "mod", target = "module.id")
     public abstract Group toEntity(GroupDTO groupDTO);
 
     Group fromId(GroupPK id) {

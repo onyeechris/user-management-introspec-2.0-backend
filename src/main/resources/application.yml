@@ -52,11 +52,11 @@ logging:
 #    root: DEBUG
     com:
       activedge:
-        usermgt: INFO
+        usermgt: DEBUG
 #    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
 
 security:
   jwt:
     secret: JwtSecretKey123
-    expiration: 60_000 # 60secs
+    expiration: 60_60_000 # 1 hour

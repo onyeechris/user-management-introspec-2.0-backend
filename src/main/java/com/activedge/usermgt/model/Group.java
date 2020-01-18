@@ -209,6 +209,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", module='" + module + '\'' +
 //                ", staffs=" + getStaffs() +
 //                ", permissions=" + getPermissions() +
                 '}';
