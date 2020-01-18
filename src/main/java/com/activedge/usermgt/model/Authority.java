@@ -26,8 +26,8 @@ public class Authority implements Serializable {
     // @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @NotNull
     @Size(min = 3)
-    @Column(name = "code")
-    private String code;
+    @Column(name = "id")
+    private String id;
 
 //    @ManyToOne
 //    @JoinColumn(name = "module",insertable = false, updatable = false)

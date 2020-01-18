@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StaffModuleRepository extends PagingAndSortingRepository<StaffModule, Long> {
 
-    Page<StaffModule> findAllByModule_Code(Pageable pageable, String module);
+    Page<StaffModule> findAllByModule_Id(Pageable pageable, String module);
 
 }

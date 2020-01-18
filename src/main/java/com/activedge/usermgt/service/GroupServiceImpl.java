@@ -236,7 +236,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(readOnly = true)
     public Page<GroupDTO> findAll(String module, Pageable pageable) {
 //        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
-        return groupRepository.findAllByModule_Code(module, pageable)
+        return groupRepository.findAllByModule_Id(module, pageable)
             .map(groupMapper::toDto);
     }
 

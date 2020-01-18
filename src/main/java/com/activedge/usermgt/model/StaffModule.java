@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -23,11 +24,13 @@ public class StaffModule {
 
     @ManyToOne
     @JoinColumn(name = "module")
+    @DBRef
     Module module;
 
     @ManyToOne
     @JoinColumn(name = "staff")
     @JsonBackReference
+    @DBRef
     Staff staff;
 
     LocalDateTime assignAt;

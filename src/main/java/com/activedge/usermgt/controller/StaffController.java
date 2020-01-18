@@ -123,16 +123,15 @@ public class StaffController {
         Page<StaffDTO> page = null;
 
         Optional<Module> module = this.moduleRepository.findById(mdl);
-
+        System.out.println(module);
         if(!module.isPresent()) {
 //            page = staffService.findAllBy(module, pageable);
         } else {
             page = staffService.findAll(pageable);
+            System.out.printf("Page content: %s", page);
         }
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**

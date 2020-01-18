@@ -36,6 +36,6 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
     @org.springframework.data.mongodb.repository.Query(value = "{'name': ?0}", count = true)
     Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
 
-    Page<Group> findAllByModule_Code(String module, Pageable pageable);
+    Page<Group> findAllByModule_Id(String module, Pageable pageable);
 
 }

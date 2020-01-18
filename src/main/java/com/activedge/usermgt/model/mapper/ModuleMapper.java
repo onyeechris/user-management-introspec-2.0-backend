@@ -4,7 +4,6 @@ package com.activedge.usermgt.model.mapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.ModuleDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * Mapper for the entity Module and its DTO ModuleDTO.
@@ -21,7 +20,7 @@ public interface ModuleMapper extends EntityMapper<ModuleDTO, Module> {
             return null;
         }
         Module module = new Module();
-        module.setCode(id);
+        module.setId(id);
         return module;
     }
 

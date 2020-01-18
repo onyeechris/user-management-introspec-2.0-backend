@@ -1,0 +1,70 @@
+package com.activedge.usermgt.model.ox.migrations;
+
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DB;
+import com.mongodb.DBRef;
+import ox.engine.exception.OxException;
+import ox.engine.internal.OxAction;
+import ox.engine.internal.OxEnvironment;
+import ox.engine.structure.Migration;
+import ox.engine.structure.OrderingType;
+
+public class V0005__permission_indexes implements Migration {
+
+    @Override
+    public void up(OxEnvironment oxEnvironment) throws OxException {
+        DB db = oxEnvironment.getMongoDatabase();
+        oxEnvironment.execute(OxAction
+                .createIndex("permission_id_idx")
+                .setCollection("permissions")
+                .addAttribute("_id",OrderingType.ASC)
+                .ifNotExists()
+        );
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", 1)
+                .add("action", "VIEW-JOURNAL")
+                .add("description", "creating ATM branch endpoint")
+                .add("module", new DBRef("introspec_modules", "ATM"))
+                .get());
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", 2)
+                .add("action", "EDIT-JOURNAL")
+                .add("description", "editing ATM branch endpoint")
+                .add("module", new DBRef("introspec_modules", "ATM"))
+                .get());
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", 3)
+                .add("action", "VIEW-FILES")
+                .add("description", "creating SETTLEMENT branch endpoint")
+                .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
+                .get());
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", 4)
+                .add("action", "EDIT-FILES")
+                .add("description", "editing SETTLEMENT branch endpoint")
+                .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
+                .get());
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", 5)
+                .add("action", "VIEW-AUDIT")
+                .add("description", "creating AUDIT branch endpoint")
+                .add("module", new DBRef("introspec_modules", "ADMIN"))
+                .get());
+
+    }
+
+    @Override
+    public void down(OxEnvironment oxEnvironment) throws OxException {
+
+    }
+}

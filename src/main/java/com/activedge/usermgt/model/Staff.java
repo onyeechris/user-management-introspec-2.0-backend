@@ -13,6 +13,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -37,7 +38,7 @@ import static javax.persistence.CascadeType.*;
 @SequenceGenerator(name = "tabGenerator", initialValue = 5, allocationSize = 50)
 @SQLDelete(sql="UPDATE staff SET activated = '0' WHERE id = ?")
 @Where(clause="activated <> '0'")
-@Document(collection = "staffs")
+@Document(collection = "staff")
 public class Staff extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -82,18 +83,18 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private Boolean activated = false;
 
     @OneToMany(mappedBy = "staff", fetch = FetchType.EAGER)
+    @DBRef
     Set<StaffModule> assignments;
 
-//    @ManyToMany(cascade={PERSIST, MERGE, REFRESH, DETACH})
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
             @JoinColumn(name = "staff_id", referencedColumnName = "id") },
             inverseJoinColumns = {
-//                    @JoinColumn(name = "module_id", referencedColumnName = "module"),
-                    @JoinColumn(name = "authority_id", referencedColumnName = "code")
+                    @JoinColumn(name = "authority_id", referencedColumnName = "id")
                 }
             )
-    @BatchSize(size = 10)
+//    @BatchSize(size = 10)
+    @DBRef
     private Set<Authority> authorities = new HashSet<>();
 
 //    @ManyToOne
@@ -109,6 +110,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 //    )
 //    @BatchSize(size = 10)
 //    @JsonBackReference
+    @DBRef
     private Set<Group> groups = new HashSet<>();
 
     @PreRemove

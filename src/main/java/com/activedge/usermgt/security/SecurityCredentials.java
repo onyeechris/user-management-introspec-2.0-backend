@@ -75,10 +75,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.GET, "/staffs/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/staffs/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/appmodule/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
+                .antMatchers(HttpMethod.GET, "/appmodule/**").permitAll()//.hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/appmodule/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/userapps/**").hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
+                .antMatchers(HttpMethod.GET, "/userapps/**").permitAll()//.hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
                 .antMatchers("/userapps/**").hasRole("ADMIN")
 
                 .antMatchers(HttpMethod.GET, "/management/audits/**").hasAnyRole("AUDITOR", "ADMIN")

@@ -44,7 +44,7 @@ public class Permission implements Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "module", referencedColumnName = "code")
+    @JoinColumn(name = "module", referencedColumnName = "id")
     private Module module;
 
 //    @ManyToOne
@@ -54,7 +54,7 @@ public class Permission implements Serializable {
 //                    referencedColumnName = "module"),
 //            @JoinColumn(
 //                    name = "authority",
-//                    referencedColumnName = "code")
+//                    referencedColumnName = "id")
 //    })
 //    private Authority authority;
 

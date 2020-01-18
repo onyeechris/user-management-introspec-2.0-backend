@@ -14,11 +14,11 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {})
 public interface PermissionMapper extends EntityMapper<PermissionDTO, Permission> {
 
-    @Mapping(source = "module.code", target = "modul")
+    @Mapping(source = "module.id", target = "modul")
     PermissionDTO toDto(Permission permission);
 
     @Mapping(target = "grps", ignore = true)
-    @Mapping(source = "modul", target = "module.code")
+    @Mapping(source = "modul", target = "module.id")
     Permission toEntity(PermissionDTO permissionDTO);
 
     Set<PermissionDTO> toDtoSet(Set<Permission> permissions);

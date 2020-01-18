@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -55,6 +56,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     @ManyToOne
     @JoinColumn(name = "module", insertable = false, updatable = false)
+    @DBRef
     private Module module;
 
 //    @OneToMany(mappedBy = "group")
@@ -68,7 +70,8 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
                 @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = {
                 @JoinColumn(name = "staff_id", referencedColumnName = "id") })
-//    @BatchSize(size = 10)
+    // @BatchSize(size = 10)
+    @DBRef
     private Set<Staff> staffs = new HashSet<>();
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
@@ -78,6 +81,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
                 @JoinColumn(name = "group_id", referencedColumnName = "id"),
                 @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
+    @DBRef
     private Set<Permission> permissions = new HashSet<>();
 
     @NotNull(message = "isDeleted cannot be null")

@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -15,8 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-@Table(name = "introspec_module")
-@Document(collection = "introspec_module")
+@Table(name = "introspec_modules")
+@Document(collection = "introspec_modules")
 public class Module implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +26,7 @@ public class Module implements Serializable {
     @NotNull
     @Size(max = 50)
     @Column(length = 50, unique = true)
-    private String code;
+    private String id;
 
     @NotNull
     @Size(max = 50)
@@ -39,17 +40,7 @@ public class Module implements Serializable {
     private String key;
 
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
-//    @JsonBackReference
+    @DBRef
     Set<StaffModule> staffModules;
-
-//    @OneToMany(mappedBy = "module")
-//    private Set<Permission> permissions = new HashSet<>();
-
-//    @OneToMany(mappedBy = "module")
-//    private Set<Group> groups = new HashSet<>();
-
-//    @OneToMany(mappedBy = "module")
-//    private Set<Authority> authority = new HashSet<>();
-
 }
 

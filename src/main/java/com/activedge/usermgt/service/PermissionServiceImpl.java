@@ -75,7 +75,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional(readOnly = true)
     public Page<PermissionDTO> findAll(String module, Pageable pageable) {
         log.debug("Request to get all Permissions");
-        return permissionRepository.findAllByModule_Code(pageable, module)
+        return permissionRepository.findAllByModule_Id(pageable, module)
             .map(permissionMapper::toDto);
     }
 

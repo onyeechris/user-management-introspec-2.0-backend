@@ -88,7 +88,7 @@ public class StaffServiceImpl implements StaffService {
 
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
-        authority.setCode("ROLE_" + staff.getType());
+        authority.setId("ROLE_" + staff.getType());
         authority.setName("ROLE_" + staff.getType());
         authorities.add(authority);
 

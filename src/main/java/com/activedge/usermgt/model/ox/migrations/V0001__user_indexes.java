@@ -15,45 +15,59 @@ public class V0001__user_indexes implements Migration {
          DB db = oxEnvironment.getMongoDatabase();
         // do what you want with db.
         oxEnvironment.execute(OxAction
-                .createIndex("auth_id_idx")
+                .createIndex("staff_id_idx")
                 .setCollection("staff")
-                .addAttribute("authId", OrderingType.ASC)
+                .addAttribute("_id", OrderingType.ASC)
                 .ifNotExists()
         );
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                // .add("_id", new ObjectId("590f86d92449343841cc2c3f"))
-                .add("firstname", "Elvo")
-                .add("lastname", "One")
-                .add("email", "elvis@example.com")
-                .add("authId", 11)
+                 .add("_id", 1L)
+                .add("first_name", "ATM_User")
+                .add("email", "atmrecon@aet.com")
+                .add("type", "USER")
+                .add("i_password", "$2a$10$fobhDhagq2vzx/RisgWtiuZ2ybihxIqF2jPl9/zm4aVfI4WEzhOtS")
+                .add("approved_by", "default")
+                .add("approved_date", "2019-01-09")
+                .add("activated", true)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                // .add("_id", new ObjectId("590f86d92449343841cc2c3f"))
-                .add("firstname", "Elvo11")
-                .add("lastname", "One1")
-                .add("email", "elvis1@example.com")
-                .add("authId", 12)
+                 .add("_id", 2L)
+                .add("first_name", "Settlement_User")
+                .add("email", "settlement@aet.com")
+                .add("type", "USER")
+                .add("i_password", "$2a$10$ydka6YmJeTVia4fdDHAkXeTEk.HW3220fFDHPZanhdfLyiE/aBIxa")
+                .add("approved_by", "default")
+                .add("approved_date", "2019-01-12")
+                .add("activated", true)
                 .get());
-        /*
-        oxEnvironment.execute(OxAction
-                .createIndex("user_id_accommodation_id_idx")
-                .setCollection("booking")
-                .addAttribute("userId", OrderingType.ASC)
-                .addAttribute("accommodationId", OrderingType.ASC)
-                .ifNotExists()
-        );
-        oxEnvironment.execute(OxAction
-                .createIndex("user_id_idx")
-                .setCollection("booking")
-                .addAttribute("userId", OrderingType.ASC));
-        oxEnvironment.execute(OxAction
-                .createIndex("accommodation_id_idx")
-                .setCollection("booking")
-                .addAttribute("accommodationId", OrderingType.ASC));
-        */
+
+        db.getCollection("staff").insert(BasicDBObjectBuilder
+                .start()
+                 .add("_id", 3L)
+                .add("first_name", "Admin_User")
+                .add("email", "admin@aet.com")
+                .add("type", "ADMIN")
+                .add("i_password", "$2a$10$0v503h5I1LCoWFs8XAj3eebmDk6fOR86sMp8gEaVJy/SzvxEliTfC")
+                .add("approved_by", "default")
+                .add("approved_date", "2019-01-16")
+                .add("activated", true)
+                .get());
+
+        db.getCollection("staff").insert(BasicDBObjectBuilder
+                .start()
+                 .add("_id", 4L)
+                .add("first_name", "Sys_Dev")
+                .add("email", "sysdev@aet.com")
+                .add("type", "DEV")
+                .add("i_password", "$2a$10$irbom5DMU9YwRdJG1pgpyONG..Vjg4Ru5mb6Ta9ODc.50ztsND.VG")
+                .add("approved_by", "default")
+                .add("approved_date", "2019-01-17")
+                .add("activated", true)
+                .get());
+
     }
 
     @Override

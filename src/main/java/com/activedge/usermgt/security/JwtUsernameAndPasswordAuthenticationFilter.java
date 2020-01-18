@@ -166,7 +166,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter {
         // new user gets registration key
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
-        authority.setCode(AuthoritiesConstants.USER);
+        authority.setId(AuthoritiesConstants.USER);
         authority.setName(AuthoritiesConstants.USER);
         authorities.add(authority);
         newUser.setAuthorities(authorities);

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PermissionRepository extends PagingAndSortingRepository<Permission, Long> {
 
-    Page<Permission> findAllByModule_Code(Pageable pageable, String module);
+    Page<Permission> findAllByModule_Id(Pageable pageable, String module);
 
 }

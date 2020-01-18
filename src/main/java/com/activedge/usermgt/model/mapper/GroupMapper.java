@@ -33,7 +33,7 @@ public abstract class GroupMapper {
     }
 
     @Mapping(source = "id.id", target = "id")
-    @Mapping(source = "id.module.code", target = "mod")
+    @Mapping(source = "id.module.id", target = "mod")
 //    @Mapping(target = "staffs", ignore = true)
     public abstract GroupDTO toDto(Group group);
 

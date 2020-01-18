@@ -23,7 +23,7 @@ public class AuthorityPK implements Serializable {
 
     @NotNull
     @Size(min = 3)
-    @Column(name = "code")
+    @Column(name = "id")
     private String code;
 
 }
