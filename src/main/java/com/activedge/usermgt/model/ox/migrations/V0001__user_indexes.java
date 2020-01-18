@@ -2,12 +2,16 @@ package com.activedge.usermgt.model.ox.migrations;
 
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
+import com.mongodb.DBRef;
 import org.bson.types.ObjectId;
 import ox.engine.exception.OxException;
 import ox.engine.internal.OxAction;
 import ox.engine.internal.OxEnvironment;
 import ox.engine.structure.Migration;
 import ox.engine.structure.OrderingType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class V0001__user_indexes implements Migration {
     @Override
@@ -20,16 +24,26 @@ public class V0001__user_indexes implements Migration {
                 .addAttribute("_id", OrderingType.ASC)
                 .ifNotExists()
         );
+
+        List<DBRef> admin_authorities = new ArrayList<>();
+        admin_authorities.add(new DBRef("introspec_authorities", "ROLE_ADMIN"));
+        admin_authorities.add(new DBRef("introspec_authorities", "ROLE_USER"));
+
+        List<DBRef> user_authorities = new ArrayList<>();
+        user_authorities.add(new DBRef("introspec_authorities", "ROLE_USER"));
+
+
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
                  .add("_id", 1L)
                 .add("first_name", "ATM_User")
                 .add("email", "atmrecon@aet.com")
                 .add("type", "USER")
-                .add("i_password", "$2a$10$fobhDhagq2vzx/RisgWtiuZ2ybihxIqF2jPl9/zm4aVfI4WEzhOtS")
+                .add("password", "$2a$10$fobhDhagq2vzx/RisgWtiuZ2ybihxIqF2jPl9/zm4aVfI4WEzhOtS")
                 .add("approved_by", "default")
                 .add("approved_date", "2019-01-09")
                 .add("activated", true)
+                .add("authorities", user_authorities)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -38,10 +52,11 @@ public class V0001__user_indexes implements Migration {
                 .add("first_name", "Settlement_User")
                 .add("email", "settlement@aet.com")
                 .add("type", "USER")
-                .add("i_password", "$2a$10$ydka6YmJeTVia4fdDHAkXeTEk.HW3220fFDHPZanhdfLyiE/aBIxa")
+                .add("password", "$2a$10$ydka6YmJeTVia4fdDHAkXeTEk.HW3220fFDHPZanhdfLyiE/aBIxa")
                 .add("approved_by", "default")
                 .add("approved_date", "2019-01-12")
                 .add("activated", true)
+                .add("authorities", user_authorities)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -50,10 +65,11 @@ public class V0001__user_indexes implements Migration {
                 .add("first_name", "Admin_User")
                 .add("email", "admin@aet.com")
                 .add("type", "ADMIN")
-                .add("i_password", "$2a$10$0v503h5I1LCoWFs8XAj3eebmDk6fOR86sMp8gEaVJy/SzvxEliTfC")
+                .add("password", "$2a$10$0v503h5I1LCoWFs8XAj3eebmDk6fOR86sMp8gEaVJy/SzvxEliTfC")
                 .add("approved_by", "default")
                 .add("approved_date", "2019-01-16")
                 .add("activated", true)
+                .add("authorities", admin_authorities)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -62,10 +78,11 @@ public class V0001__user_indexes implements Migration {
                 .add("first_name", "Sys_Dev")
                 .add("email", "sysdev@aet.com")
                 .add("type", "DEV")
-                .add("i_password", "$2a$10$irbom5DMU9YwRdJG1pgpyONG..Vjg4Ru5mb6Ta9ODc.50ztsND.VG")
+                .add("password", "$2a$10$irbom5DMU9YwRdJG1pgpyONG..Vjg4Ru5mb6Ta9ODc.50ztsND.VG")
                 .add("approved_by", "default")
                 .add("approved_date", "2019-01-17")
                 .add("activated", true)
+                .add("authorities", user_authorities)
                 .get());
 
     }

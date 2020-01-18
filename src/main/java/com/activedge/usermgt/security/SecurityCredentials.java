@@ -71,14 +71,13 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/groups/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/groups/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/staffs/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/staffs/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
+                .antMatchers(HttpMethod.GET, "/staffs/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/staffs/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/appmodule/**").permitAll()//.hasAnyRole("ADMIN", "DEV", "AUDITOR")
+                .antMatchers(HttpMethod.GET, "/appmodule/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
                 .antMatchers("/appmodule/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/userapps/**").permitAll()//.hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
+                .antMatchers(HttpMethod.GET, "/userapps/**").hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
                 .antMatchers("/userapps/**").hasRole("ADMIN")
 
                 .antMatchers(HttpMethod.GET, "/management/audits/**").hasAnyRole("AUDITOR", "ADMIN")
@@ -99,19 +98,20 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     // define the password encoder to be used by the auth manager to compare and verify passwords.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // check JDBC
         auth
             .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
+        // check AD
         auth
-                .ldapAuthentication()
+            .ldapAuthentication()
 //                .userDnPatterns("uid={0},ou=users,ou=guests")
-                .userSearchBase("ou=users")
-                .userSearchFilter("uid={0}")
-                .contextSource(contextSource())
-                .passwordCompare()
+            .userSearchBase("ou=users")
+            .userSearchFilter("uid={0}")
+            .contextSource(contextSource())
+            .passwordCompare()
 //                .passwordEncoder()
-                .passwordAttribute("mail");
-
+            .passwordAttribute("mail");
 
 /*
         auth

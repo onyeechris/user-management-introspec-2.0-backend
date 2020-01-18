@@ -26,6 +26,7 @@ public class V0004__authority_indexes implements Migration {
                 .add("_id", "ROLE_DEV")
                 .add("name", "ROLE_DEV")
                 .get());
+
         db.getCollection("introspec_authorities").insert(BasicDBObjectBuilder
                 .start()
                 .add("_id", "ROLE_ADMIN")

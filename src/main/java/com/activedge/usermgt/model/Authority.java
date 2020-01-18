@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
-@Table(name = "introspec_authority")
+@Table(name = "introspec_authorities")
 @Document
 public class Authority implements Serializable {
 

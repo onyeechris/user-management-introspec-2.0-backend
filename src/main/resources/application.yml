@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: mongo # comma-separated e.g mongo | jpa
+    active: mongo # e.g mongo | jpa #-note you can have two profiles active!
 #  main:
 #    allow-bean-definition-overriding: true
   application:

@@ -41,5 +41,5 @@ spring:
       minimum-idle: 3
       maximum-pool-size: 5
 
-    #      initialization-mode: always
+    initialization-mode: always
     data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql

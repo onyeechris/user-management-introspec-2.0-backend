@@ -64,7 +64,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private String email;
 
     @NotNull
-    @Column(name = "i_password", nullable = false)
     @Size(min = 50, max = 100)
     private String password;
 
@@ -94,7 +93,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
                 }
             )
 //    @BatchSize(size = 10)
-    @DBRef
+    @DBRef()
     private Set<Authority> authorities = new HashSet<>();
 
 //    @ManyToOne

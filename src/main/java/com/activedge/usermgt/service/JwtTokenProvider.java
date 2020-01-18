@@ -52,6 +52,7 @@ public class JwtTokenProvider {
                                 staffPermissions.add(permission.getAction());
                             }
                         }
+//                        System.out.println("ldap: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     })
                     .orElse(createNewUserToken(authentication, staffPermissions));
@@ -65,6 +66,7 @@ public class JwtTokenProvider {
                                 staffPermissions.add(permission.getAction());
                             }
                         }
+//                        System.out.println("jdbc: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     }).orElse("null");
         }
@@ -74,6 +76,7 @@ public class JwtTokenProvider {
 
     private String generateToken(Authentication authentication, Set<String> staffPermissions) {
         Date now = new Date(System.currentTimeMillis());
+
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
@@ -89,7 +92,7 @@ public class JwtTokenProvider {
 
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -98,7 +101,7 @@ public class JwtTokenProvider {
 
     public List getAuthoritiesFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -107,7 +110,7 @@ public class JwtTokenProvider {
 
     public List getPermissionFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -116,7 +119,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtSecret.getBytes()).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");
