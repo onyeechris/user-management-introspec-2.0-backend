@@ -3,7 +3,6 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.GroupDTO;
@@ -15,22 +14,16 @@ import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.ModuleRepository;
-import com.activedge.usermgt.util.Lambda;
-import com.activedge.usermgt.util.facade.GroupSpy;
-import com.activedge.usermgt.util.facade.Spy;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ValidationException;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Service Implementation for managing Group.
@@ -131,35 +124,9 @@ public class GroupServiceImpl implements GroupService {
 
         }
 
-        /*
-        if(flag == 1) {
-            for (Permission p : g.getPermissions()) {
-                // add permission attached to entity
-                groupDTO.getPermissions().add(permissionMapper.toDto(p));
-            }
-        } else {
-            // delete permission attached to entity
-            for(PermissionDTO p: groupDTO.getPermissions()) {
-                if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
-                    g.getPermissions().remove(permissionMapper.toEntity(p));
-                }
-            }
-            groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
-        }
-        */
-
         log.debug("Updating group... {}", groupDTO);
 
-
-//        else {
-//            groupDTO.setId(null);
-//            groupDTO.setPermissions(new HashSet<>());
-//            log.info("Saving group... {}", groupDTO);
-//        }
-
         g = groupMapper.toEntity(groupDTO);
-
-
 
         log.debug("Converted group ... {} permissions...{}, staffs...{}", g, g.getPermissions(), g.getStaffs());
 

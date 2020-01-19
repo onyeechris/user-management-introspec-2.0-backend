@@ -2,7 +2,6 @@ package com.activedge.usermgt.security;
 
 import com.google.gson.Gson;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

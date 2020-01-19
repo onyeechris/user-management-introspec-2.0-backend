@@ -13,19 +13,12 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {GroupMapper.class})
 public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
-//    @Mapping(source = "group.id", target = "group_id")
-//    @Mapping(source = "first_name", target = "first_name")
-//    @Mapping(source = "last_name", target = "last_name")
     @Mapping(source = "hireDate", target = "hire_date")
     @Mapping(source = "type", target = "user_type")
-//    @Mapping(target = "groups")
     StaffDTO toDto(Staff staff);
 
     Set<StaffDTO> toDtoSet(Set<Staff> staffs);
 
-//    @Mapping(source = "group_id", target = "group")
-//    @Mapping(source = "first_name", target = "first_name")
-//    @Mapping(source = "last_name", target = "last_name")
     @Mapping(source = "hire_date", target = "hireDate")
     @Mapping(source = "user_type", target = "type")
     Staff toEntity(StaffDTO staffDTO);

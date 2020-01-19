@@ -1,13 +1,11 @@
 package com.activedge.usermgt.model.mapper;
 
 
-import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Set;
 
 /**

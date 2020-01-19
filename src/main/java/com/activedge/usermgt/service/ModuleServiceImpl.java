@@ -2,24 +2,18 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Module;
-import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.ModuleDTO;
-import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.repository.ModuleRepository;
-import com.activedge.usermgt.util.facade.Spy;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 /**

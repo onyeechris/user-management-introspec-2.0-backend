@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,9 +26,6 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
     @Query(value = "select distinct groups from Group groups left join fetch groups.permissions")
     @org.springframework.data.mongodb.repository.Query(value = "{}")
     List<Group> findAllWithEagerRelationships();
-
-//    @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")
-//    Optional<Group> findOneWithEagerRelationships(@Param("id") GroupPK id);
 
     @Profile("jpa")
     @Query("select groups from Group groups left join fetch groups.permissions where groups.id =:id")

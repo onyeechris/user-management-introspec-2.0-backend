@@ -13,11 +13,9 @@ import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +29,6 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -127,8 +124,6 @@ public class GroupController extends BaseEntity {
         log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
 
-//        Module module = this.getModule(mdl);
-
         log.debug("Module is: {}", module);
 
         if (eagerload) {
@@ -156,8 +151,6 @@ public class GroupController extends BaseEntity {
         Module module = this.getModule(mdl);
 
         Optional<GroupDTO> groupsDTO = groupService.findOne(new GroupPK(module, id));
-
-        System.out.println(">>> " + groupsDTO);
 
         if (!groupsDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);

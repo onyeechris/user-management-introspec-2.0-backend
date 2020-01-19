@@ -3,12 +3,8 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
-import com.activedge.usermgt.model.Authority;
-import com.activedge.usermgt.model.AuthorityPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.repository.AuthorityRepository;
-import com.activedge.usermgt.repository.PermissionRepository;
 import com.activedge.usermgt.service.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,10 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -74,17 +68,7 @@ public class PermissionController {
 
         permissionDTO.setId(null);
         permissionDTO.setModul(module);
-//
-//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-//        Authority auth;
-//
-//        if(authority.isPresent()) {
-//            auth = authority.get();
-//        } else {
-//            throw new ServletRequestBindingException("Module[" + module + "] not found");
-//        }
 
-//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
@@ -113,16 +97,6 @@ public class PermissionController {
                     .collect(Collectors.joining(",")));
         }
 
-//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-//        Authority auth;
-//
-//        if(authority.isPresent()) {
-//            auth = authority.get();
-//        } else {
-//            throw new ServletRequestBindingException("Module[" + module + "] not found");
-//        }
-//
-//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.ok()
@@ -142,9 +116,8 @@ public class PermissionController {
         log.info("REST request to get a page of Permissions on module {}", module);
 
         Page<PermissionDTO> page = permissionService.findAll(module, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**
@@ -163,9 +136,7 @@ public class PermissionController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/permissions/" + id);
-
-        return new ResponseEntity<>(permissionDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(permissionDTO.get(), HttpStatus.OK);
     }
 
     /**

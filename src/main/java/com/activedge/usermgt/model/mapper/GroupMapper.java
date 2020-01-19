@@ -34,7 +34,6 @@ public abstract class GroupMapper {
 
     @Mapping(source = "id.id", target = "id")
     @Mapping(source = "id.module.id", target = "mod")
-//    @Mapping(target = "staffs", ignore = true)
     public abstract GroupDTO toDto(Group group);
 
     @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getMod()), groupDTO.getId()) )")

@@ -3,7 +3,6 @@ package com.activedge.usermgt.model.ox.migrations;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
-import org.bson.types.ObjectId;
 import ox.engine.exception.OxException;
 import ox.engine.internal.OxAction;
 import ox.engine.internal.OxEnvironment;

@@ -8,7 +8,6 @@ import com.activedge.usermgt.service.BeanUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.EntityManager;
@@ -46,9 +45,6 @@ public class GroupEntityListener {
     @PreRemove
     public void preRemove(Group target) throws ActivityRequiredException {
         System.out.println("...@preRemove()");
-//        if(!SecurityUtils.isCurrentUserInRole("ROLE_CHECKER")) {
-//            throw new ActivityRequiredException("Only Supervisors can delete!");
-//        }
         perform(target, DELETED);
     }
 

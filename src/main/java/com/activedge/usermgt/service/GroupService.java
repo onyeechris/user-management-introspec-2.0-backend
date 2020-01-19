@@ -3,7 +3,6 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.GroupPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,6 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
-import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
@@ -14,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +26,6 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -128,7 +125,6 @@ public class StaffController {
 //            page = staffService.findAllBy(module, pageable);
         } else {
             page = staffService.findAll(pageable);
-            System.out.printf("Page content: %s", page);
         }
 
         return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
@@ -150,9 +146,7 @@ public class StaffController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(staffDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
 
     }
 

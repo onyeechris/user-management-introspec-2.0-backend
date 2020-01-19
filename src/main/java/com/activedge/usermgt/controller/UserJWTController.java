@@ -23,8 +23,6 @@ import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
 /**
  * Controller to authenticate users.
- * This class is only added for documentation purposes
- * @See com.activedge.usermgt.security.JwtUsernameAndPasswordAuthenticationFilter#61
  */
 @RestController
 @RequestMapping("/auth")

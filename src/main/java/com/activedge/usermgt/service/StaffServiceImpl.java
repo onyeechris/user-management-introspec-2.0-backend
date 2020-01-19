@@ -152,10 +152,6 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(String id) {
         log.debug("Request to delete Staff : {}", id);
-//        Staff sf = staffRepository.findById(id).get();
-//        sf.setActivated(false);
-//        log.debug("Staff to save: {}", sf);
-//        staffRepository.save(sf);
         staffRepository.deleteById(id);
     }
 

@@ -1,21 +1,16 @@
 package com.activedge.usermgt.service;
 
-import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.repository.PermissionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.math.BigInteger;
 import java.util.Optional;
 
 /**

@@ -1,10 +1,9 @@
 package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,13 +13,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter
 @SequenceGenerator(name = "smGenerator")
-@Table(name = "staffmodules", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "staff" } ) })
+@Table(name = "staff_modules", uniqueConstraints = { @UniqueConstraint( columnNames = { "module", "staff" } ) })
 @Document(collection = "staff_modules")
 public class StaffModule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "smGenerator")
-    private Long id;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "module")

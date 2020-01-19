@@ -8,7 +8,6 @@ import com.activedge.usermgt.model.dto.ModuleDTO;
 import com.activedge.usermgt.service.ModuleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,9 +116,7 @@ public class AppModuleController {
 
         page = moduleService.findAll(pageable);
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/auth-service/modules?eagerload=%b", eagerload));
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**
@@ -138,9 +135,7 @@ public class AppModuleController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/auth-service/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(modulesDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(modulesDTO.get(), HttpStatus.OK);
     }
 
     /**
