@@ -14,9 +14,7 @@ import org.hibernate.annotations.Where;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A DTO for the Group entity.

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 @Repository
-public interface PermissionRepository extends PagingAndSortingRepository<Permission, BigInteger> {
+public interface PermissionRepository extends PagingAndSortingRepository<Permission, String> {
 
     Page<Permission> findAllByModule_Id(Pageable pageable, String module);
 

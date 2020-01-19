@@ -25,7 +25,7 @@ import java.util.Objects;
 public class PermissionDTO implements Serializable {
 
     @ApiModelProperty(notes = "The database generated permission ID")
-    private Long id;
+    private String id;
 
     @ApiModelProperty(notes = "Permission action", required = true)
     @NotNull(message = "PermissionDTO action is required")

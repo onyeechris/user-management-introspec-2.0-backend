@@ -7,6 +7,7 @@ import com.activedge.usermgt.model.dto.PermissionDTO;
 import org.mapstruct.*;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,7 +25,7 @@ public interface PermissionMapper extends EntityMapper<PermissionDTO, Permission
 
     Set<PermissionDTO> toDtoSet(Set<Permission> permissions);
 
-    default Permission fromId(BigInteger id) {
+    default Permission fromId(String id) {
         if (id == null) {
             return null;
         }

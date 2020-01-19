@@ -2,15 +2,11 @@ package com.activedge.usermgt.model;
 
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.event.StaffEntityListener;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -23,11 +19,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-
-import static javax.persistence.CascadeType.*;
 
 @Getter
 @Setter
@@ -44,8 +37,9 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tabGenerator")
-    private Long id;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id;
 
     @NotNull
     @Column(name = "first_name", nullable = false)
@@ -78,7 +72,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
 
     @NotNull
     @Column(nullable = false)
-    // @ColumnDefault("1")
     private Boolean activated = false;
 
     @OneToMany(mappedBy = "staff", fetch = FetchType.EAGER)
@@ -96,19 +89,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @DBRef()
     private Set<Authority> authorities = new HashSet<>();
 
-//    @ManyToOne
-//    // @JsonIgnoreProperties("staff")
-//    private Group group;
     @ManyToMany(mappedBy = "staffs")
-//    @JoinTable(name = "staff_group", joinColumns = {
-//            @JoinColumn(name = "staff_id", referencedColumnName = "id") },
-//            inverseJoinColumns = {
-//                    @JoinColumn(name = "module", referencedColumnName = "module"),
-//                    @JoinColumn(name = "group_id", referencedColumnName = "id")
-//            }
-//    )
-//    @BatchSize(size = 10)
-//    @JsonBackReference
     @DBRef
     private Set<Group> groups = new HashSet<>();
 
@@ -116,181 +97,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     public void deleteGroup() {
         this.activated = false;
     }
-/*
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirst_name() {
-        return first_name;
-    }
-
-    public Staff first_name(String first_name) {
-        this.first_name = first_name;
-        return this;
-    }
-
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
-    }
-
-    public String getLast_name() {
-        return last_name;
-    }
-
-    public Staff last_name(String last_name) {
-        this.last_name = last_name;
-        return this;
-    }
-
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
-    }
-
-    public Set<Authority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public Staff phone(String phone) {
-        this.phone = phone;
-        return this;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Staff email(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public void setEmail(String email) {
-        this.email = StringUtils.lowerCase(email, Locale.ENGLISH);
-        ;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Staff password(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public Staff type(Type type) {
-        this.type = type;
-        return this;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public LocalDate getHireDate() {
-        return hireDate;
-    }
-
-    public Staff hireDate(LocalDate hireDate) {
-        this.hireDate = hireDate;
-        return this;
-    }
-
-    public void setHireDate(LocalDate hireDate) {
-        this.hireDate = hireDate;
-    }
-
-    public Set<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<Group> groups) {
-        this.groups = groups;
-    }
-
-    //    public Group getGroup() {
-//        return groups;
-//    }
-//
-//    public Staff group(Group group) {
-//        this.groups = group;
-//        return this;
-//    }
-//
-//    public void setGroup(Group group) {
-//        this.group = group;
-//    }
-
-    public Boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public Set<StaffModule> getAssignments() {
-        return assignments;
-    }
-
-    public void setAssignments(Set<StaffModule> assignments) {
-        this.assignments = assignments;
-    }
-
-    //    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || getClass() != o.getClass()) {
-//            return false;
-//        }
-//        Staff staff = (Staff) o;
-//        if (staff.getId() == null || getId() == null) {
-//            return false;
-//        }
-//        return Objects.equals(getId(), staff.getId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hashCode(getId());
-//    }
-
-    @Override
-    public String toString() {
-        return "Staff{" + "id=" + getId() + ", first_name='" + getFirst_name() + "'" + ", last_name='" + getLast_name()
-                + "'" + ", phone='" + getPhone() + "'" + ", email='" + getEmail() + "'" + ", password='" + getPassword()
-//                + "'" + ", type='" + getType() + "'" + ", Authorities='" + getAuthorities() + "'"
-                + "'" + ", hireDate='" + getHireDate()
-                + "'" + "}";
-    }
-*/
     public Boolean isActivated() {
         return activated;
     }

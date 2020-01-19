@@ -157,13 +157,13 @@ public class GroupController extends BaseEntity {
 
         Optional<GroupDTO> groupsDTO = groupService.findOne(new GroupPK(module, id));
 
+        System.out.println(">>> " + groupsDTO);
+
         if (!groupsDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/auth-service/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(groupsDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(groupsDTO.get(), HttpStatus.OK);
     }
 
     /**

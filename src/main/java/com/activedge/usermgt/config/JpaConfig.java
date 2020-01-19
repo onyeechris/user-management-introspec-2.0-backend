@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Profile("jpa")
 // Custom JPA configuration here
  @EnableJpaRepositories("com.activedge.usermgt.repository")
-// @EnableJpaAuditing
+ @EnableJpaAuditing
 public class JpaConfig {
 }

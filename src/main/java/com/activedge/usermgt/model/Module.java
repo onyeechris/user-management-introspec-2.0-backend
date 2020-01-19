@@ -24,8 +24,7 @@ public class Module implements Serializable {
 
     @Id
     @NotNull
-    @Size(max = 50)
-    @Column(length = 50, unique = true)
+    @Column(unique = true)
     private String id;
 
     @NotNull

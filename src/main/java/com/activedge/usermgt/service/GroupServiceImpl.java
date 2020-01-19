@@ -163,36 +163,6 @@ public class GroupServiceImpl implements GroupService {
 
         log.debug("Converted group ... {} permissions...{}, staffs...{}", g, g.getPermissions(), g.getStaffs());
 
-//      Enable Type
-//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-//        spyGroupObj.checkModel();
-
-        // added for tests
-//        Group gg = groupMapper.toEntity(groupDTO);
-//        gg.setCreatedBy("test");
-//        gg.setCreatedDate(LocalDateTime.now());
-//        {
-//            "id": "b3b0c1b47a0140688edc853f3f78b995",
-//                "name": "GroupName",
-//                "description": "Group name description",
-//                "module": "ATM",
-//                "permissions": [
-//            {
-//                "id": 1,
-//                    "action": "CREATE-ACCOUNT",
-//                    "description": "creating account endpoint"
-//            }
-//    ],
-//            "staffs": [
-//            {
-//                "id": 3,
-//                    "email": "admin@aet.com",
-//                    "groups": [],
-//                "activated": true
-//            }
-//    ]
-//        }
-//        g = groupRepository.save(gg);
 
         g.setIsDeleted(false);
 
@@ -215,18 +185,6 @@ public class GroupServiceImpl implements GroupService {
 
         log.debug("Saving group... {}", g);
 
-
-//      Enable Type
-//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-//        spyGroupObj.checkModel();
-
-        // added for tests
-//        Group gg = groupMapper.toEntity(groupDTO);
-//        gg.setCreatedBy("test");
-//        gg.setCreatedDate(LocalDateTime.now());
-
-//        g = groupRepository.save(gg);
-
         return groupMapper.toDto(groupRepository.save(g));
     }
 
@@ -239,7 +197,6 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(readOnly = true)
     public Page<GroupDTO> findAll(String module, Pageable pageable) {
-//        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
         return groupRepository.findAllByModule_Id(module, pageable)
             .map(groupMapper::toDto);
     }
@@ -261,13 +218,6 @@ public class GroupServiceImpl implements GroupService {
      * @param id the id of the entity
      * @return the entity
      */
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Optional<GroupDTO> findOne(GroupPK id) {
-//        log.debug("Request to get Group : {}", id);
-//        return groupRepository.findOneWithEagerRelationships(id)
-//            .map(groupMapper::toDto);
-//    }
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupDTO> findOne(GroupPK id) {
@@ -289,10 +239,6 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void delete(GroupPK id) {
         log.debug("Request to delete Group : {}", id);
-//        GroupDTO gdto = findOne(id).get();
-//        Group grp = groupMapper.toEntity(gdto);
-//        grp.setIsDeleted(true);
-//        groupRepository.save(grp);
         groupRepository.deleteById(id);
     }
 }

@@ -37,12 +37,12 @@ public interface PermissionService {
      * @param id the id of the entity
      * @return the entity
      */
-    Optional<PermissionDTO> findOne(BigInteger id);
+    Optional<PermissionDTO> findOne(String id);
 
     /**
      * Delete the "id" permission.
      *
      * @param id the id of the entity
      */
-    void delete(BigInteger id);
+    void delete(String id);
 }

@@ -31,7 +31,7 @@ public abstract class AbstractAuditingEntity<U> implements Serializable {
 //    protected String createdBy;
 
     @CreatedBy
-    @Column(name = "approved_by", nullable = false, length = 50, updatable = false)
+    @Column(name = "approved_by", nullable = false, updatable = false)
     @JsonIgnore
     protected String approvedBy;
 
@@ -50,7 +50,7 @@ public abstract class AbstractAuditingEntity<U> implements Serializable {
 //    protected U lastModifiedBy;
 
     @LastModifiedBy
-    @Column(name = "last_modified_approved_by", length = 50)
+    @Column(name = "last_modified_approved_by")
     @JsonIgnore
     protected U lastModifiedApprovedBy;
 

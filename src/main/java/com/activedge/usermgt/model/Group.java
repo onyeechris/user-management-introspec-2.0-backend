@@ -11,14 +11,13 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -52,6 +51,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     @Size(min = 10)
     @Column(name = "description")
+    @Field("description")
     private String description;
 
     @ManyToOne

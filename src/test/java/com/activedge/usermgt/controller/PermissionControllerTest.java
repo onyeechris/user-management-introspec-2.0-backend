@@ -123,7 +123,7 @@ public class PermissionControllerTest {
 
         PermissionDTO permission = new PermissionDTO();
 
-        permission.setId(id);
+//        permission.setId(id);
         permission.setAction("Test Endpoint changed");
         permission.setDescription("My test endpoint description too");
 

@@ -30,7 +30,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "user_type", target = "type")
     Staff toEntity(StaffDTO staffDTO);
 
-    default Staff fromId(Long id) {
+    default Staff fromId(String id) {
         if (id == null) {
             return null;
         }

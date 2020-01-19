@@ -16,7 +16,7 @@ public interface ModuleRepository extends PagingAndSortingRepository<Module, Str
 
     @Profile("jpa")
     @Query("select modules from Module modules left join fetch modules.staffModules where modules.id =:id")
-    @org.springframework.data.mongodb.repository.Query(value = "{'name': ?0}")
+    @org.springframework.data.mongodb.repository.Query(value = "{'_id': ?0}")
     Optional<Module> findOneWithEagerRelationships(@Param("id") String id);
 
 }

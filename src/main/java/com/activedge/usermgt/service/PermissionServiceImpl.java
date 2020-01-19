@@ -89,7 +89,7 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<PermissionDTO> findOne(BigInteger id) {
+    public Optional<PermissionDTO> findOne(String id) {
         log.debug("Request to get Permission : {}", id);
         return permissionRepository.findById(id)
             .map(permissionMapper::toDto);
@@ -101,7 +101,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(BigInteger id) {
+    public void delete(String id) {
         log.debug("Request to delete Permission : {}", id);
         permissionRepository.deleteById(id);
     }

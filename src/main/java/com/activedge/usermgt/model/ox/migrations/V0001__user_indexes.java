@@ -39,7 +39,7 @@ public class V0001__user_indexes implements Migration {
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                 .add("_id", 1L)
+                 .add("_id", new ObjectId())
                 .add("first_name", "ATM_User")
                 .add("email", "atmrecon@aet.com")
                 .add("type", "USER")
@@ -52,7 +52,7 @@ public class V0001__user_indexes implements Migration {
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                 .add("_id", 2L)
+                 .add("_id", new ObjectId())
                 .add("first_name", "Settlement_User")
                 .add("email", "settlement@aet.com")
                 .add("type", "USER")
@@ -65,7 +65,7 @@ public class V0001__user_indexes implements Migration {
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                 .add("_id", 3L)
+                 .add("_id", new ObjectId())
                 .add("first_name", "Admin_User")
                 .add("email", "admin@aet.com")
                 .add("type", "ADMIN")
@@ -78,7 +78,7 @@ public class V0001__user_indexes implements Migration {
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
                 .start()
-                 .add("_id", 4L)
+                 .add("_id", new ObjectId())
                 .add("first_name", "Sys_Dev")
                 .add("email", "sysdev@aet.com")
                 .add("type", "DEV")

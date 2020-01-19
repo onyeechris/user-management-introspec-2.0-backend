@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface StaffRepository extends PagingAndSortingRepository<Staff, Long> {
+public interface StaffRepository extends PagingAndSortingRepository<Staff, String> {
 //
 //    Optional<User> findOneByActivationKey(String activationKey);
 //
@@ -26,7 +26,7 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Long>
 //    Optional<User> findOneByLogin(String login);
 
     @EntityGraph(attributePaths = {"authorities"})
-    Optional<Staff> findOneWithAuthoritiesById(Long id);
+    Optional<Staff> findOneWithAuthoritiesById(String id);
 
 //    @EntityGraph(attributePaths = "authorities")
 //    Optional<User> findOneWithAuthoritiesByLogin(String login);

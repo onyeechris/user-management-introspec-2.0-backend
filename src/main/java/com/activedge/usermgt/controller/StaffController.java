@@ -142,7 +142,7 @@ public class StaffController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<StaffDTO> getStaff(@PathVariable Long id) throws Exception {
+    public ResponseEntity<StaffDTO> getStaff(@PathVariable String id) throws Exception {
         log.debug("REST request to get {} : {}", ENTITY_NAME, id);
         Optional<StaffDTO> staffDTO = staffService.findOne(id);
 
@@ -164,7 +164,7 @@ public class StaffController {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deleteStaff(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStaff(@PathVariable String id) {
         log.debug("REST request to delete {} : {}", ENTITY_NAME, id);
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
