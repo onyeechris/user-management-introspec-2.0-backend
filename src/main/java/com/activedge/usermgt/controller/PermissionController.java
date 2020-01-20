@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -56,7 +57,7 @@ public class PermissionController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> createPermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<PermissionDTO> createPermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, permissionDTO);
 
         if (errors.hasErrors()) {
@@ -87,7 +88,7 @@ public class PermissionController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> updatePermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<PermissionDTO> updatePermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update Permission : {}", permissionDTO);
 
         if (errors.hasErrors() || permissionDTO.getId() == null) {
@@ -112,7 +113,7 @@ public class PermissionController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllPermissions(@RequestHeader(value = "Module", required = true) String module, Pageable pageable) {
+    public ResponseEntity<ResponseWrapper> getAllPermissions(@RequestHeader(value = "Module", required = true) String module, @ApiIgnore Pageable pageable) {
         log.info("REST request to get a page of Permissions on module {}", module);
 
         Page<PermissionDTO> page = permissionService.findAll(module, pageable);

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.DigestUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -54,7 +55,7 @@ public class AppModuleController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<ModuleDTO> createModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<ModuleDTO> createModules(@Valid @RequestBody ModuleDTO moduleDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, moduleDTO);
 
         if (errors.hasErrors() || moduleDTO.getId() == null) {
@@ -82,7 +83,7 @@ public class AppModuleController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<ModuleDTO> updateModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<ModuleDTO> updateModules(@Valid @RequestBody ModuleDTO moduleDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, moduleDTO);
 
         if (errors.hasErrors() || moduleDTO.getId() == null) {
@@ -108,7 +109,7 @@ public class AppModuleController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, @ApiIgnore Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Module for app: {}", app);
         Page<ModuleDTO> page;
 

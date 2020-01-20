@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -52,7 +53,7 @@ public class UserAppController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, staffModuleDTO);
 
         if (errors.hasErrors()) {
@@ -83,7 +84,7 @@ public class UserAppController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update StaffModule : {}", staffModuleDTO);
 
         if (errors.hasErrors() || staffModuleDTO.getId() == null) {
@@ -114,7 +115,7 @@ public class UserAppController {
     public ResponseEntity<ResponseWrapper> getAllStaffModules(
             @RequestHeader(value = "Module", required = true) String module,
             @RequestHeader(value = "Authorization", required = true) String authUser,
-            Pageable pageable) {
+            @ApiIgnore Pageable pageable) {
 
         return new ResponseEntity<>(new ResponseWrapper(staffModuleService.findAllByModule(module, pageable)), HttpStatus.OK);
     }

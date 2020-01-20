@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -60,7 +61,7 @@ public class StaffController {
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
         log.info("---REST request to save a {} : {}, token: {}", ENTITY_NAME, staffDTO, SecurityUtils.getCurrentUserLogin());
 
         if (errors.hasErrors()) {
@@ -89,7 +90,7 @@ public class StaffController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
         log.debug("REST request to update {} : {}", ENTITY_NAME, staffDTO);
 
         if (errors.hasErrors() || staffDTO.getId() == null) {
@@ -114,7 +115,7 @@ public class StaffController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, @ApiIgnore Pageable pageable) throws ServletRequestBindingException {
         log.debug("REST request to get a page of "+ENTITY_NAME);
 
         Page<StaffDTO> page = null;
