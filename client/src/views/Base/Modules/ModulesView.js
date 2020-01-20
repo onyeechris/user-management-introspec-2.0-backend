@@ -505,11 +505,11 @@ class ModulesView extends Component {
                 <FormGroup row>
                   <Col md="3">
                     <Label htmlFor="description"><strong>
-                      {this.translate("Code")}
+                      {this.translate("Id")}
                     </strong></Label>
                   </Col>
                   <Col xs="12" md="9">
-                    {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.code : this.state.sessionModuleData.code}
+                    {this.props.moduleData.moduleFetched ? this.props.moduleData.moduleFetched.data.id : this.state.sessionModuleData.id}
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -549,14 +549,14 @@ class ModulesView extends Component {
           <Col md="4">
             <Col sm="12" md="12">
               <Link to='/apps/module_view/groups'>
-                <Widget04 icon="icon-people" color="success" header={this.state.groupData ? this.state.groupData.length : "0"} value="10">
+                <Widget04 icon="icon-people" color="success" header={this.state.groupData ? `${this.state.groupData.length}` : "0"} value="10">
                   {this.translate("User Groups")}
                 </Widget04>
               </Link>
             </Col>
             <Col sm="12" md="12">
               <Link to='/apps/module_view/permissions'>
-                <Widget04 icon="icon-people" color="success" header={this.state.permissionData ? this.state.permissionData.length : "0"} value="10">
+                <Widget04 icon="icon-people" color="success" header={this.state.permissionData ? `${this.state.permissionData.length}` : "0"} value="10">
                   {this.translate("App Permissions")}
                 </Widget04>
               </Link>
