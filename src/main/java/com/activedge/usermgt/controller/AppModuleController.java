@@ -57,7 +57,7 @@ public class AppModuleController {
     public ResponseEntity<ModuleDTO> createModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, moduleDTO);
 
-        if (errors.hasErrors() || moduleDTO.getCode() == null) {
+        if (errors.hasErrors() || moduleDTO.getId() == null) {
             log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
                     .map(x -> x.getDefaultMessage())
@@ -66,8 +66,8 @@ public class AppModuleController {
 
         ModuleDTO result = moduleService.save(moduleDTO);
 
-        return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getCode()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getCode().toString()))
+        return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
@@ -85,7 +85,7 @@ public class AppModuleController {
     public ResponseEntity<ModuleDTO> updateModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, moduleDTO);
 
-        if (errors.hasErrors() || moduleDTO.getCode() == null) {
+        if (errors.hasErrors() || moduleDTO.getId() == null) {
             log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
                     .map(x -> x.getDefaultMessage())
@@ -95,7 +95,7 @@ public class AppModuleController {
         ModuleDTO result = moduleService.save(moduleDTO);
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getCode().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 

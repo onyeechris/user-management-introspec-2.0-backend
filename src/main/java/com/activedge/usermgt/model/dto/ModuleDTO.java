@@ -20,7 +20,7 @@ public class ModuleDTO implements Serializable {
 
     @ApiModelProperty(notes = "The unique app module Id")
     @NotNull
-    private String code;
+    private String id;
 
     @ApiModelProperty(notes = "The module name with minimum of 3 characters", required = true)
     @NotNull
