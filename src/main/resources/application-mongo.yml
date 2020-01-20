@@ -5,9 +5,6 @@ spring:
     jpa:
       repositories:
         enabled: false
-    rest:
-      basePath: /auth-service
     mongodb:
       uri: mongodb://localhost:27017/usermgt
-#      repositories:
-#        type: reactive
+

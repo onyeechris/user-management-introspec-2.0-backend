@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
@@ -46,6 +47,7 @@ public class Permission implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "module", referencedColumnName = "id")
+    @DBRef
     private Module module;
 
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)

@@ -16,6 +16,9 @@ public class V0005__permission_indexes implements Migration {
         DB db = oxEnvironment.getMongoDatabase();
         oxEnvironment.execute(OxAction
                 .createIndex("permission_id_idx")
+                .addAttribute("module", OrderingType.ASC)
+                .addAttribute("action", OrderingType.ASC)
+                .unique()
                 .setCollection("permissions")
                 .addAttribute("_id",OrderingType.ASC)
                 .ifNotExists()

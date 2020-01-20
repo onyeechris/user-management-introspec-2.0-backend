@@ -5,15 +5,11 @@ server:
 
 spring:
   profiles:
-    active: mongo # e.g mongo | jpa #-note you can have two profiles active!
-#  main:
-#    allow-bean-definition-overriding: true
+    active: mongo # mongo | jpa
+
   application:
       name: auth-service
 
-#  data:
-#    rest:
-#      basePath: /auth-service
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -41,15 +37,11 @@ spring:
       validation:
         enabled: false
 
-app:
-  jwtExpirationInMs: '604800000'
-  jwtSecret: JWTSuperSecretKeyy
 logging:
   level:
     org:
       hibernate:
         SQL: DEBUG
-#    root: DEBUG
     com:
       activedge:
         usermgt: DEBUG

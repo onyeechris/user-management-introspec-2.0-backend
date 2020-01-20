@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Table(name = "introspec_authorities")
-@Document
+@Document(collection = "introspec_authorities")
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;

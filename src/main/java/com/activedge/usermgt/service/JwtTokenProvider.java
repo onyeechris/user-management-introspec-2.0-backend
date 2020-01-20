@@ -78,7 +78,7 @@ public class JwtTokenProvider {
 
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-        log.debug("Token set to expire @{}", expiryDate);
+        log.debug("Token set to expire @{} {}", expiryDate, authentication.getAuthorities());
 
         return Jwts.builder()
                 .setSubject(authentication.getPrincipal().toString())
@@ -87,13 +87,13 @@ public class JwtTokenProvider {
                 .claim("permissions", staffPermissions)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes())
                 .compact();
     }
 
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -102,7 +102,7 @@ public class JwtTokenProvider {
 
     public List getAuthoritiesFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -111,7 +111,7 @@ public class JwtTokenProvider {
 
     public List getPermissionFromJWT(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -120,7 +120,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtSecret.getBytes()).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");
