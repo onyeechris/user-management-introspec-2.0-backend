@@ -22,25 +22,25 @@ class AppWidget extends Component {
     };
   }
   componentDidMount() {
-    const { moduleCode } = this.props;
-
-    // console.log(moduleCode);
+    const { moduleId } = this.props;
+    //  console.log(moduleId);
     // console.log(this.props);
 
-    this.props.fetchUsersByApp(moduleCode).then(result => {
-      this.setState({ totalUsers: result.payload })
+    this.props.fetchUsersByApp(moduleId).then(result => {
+      console.log(result.payload,'result.payload')
+      this.setState({ totalUsers: result.payload || [] })
     }, error => {
       console.log(error);
     });
 
-    this.props.fetchGroupsByApp(moduleCode).then(result => {
-      this.setState({ totalGroups: result.payload });
+    this.props.fetchGroupsByApp(moduleId).then(result => {
+      this.setState({ totalGroups: result.payload || [] });
     }, error => {
       console.log(error);
     });
 
-    this.props.fetchPermissionsByApp(moduleCode).then(result => {
-      this.setState({ totalPermissions: result.payload });
+    this.props.fetchPermissionsByApp(moduleId).then(result => {
+      this.setState({ totalPermissions: result.payload || [] });
     }, error => {
       console.log(error);
     });
