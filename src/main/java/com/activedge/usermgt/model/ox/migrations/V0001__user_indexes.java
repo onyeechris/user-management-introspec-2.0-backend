@@ -93,6 +93,11 @@ public class V0001__user_indexes implements Migration {
 
     @Override
     public void down(OxEnvironment oxEnvironment) throws OxException {
-
+        /*
+        oxEnvironment.execute(OxAction
+            .removeIndex("user_id_idx")
+            .setCollection("booking")
+            .ifExists());
+        */
     }
 }

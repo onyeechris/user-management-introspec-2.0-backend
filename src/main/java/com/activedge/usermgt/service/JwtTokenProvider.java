@@ -78,6 +78,8 @@ public class JwtTokenProvider {
 
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
+        log.debug("Token set to expire @{}", expiryDate);
+
         return Jwts.builder()
                 .setSubject(authentication.getPrincipal().toString())
                 .claim("authorities", authentication.getAuthorities().stream()

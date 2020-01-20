@@ -59,4 +59,4 @@ logging:
 security:
   jwt:
     secret: JwtSecretKey123
-    expiration: 60_60_000 # 1 hour
+    expiration: 8_60_60_000 # 24 hours
