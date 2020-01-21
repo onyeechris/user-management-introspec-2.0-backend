@@ -3,12 +3,8 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
-import com.activedge.usermgt.model.Authority;
-import com.activedge.usermgt.model.AuthorityPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.repository.AuthorityRepository;
-import com.activedge.usermgt.repository.PermissionRepository;
 import com.activedge.usermgt.service.PermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,12 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -61,7 +57,7 @@ public class PermissionController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> createPermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<PermissionDTO> createPermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, permissionDTO);
 
         if (errors.hasErrors()) {
@@ -73,17 +69,7 @@ public class PermissionController {
 
         permissionDTO.setId(null);
         permissionDTO.setModul(module);
-//
-//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-//        Authority auth;
-//
-//        if(authority.isPresent()) {
-//            auth = authority.get();
-//        } else {
-//            throw new ServletRequestBindingException("Module[" + module + "] not found");
-//        }
 
-//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.created(new URI("/api/"+ENTITY_NAME+"/" + result.getId()))
@@ -102,7 +88,7 @@ public class PermissionController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<PermissionDTO> updatePermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<PermissionDTO> updatePermission(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody PermissionDTO permissionDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update Permission : {}", permissionDTO);
 
         if (errors.hasErrors() || permissionDTO.getId() == null) {
@@ -112,16 +98,6 @@ public class PermissionController {
                     .collect(Collectors.joining(",")));
         }
 
-//        Optional<Authority> authority = this.authorityRepository.findById(new AuthorityPK(module, "ROLE_USER"));
-//        Authority auth;
-//
-//        if(authority.isPresent()) {
-//            auth = authority.get();
-//        } else {
-//            throw new ServletRequestBindingException("Module[" + module + "] not found");
-//        }
-//
-//        permissionDTO.setAuthority(auth);
         PermissionDTO result = permissionService.save(permissionDTO);
 
         return ResponseEntity.ok()
@@ -137,13 +113,12 @@ public class PermissionController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllPermissions(@RequestHeader(value = "Module", required = true) String module, Pageable pageable) {
+    public ResponseEntity<ResponseWrapper> getAllPermissions(@RequestHeader(value = "Module", required = true) String module, @ApiIgnore Pageable pageable) {
         log.info("REST request to get a page of Permissions on module {}", module);
 
         Page<PermissionDTO> page = permissionService.findAll(module, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
 
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**
@@ -154,7 +129,7 @@ public class PermissionController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<PermissionDTO> getPermission(@PathVariable Long id) {
+    public ResponseEntity<PermissionDTO> getPermission(@PathVariable String id) {
         log.debug("REST request to get Permission : {}", id);
         Optional<PermissionDTO> permissionDTO = permissionService.findOne(id);
 
@@ -162,9 +137,7 @@ public class PermissionController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/permissions/" + id);
-
-        return new ResponseEntity<>(permissionDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(permissionDTO.get(), HttpStatus.OK);
     }
 
     /**
@@ -175,7 +148,7 @@ public class PermissionController {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePermission(@PathVariable String id) {
         log.debug("REST request to delete Permission : {}", id);
         permissionService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();

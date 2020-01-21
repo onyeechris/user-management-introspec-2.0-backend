@@ -1,15 +1,19 @@
 package com.activedge.usermgt.model;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
 
-//@Entry(base = "ou=users", objectClasses = { "person", "inetOrgPerson", "top" })
 @Entry(base = "ou=users", objectClasses = { "person", "inetOrgPerson", "top" })
 public class LdapUser  {
+    @Value("${security.jwt.expiration}")
+    private long expiration;
 
+    @Value("${security.jwt.secret}")
+    private String secret;
     @Id
     private Name id;
 

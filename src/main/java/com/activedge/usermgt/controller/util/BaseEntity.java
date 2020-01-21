@@ -21,7 +21,7 @@ public class BaseEntity {
     protected Module getModule(String mdl) throws ServletRequestBindingException {
         Optional<Module> module = this.moduleRepository.findOneWithEagerRelationships(mdl);
 
-        if(!module.isPresent()) {
+        if(!module.isPresent()) {;
             throw new ServletRequestBindingException("Module[" + mdl + "] not found");
         }
 

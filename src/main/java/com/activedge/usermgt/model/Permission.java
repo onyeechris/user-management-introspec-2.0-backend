@@ -1,7 +1,9 @@
 package com.activedge.usermgt.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,13 +19,15 @@ import java.util.Set;
         @UniqueConstraint(columnNames={"module", "action"})
 )
 @SequenceGenerator(name = "permGenerator", initialValue = 200, allocationSize = 1)
+@Document(collection = "permissions")
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permGenerator")
-    private Long id;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id;
 
     @NotNull(message = "Permission action is required")
     @Size(min = 3)
@@ -42,29 +46,19 @@ public class Permission implements Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "module", referencedColumnName = "code")
+    @JoinColumn(name = "module", referencedColumnName = "id")
+    @DBRef
     private Module module;
-
-//    @ManyToOne
-//    @JoinColumns({
-//            @JoinColumn(
-//                    name = "module",
-//                    referencedColumnName = "module"),
-//            @JoinColumn(
-//                    name = "authority",
-//                    referencedColumnName = "code")
-//    })
-//    private Authority authority;
 
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     @JsonIgnore
     private Set<Group> grps = new HashSet<>();
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -119,21 +113,12 @@ public class Permission implements Serializable {
         this.grps = groups;
     }
 
-//    public Authority getAuthority() {
-//        return authority;
-//    }
-
-//    public void setAuthority(Authority authority) {
-//        this.authority = authority;
-//    }
-
     @Override
     public String toString() {
         return "Permission{" +
                 "id=" + id +
                 ", action='" + action + '\'' +
                 ", description='" + description + '\'' +
-//                ", authority=" + authority +
                 '}';
     }
 
@@ -143,15 +128,11 @@ public class Permission implements Serializable {
         if (!(o instanceof Permission)) return false;
         Permission that = (Permission) o;
         return Objects.equals(id, that.id);
-//                Objects.equals(action, that.action) &&
-//                Objects.equals(description, that.description);
-//                Objects.equals(authority, that.authority) &&
-//                Objects.equals(grps, that.grps);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id/*, action, description /*, authority, grps*/);
+        return Objects.hash(id);
     }
 
 }

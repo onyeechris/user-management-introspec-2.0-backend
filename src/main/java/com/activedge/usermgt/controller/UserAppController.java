@@ -1,35 +1,26 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
-import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
-import com.activedge.usermgt.model.Authority;
-import com.activedge.usermgt.model.AuthorityPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
-import com.activedge.usermgt.repository.AuthorityRepository;
 import com.activedge.usermgt.repository.ModuleRepository;
-import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffModuleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,7 +53,7 @@ public class UserAppController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, staffModuleDTO);
 
         if (errors.hasErrors()) {
@@ -93,7 +84,7 @@ public class UserAppController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update StaffModule : {}", staffModuleDTO);
 
         if (errors.hasErrors() || staffModuleDTO.getId() == null) {
@@ -124,24 +115,9 @@ public class UserAppController {
     public ResponseEntity<ResponseWrapper> getAllStaffModules(
             @RequestHeader(value = "Module", required = true) String module,
             @RequestHeader(value = "Authorization", required = true) String authUser,
-            Pageable pageable) {
+            @ApiIgnore Pageable pageable) {
 
-        Page<StaffModuleDTO> page;
-
-//        log.debug("REST request to get staffs on module {} for User Authority {}", module, SecurityUtils.getCurrentUserMap().get().get("authorities"));
-
-//        List authorities = (List<String>) SecurityUtils.getCurrentUserMap().get().get("authorities");
-
-//        log.debug("authorities alone is {}", authorities);
-
-//        if(authorities.stream().anyMatch(x -> x.toString().equals("ROLE_DEV") || x.toString().equals("ROLE_ADMIN"))) {
-//             page = staffModuleService.findAll(pageable);
-//        } else {
-             page = staffModuleService.findAllByModule(module, pageable);
-//        }
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/auth-service/"+ENTITY_NAME);
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(staffModuleService.findAllByModule(module, pageable)), HttpStatus.OK);
     }
 
     /**
@@ -160,9 +136,7 @@ public class UserAppController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/staffModules/" + id);
-
-        return new ResponseEntity<>(staffModuleDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(staffModuleDTO.get(), HttpStatus.OK);
     }
 
     /**

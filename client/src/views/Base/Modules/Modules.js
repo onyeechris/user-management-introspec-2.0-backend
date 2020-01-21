@@ -193,7 +193,7 @@ class Modules extends Component {
     });
   }
 
-  // Send module code to delete module
+  // Send module id to delete module
   deleteModule(moduleCode) {
     if (moduleCode || moduleCode === 0) {
       this.props.deleteModule(moduleCode).then(result => {
@@ -206,7 +206,7 @@ class Modules extends Component {
     }
   }
 
-  // Function to find specific module by code for editing
+  // Function to find specific module by id for editing
   findModule(moduleCode) {
     this.props.fetchModule(moduleCode)
       .then(result => {

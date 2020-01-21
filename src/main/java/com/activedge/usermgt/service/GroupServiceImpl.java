@@ -3,7 +3,6 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
-import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.GroupDTO;
@@ -14,21 +13,17 @@ import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
-import com.activedge.usermgt.util.Lambda;
-import com.activedge.usermgt.util.facade.GroupSpy;
-import com.activedge.usermgt.util.facade.Spy;
+import com.activedge.usermgt.repository.ModuleRepository;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ValidationException;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Service Implementation for managing Group.
@@ -40,18 +35,20 @@ public class GroupServiceImpl implements GroupService {
     private final Logger log = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     private final GroupRepository groupRepository;
+    private final ModuleRepository moduleRepository;
 
     private final GroupMapper groupMapper;
     private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
     private final StaffMapper staffMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
+    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
         this.staffMapper = staffMapper;
         this.moduleMapper = moduleMapper;
+        this.moduleRepository = moduleRepository;
     }
 
     /**
@@ -127,68 +124,12 @@ public class GroupServiceImpl implements GroupService {
 
         }
 
-        /*
-        if(flag == 1) {
-            for (Permission p : g.getPermissions()) {
-                // add permission attached to entity
-                groupDTO.getPermissions().add(permissionMapper.toDto(p));
-            }
-        } else {
-            // delete permission attached to entity
-            for(PermissionDTO p: groupDTO.getPermissions()) {
-                if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
-                    g.getPermissions().remove(permissionMapper.toEntity(p));
-                }
-            }
-            groupDTO.setPermissions(groupMapper.toDto(g).getPermissions());
-        }
-        */
-
         log.debug("Updating group... {}", groupDTO);
-
-
-//        else {
-//            groupDTO.setId(null);
-//            groupDTO.setPermissions(new HashSet<>());
-//            log.info("Saving group... {}", groupDTO);
-//        }
 
         g = groupMapper.toEntity(groupDTO);
 
-
-
         log.debug("Converted group ... {} permissions...{}, staffs...{}", g, g.getPermissions(), g.getStaffs());
 
-//      Enable Type
-//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-//        spyGroupObj.checkModel();
-
-        // added for tests
-//        Group gg = groupMapper.toEntity(groupDTO);
-//        gg.setCreatedBy("test");
-//        gg.setCreatedDate(LocalDateTime.now());
-//        {
-//            "id": "b3b0c1b47a0140688edc853f3f78b995",
-//                "name": "GroupName",
-//                "description": "Group name description",
-//                "module": "ATM",
-//                "permissions": [
-//            {
-//                "id": 1,
-//                    "action": "CREATE-ACCOUNT",
-//                    "description": "creating account endpoint"
-//            }
-//    ],
-//            "staffs": [
-//            {
-//                "id": 3,
-//                    "email": "admin@aet.com",
-//                    "groups": [],
-//                "activated": true
-//            }
-//    ]
-//        }
-//        g = groupRepository.save(gg);
 
         g.setIsDeleted(false);
 
@@ -205,22 +146,11 @@ public class GroupServiceImpl implements GroupService {
         groupDTO.setPermissions(new HashSet<>());
         groupDTO.setStaffs(new HashSet<>());
 
-        log.debug("Saving group... {}", groupDTO);
-
         g = groupMapper.toEntity(groupDTO);
 
         g.setIsDeleted(false);
 
-//      Enable Type
-//        Spy spyGroupObj = new GroupSpy(g, this.makerItemRepository);
-//        spyGroupObj.checkModel();
-
-        // added for tests
-//        Group gg = groupMapper.toEntity(groupDTO);
-//        gg.setCreatedBy("test");
-//        gg.setCreatedDate(LocalDateTime.now());
-
-//        g = groupRepository.save(gg);
+        log.debug("Saving group... {}", g);
 
         return groupMapper.toDto(groupRepository.save(g));
     }
@@ -234,8 +164,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(readOnly = true)
     public Page<GroupDTO> findAll(String module, Pageable pageable) {
-//        log.debug("Request to get all Group" + groupRepository.findAll(pageable).getContent());
-        return groupRepository.findAllByModule_Code(module, pageable)
+        return groupRepository.findAllByModule_Id(module, pageable)
             .map(groupMapper::toDto);
     }
 
@@ -256,13 +185,6 @@ public class GroupServiceImpl implements GroupService {
      * @param id the id of the entity
      * @return the entity
      */
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Optional<GroupDTO> findOne(GroupPK id) {
-//        log.debug("Request to get Group : {}", id);
-//        return groupRepository.findOneWithEagerRelationships(id)
-//            .map(groupMapper::toDto);
-//    }
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupDTO> findOne(GroupPK id) {
@@ -284,10 +206,6 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void delete(GroupPK id) {
         log.debug("Request to delete Group : {}", id);
-//        GroupDTO gdto = findOne(id).get();
-//        Group grp = groupMapper.toEntity(gdto);
-//        grp.setIsDeleted(true);
-//        groupRepository.save(grp);
         groupRepository.deleteById(id);
     }
 }

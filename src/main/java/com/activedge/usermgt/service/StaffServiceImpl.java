@@ -88,7 +88,7 @@ public class StaffServiceImpl implements StaffService {
 
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
-        authority.setCode("ROLE_" + staff.getType());
+        authority.setId("ROLE_" + staff.getType());
         authority.setName("ROLE_" + staff.getType());
         authorities.add(authority);
 
@@ -126,7 +126,7 @@ public class StaffServiceImpl implements StaffService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<StaffDTO> findOne(Long id) {
+    public Optional<StaffDTO> findOne(String id) {
         log.debug("Request to get Staff : {}", id);
         return staffRepository.findById(id)
             .map(staffMapper::toDto);
@@ -139,7 +139,7 @@ public class StaffServiceImpl implements StaffService {
      * @return the entity
      */
     @Transactional(readOnly = true)
-    public Optional<Staff> findById(Long id) {
+    public Optional<Staff> findById(String id) {
         log.debug("Request to get Staff : {}", id);
         return staffRepository.findOneWithAuthoritiesById(id);
     }
@@ -150,12 +150,8 @@ public class StaffServiceImpl implements StaffService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         log.debug("Request to delete Staff : {}", id);
-//        Staff sf = staffRepository.findById(id).get();
-//        sf.setActivated(false);
-//        log.debug("Staff to save: {}", sf);
-//        staffRepository.save(sf);
         staffRepository.deleteById(id);
     }
 

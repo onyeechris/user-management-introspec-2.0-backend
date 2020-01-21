@@ -24,9 +24,6 @@ public class GroupLog {
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK_group_history_log"))
-
     @ManyToOne
     @JoinColumns({
             @JoinColumn(

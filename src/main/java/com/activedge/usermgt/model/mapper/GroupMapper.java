@@ -33,11 +33,11 @@ public abstract class GroupMapper {
     }
 
     @Mapping(source = "id.id", target = "id")
-    @Mapping(source = "id.module.code", target = "mod")
-//    @Mapping(target = "staffs", ignore = true)
+    @Mapping(source = "id.module.id", target = "mod")
     public abstract GroupDTO toDto(Group group);
 
     @Mapping(target = "id", expression = "java( new GroupPK(fromCode(groupDTO.getMod()), groupDTO.getId()) )")
+    @Mapping(source = "mod", target = "module.id")
     public abstract Group toEntity(GroupDTO groupDTO);
 
     Group fromId(GroupPK id) {

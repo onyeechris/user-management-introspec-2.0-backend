@@ -1,58 +1,21 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
+  profiles:
+    active: mongo # mongo | jpa
+
   application:
       name: auth-service
 
-  data:
-    rest:
-      basePath: /auth-service
-  jpa:
-      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-      database: POSTGRESQL
-      show-sql: true
-      generate-ddl: true
-
-      hibernate:
-          ddl-auto: update
-      properties:
-          hibernate.id.new_generator_mappings: true
-          hibernate.connection.provider_disables_autocommit: true
-          hibernate.cache.use_second_level_cache: false
-          hibernate.cache.use_query_cache: false
-          hibernate.generate_statistics: false
-          hibernate:
-              jdbc:
-                lob:
-                  non_contextual_creation: true
-  datasource.driver-class-name: org.postgresql.Driver
-  datasource.type: com.zaxxer.hikari.HikariDataSource
-  datasource.url: ${introspec_sso_db_url:jdbc:postgresql://localhost:5432/introspec_sso}
-  datasource.username: ${introspec_sso_db_user}
-  datasource.password: ${introspec_sso_db_password}
-  datasource.continue-on-error: true
-  datasource.initialization-mode: always
-  datasource:
-      hikari:
-          auto-commit: false
-          minimum-idle: 3
-          maximum-pool-size: 5
-      data: classpath:modules.sql, classpath:authorities.sql, classpath:groups.sql, classpath:staff.sql, classpath:staff_authorities.sql, classpath:permissions.sql
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   ldap:
-    # Spring LDAP
-    #
-    # In this example we use an embedded ldap server. When using a real one,
-    # you can configure the settings here.
+    # Embedded Spring LDAP
     #
     # urls: ldap://localhost:12345
     # base: dc=memorynotfound,dc=com
     # username: uid=admin
     # password: secret
-    # Embedded Spring LDAP
     embedded:
       base-dn: dc=memorynotfound,dc=com
       credential:
@@ -63,9 +26,6 @@ spring:
       validation:
         enabled: false
 
-app:
-  jwtExpirationInMs: '604800000'
-  jwtSecret: ${introspec_sso_jwt_secret}
 logging:
   level:
     org:
@@ -74,12 +34,13 @@ logging:
     com:
       activedge:
         usermgt: DEBUG
-makerChecker:
-  enabled: true
+#    root: DEBUG
+#  file: ${java.io.tmpdir}/${spring.application.name}.log
 
 security:
   jwt:
-    secret: JwtSecretKey123
+    secret: ${introspec_sso_jwt_secret:JwtSecretKey123}
+    expiration: 8_60_60_000 # 24 hours
 
 server:
   port: ${introspec_sso_port:9100}

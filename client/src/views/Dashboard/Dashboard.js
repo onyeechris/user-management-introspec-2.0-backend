@@ -76,6 +76,7 @@ class Dashboard extends Component {
       // Application Data
       this.props.fetchModules()
         .then((response) => {
+          console.log(response.data.payload,'data')
           this.setState({ appData: response.data.payload });
         }).catch(err => {
           console.log(err);
@@ -100,11 +101,10 @@ class Dashboard extends Component {
   );
 
   // Get specific module to view module Details
-  findModuleView = (moduleCode) => {
-    this.props.fetchModule(moduleCode).then(result => {
-      // console.log(result);
+  findModuleView = (moduleId) => {
+    this.props.fetchModule(moduleId).then(result => {
       this.props.saveModuleInfo(result);
-      sessionStorage.setItem("userModule", moduleCode);
+      sessionStorage.setItem("userModule", moduleId);
       sessionStorage.setItem("moduleData", JSON.stringify(result.data));
       this.setState({ singleModuleData: result.data }, this.props.history.push('/apps/module_view'));
     }, error => {
@@ -112,9 +112,9 @@ class Dashboard extends Component {
     });
   }
 
-  // getTotalUsers = (moduleCode) => {
+  // getTotalUsers = (moduleId) => {
   //   let totalUsers = '';
-  //   this.props.fetchUsersByApp(moduleCode).then(result => {
+  //   this.props.fetchUsersByApp(moduleId).then(result => {
   //     totalUsers = result.data.payload;
   //   }, error => {
   //     console.log(error);
@@ -122,9 +122,9 @@ class Dashboard extends Component {
   //   return totalUsers.length;
   // }
 
-  // getTotalGroups = (moduleCode) => {
+  // getTotalGroups = (moduleId) => {
   //   let totalGroups = '';
-  //   this.props.fetchGroupsByApp(moduleCode).then(result => {
+  //   this.props.fetchGroupsByApp(moduleId).then(result => {
   //     totalGroups = result.data.payload;
   //   }, error => {
   //     console.log(error);
@@ -132,9 +132,9 @@ class Dashboard extends Component {
   //   return totalGroups.length;
   // }
 
-  // getTotalPermissions = (moduleCode) => {
+  // getTotalPermissions = (moduleId) => {
   //   let totalPermissions = '';
-  //   this.props.fetchPermissionsByApp(moduleCode).then(result => {
+  //   this.props.fetchPermissionsByApp(moduleId).then(result => {
   //     totalPermissions = result.data.payload;
   //     console.log(totalPermissions.length);
   //   }, error => {
@@ -162,7 +162,7 @@ class Dashboard extends Component {
               {this.state.appData.map((item, key) => {
                 return (
                   <Col md="6" key={key} >
-                    <Link to="#" onClick={e => this.findModuleView(item.code)}>
+                    <Link to="#" onClick={e => this.findModuleView(item.id)}>
                       {/* <Widget05
                         metric1={this.getTotalUsers(item.code)}
                         icon1="icon-user"
@@ -178,7 +178,7 @@ class Dashboard extends Component {
                       <AppWidget
                         moduleName={item.name}
                         moduleDescription={item.description}
-                        moduleCode={item.code}
+                        moduleId={item.id}
                       />
                     </Link>
                   </Col>

@@ -16,7 +16,7 @@ export const PERMISSIONS_BY_APP_FETCH_ERROR = 'PERMISSIONS_BY_APP_FETCH_ERROR';
 
 // Fetch users by app
 let userApi = BASE_URL + 'userapps/?size=10000';
-export function fetchUsersByApp(moduleCode) {
+export function fetchUsersByApp(moduleId) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       // axios({
@@ -24,14 +24,14 @@ export function fetchUsersByApp(moduleCode) {
       //   url: userApi,
       //   headers: {
       //     Authorization: userToken,
-      //     Module: moduleCode
+      //     Module: moduleId
       //   }
       // })
       fetch(userApi, {
         method: 'GET',
         headers: {
           Authorization: userToken,
-          Module: moduleCode
+          Module: moduleId
         }
       })
         .then((response) => response.json())
@@ -56,7 +56,7 @@ export function fetchUsersByApp(moduleCode) {
 
 // Fetch groups by app
 let groupApi = BASE_URL + 'groups/?size=10000';
-export function fetchGroupsByApp(moduleCode) {
+export function fetchGroupsByApp(moduleId) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       // axios({
@@ -64,14 +64,14 @@ export function fetchGroupsByApp(moduleCode) {
       //   url: groupApi,
       //   headers: {
       //     Authorization: userToken,
-      //     Module: moduleCode
+      //     Module: moduleId
       //   }
       // })
       fetch(groupApi, {
         method: 'GET',
         headers: {
           Authorization: userToken,
-          Module: moduleCode
+          Module: moduleId
         }
       })
         .then((response) => response.json())
@@ -82,6 +82,7 @@ export function fetchGroupsByApp(moduleCode) {
             payload: responseJSON
           });
         }).catch((error) => {
+          console.log(error,'error')
           reject(errorSwitch(error));
           dispatch({
             type: GROUPS_BY_APP_FETCH_ERROR,
@@ -96,7 +97,7 @@ export function fetchGroupsByApp(moduleCode) {
 
 // Fetch permissions by app
 let permissionApi = BASE_URL + 'permissions/?size=10000';
-export function fetchPermissionsByApp(moduleCode) {
+export function fetchPermissionsByApp(moduleId) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       // axios({
@@ -104,7 +105,7 @@ export function fetchPermissionsByApp(moduleCode) {
       //   url: permissionApi,
       //   headers: {
       //     Authorization: userToken,
-      //     Module: moduleCode
+      //     Module: moduleId
       //   }
       // })
 
@@ -112,7 +113,7 @@ export function fetchPermissionsByApp(moduleCode) {
         method: 'GET',
         headers: {
           Authorization: userToken,
-          Module: moduleCode
+          Module: moduleId
         }
       })
         .then((response) => response.json())

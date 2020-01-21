@@ -1,7 +1,6 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
-import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
@@ -22,12 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,6 @@ public class StaffController {
     private final LdapUserService ldapUserService;
     private final ModuleRepository moduleRepository;
 
-
     public StaffController(StaffService staffService, LdapUserService ldapUserService, ModuleRepository moduleRepository) {
         this.staffService = staffService;
         this.ldapUserService = ldapUserService;
@@ -63,7 +61,7 @@ public class StaffController {
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
         log.info("---REST request to save a {} : {}, token: {}", ENTITY_NAME, staffDTO, SecurityUtils.getCurrentUserLogin());
 
         if (errors.hasErrors()) {
@@ -92,7 +90,7 @@ public class StaffController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
         log.debug("REST request to update {} : {}", ENTITY_NAME, staffDTO);
 
         if (errors.hasErrors() || staffDTO.getId() == null) {
@@ -117,22 +115,20 @@ public class StaffController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, @ApiIgnore Pageable pageable) throws ServletRequestBindingException {
         log.debug("REST request to get a page of "+ENTITY_NAME);
 
         Page<StaffDTO> page = null;
 
         Optional<Module> module = this.moduleRepository.findById(mdl);
-
+        System.out.println(module);
         if(!module.isPresent()) {
 //            page = staffService.findAllBy(module, pageable);
         } else {
             page = staffService.findAll(pageable);
         }
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/"+ENTITY_NAME);
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**
@@ -143,7 +139,7 @@ public class StaffController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<StaffDTO> getStaff(@PathVariable Long id) throws Exception {
+    public ResponseEntity<StaffDTO> getStaff(@PathVariable String id) throws Exception {
         log.debug("REST request to get {} : {}", ENTITY_NAME, id);
         Optional<StaffDTO> staffDTO = staffService.findOne(id);
 
@@ -151,9 +147,7 @@ public class StaffController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/api/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(staffDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
 
     }
 
@@ -165,7 +159,7 @@ public class StaffController {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deleteStaff(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStaff(@PathVariable String id) {
         log.debug("REST request to delete {} : {}", ENTITY_NAME, id);
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();

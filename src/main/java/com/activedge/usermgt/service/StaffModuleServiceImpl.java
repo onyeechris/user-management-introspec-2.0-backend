@@ -58,7 +58,7 @@ public class StaffModuleServiceImpl implements StaffModuleService {
     @Transactional(readOnly = true)
     public Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable) {
         log.debug("Request to get all StaffModules by {}", module);
-        return staffModuleRepository.findAllByModule_Code(pageable, module)
+        return staffModuleRepository.findAllByModule_Id(pageable, module)
             .map(staffModuleMapper::toDto);
     }
 

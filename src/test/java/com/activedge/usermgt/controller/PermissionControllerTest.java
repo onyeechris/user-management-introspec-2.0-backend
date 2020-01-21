@@ -12,11 +12,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.skyscreamer.jsonassert.*;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
@@ -36,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @FixMethodOrder(MethodSorters.JVM)
-//@TestMethodOrder(OrderAnnotation.class)
+@ActiveProfiles({"mongo"})
 public class PermissionControllerTest {
 
     @LocalServerPort
@@ -46,7 +48,7 @@ public class PermissionControllerTest {
 
     HttpHeaders headers = new HttpHeaders();
 
-    private static Long id;
+    private static String id;
 
     @Before
     public void before() {
@@ -54,41 +56,6 @@ public class PermissionControllerTest {
                 "sysdev@aet.com", "sysdevsecret"));
         headers.add("Module", "ATM");
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    public void testGetPermissions() throws JSONException {
-
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/auth-service/permissions"),
-                HttpMethod.GET, entity, String.class);
-
-        JSONObject jsonObject = new JSONObject(response.getBody());
-
-        // Get length of array we will verify
-        // Verify if all id's in payload is integer value
-        int aLength = ((JSONArray)((JSONObject)JSONParser.parseJSON(response.getBody())).get("payload")).length();
-        // create array of customizations one for each array element
-        RegularExpressionValueMatcher<Object> regExValueMatcher = new RegularExpressionValueMatcher<Object>("\\d+");  // matches one or more digits
-        Customization[] customizations = new Customization[aLength];
-        for (int i=0; i<aLength; i++) {
-            String contextPath = "payload["+i+"].id";
-            customizations[i] = new Customization(contextPath, regExValueMatcher);
-        }
-        CustomComparator regExComparator = new CustomComparator(JSONCompareMode.STRICT_ORDER, customizations);
-        ArrayValueMatcher<Object> regExArrayValueMatcher = new ArrayValueMatcher<Object>(regExComparator);
-        Customization regExArrayValueCustomization = new Customization("payload", regExArrayValueMatcher);
-        CustomComparator regExCustomArrayValueComparator = new CustomComparator(JSONCompareMode.STRICT_ORDER, new Customization[] { regExArrayValueCustomization });
-
-
-        assertTrue(jsonObject.has("payload"));
-
-        assertTrue(jsonObject.has("meta"));
-
-        JSONAssert.assertEquals("{payload:[{id:X}]}", response.getBody(), regExCustomArrayValueComparator);
-
     }
 
     @Test
@@ -107,7 +74,7 @@ public class PermissionControllerTest {
 
         JSONObject jsonObject = new JSONObject(response.getBody());
 
-        id = jsonObject.getLong("id");
+        id = jsonObject.getString("id");
 
         String expected = "{\n" +
                 "    \"action\": \"Test Endpoint\",\n" +
@@ -115,6 +82,41 @@ public class PermissionControllerTest {
                 "}";
 
         JSONAssert.assertEquals(expected, response.getBody(), JSONCompareMode.LENIENT);
+
+    }
+
+    @Test
+    public void testGetPermissions() throws JSONException {
+
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/auth-service/permissions"),
+                HttpMethod.GET, entity, String.class);
+
+        JSONObject jsonObject = new JSONObject(response.getBody());
+
+        // Get length of array we will verify
+        // Verify if all id's in payload is integer value
+        int aLength = ((JSONArray)((JSONObject)JSONParser.parseJSON(response.getBody())).get("payload")).length();
+        // create array of customizations one for each array element
+        RegularExpressionValueMatcher<Object> regExValueMatcher = new RegularExpressionValueMatcher<Object>("\\w+");  // matches one or more digits
+        Customization[] customizations = new Customization[aLength];
+        for (int i=0; i<aLength; i++) {
+            String contextPath = "payload["+i+"].id";
+            customizations[i] = new Customization(contextPath, regExValueMatcher);
+        }
+        CustomComparator regExComparator = new CustomComparator(JSONCompareMode.STRICT_ORDER, customizations);
+        ArrayValueMatcher<Object> regExArrayValueMatcher = new ArrayValueMatcher<Object>(regExComparator);
+        Customization regExArrayValueCustomization = new Customization("payload", regExArrayValueMatcher);
+        CustomComparator regExCustomArrayValueComparator = new CustomComparator(JSONCompareMode.STRICT_ORDER, new Customization[] { regExArrayValueCustomization });
+
+
+        assertTrue(jsonObject.has("payload"));
+
+        assertTrue(jsonObject.has("meta"));
+
+        JSONAssert.assertEquals("{payload:[{id:X}]}", response.getBody(), regExCustomArrayValueComparator);
 
     }
 

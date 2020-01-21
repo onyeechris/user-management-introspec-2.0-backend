@@ -13,7 +13,6 @@ import com.activedge.usermgt.service.GroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public class GroupController extends BaseEntity {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> createGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> createGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors()) {
@@ -95,7 +94,7 @@ public class GroupController extends BaseEntity {
      */
     @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, @ApiIgnore Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors() || groupDTO.getId() == null) {
@@ -122,11 +121,9 @@ public class GroupController extends BaseEntity {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String module, @RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String module, @RequestParam(value = "app", defaultValue="all") String app, @ApiIgnore Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
         log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
-
-//        Module module = this.getModule(mdl);
 
         log.debug("Module is: {}", module);
 
@@ -160,9 +157,7 @@ public class GroupController extends BaseEntity {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/auth-service/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(groupsDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(groupsDTO.get(), HttpStatus.OK);
     }
 
     /**

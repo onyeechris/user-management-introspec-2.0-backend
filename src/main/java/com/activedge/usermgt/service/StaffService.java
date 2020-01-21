@@ -46,12 +46,12 @@ public interface StaffService {
      * @param id the id of the entity
      * @return the entity
      */
-    Optional<StaffDTO> findOne(Long id);
+    Optional<StaffDTO> findOne(String id);
 
     /**
      * Delete the "id" staff.
      *
      * @param id the id of the entity
      */
-    void delete(Long id);
+    void delete(String id);
 }

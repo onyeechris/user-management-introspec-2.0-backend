@@ -1,7 +1,7 @@
 package com.activedge.usermgt.security;
 
-import com.activedge.usermgt.config.JwtConfig;
 import com.activedge.usermgt.repository.StaffRepository;
+import com.activedge.usermgt.service.CustomUserDetailsService;
 import com.activedge.usermgt.service.LdapUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,37 +10,27 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
-import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 
 @Slf4j
 @EnableWebSecurity
 public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsService userDetailsService; // loads the user from the database (or any data source) service.
-
-    @Autowired
-    private JwtConfig jwtConfig; // jwt define config class
+    private CustomUserDetailsService userDetailsService; // loads the user from the database (or any data source) service.
 
     @Autowired
     private StaffRepository staffRepository;
 
+    @Lazy
     @Autowired
     private BCryptPasswordEncoder encoder;
 
@@ -48,25 +38,26 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Autowired
     LdapUserService ldapUserService;
 
+    @Autowired
+    private JwtAuthenticationEntryPoint unauthorizedHandler;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthFilter() {
+        return new JwtAuthenticationFilter();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
+                .cors().and().csrf().disable()
                 // use stateless session; session won't be used to store user's state.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // handle an authorized attempts
-                .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {
-                    log.error("Error caught - Authentication failed for object {}, path:{}", e.getMessage(), req.getRequestURI());
-                    rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                })
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
-                // Add a filter to validate user credentials and add token in the response header
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(staffRepository, authenticationManager(), jwtConfig, ldapUserService, encoder))
-
                 // Add a filter to check token for secured resource
-                .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -89,29 +80,36 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.GET, "/management/audits/**").hasAnyRole("AUDITOR", "ADMIN")
 
-                .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
+                .antMatchers(HttpMethod.POST, "/auth").permitAll()
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();
 
     }
 
+    @Override
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
+
     // define the password encoder to be used by the auth manager to compare and verify passwords.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // check JDBC
         auth
             .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
+        // check AD
         auth
-                .ldapAuthentication()
+            .ldapAuthentication()
 //                .userDnPatterns("uid={0},ou=users,ou=guests")
-                .userSearchBase("ou=users")
-                .userSearchFilter("uid={0}")
-                .contextSource(contextSource())
-                .passwordCompare()
+            .userSearchBase("ou=users")
+            .userSearchFilter("uid={0}")
+            .contextSource(contextSource())
+            .passwordCompare()
 //                .passwordEncoder()
-                .passwordAttribute("mail");
-
+            .passwordAttribute("mail");
 
 /*
         auth
@@ -134,11 +132,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtConfig jwtConfig() {
-        return new JwtConfig();
-    }
-
-    @Bean
     public LdapTemplate ldapTemplate() {
         return new LdapTemplate(contextSource());
     }
@@ -146,19 +139,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/auth-service/**")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedOrigins("*")
-                        .allowedHeaders("*, Authorization");
-            }
-        };
     }
 
     @Bean

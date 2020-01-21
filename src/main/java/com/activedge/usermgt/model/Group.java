@@ -2,20 +2,19 @@ package com.activedge.usermgt.model;
 
 
 import com.activedge.usermgt.model.event.GroupEntityListener;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -25,18 +24,10 @@ import java.util.Set;
 @EntityListeners(GroupEntityListener.class)
 @SQLDelete(sql="UPDATE groups SET is_deleted = '1', name = md5(random()::text) WHERE id = ? and module = ?")
 @Where(clause="is_deleted <> '1'")
+@Document(collection = "groups")
 public class Group extends AbstractAuditingEntity<String> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /*
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-//    @GeneratedValue(strategy = GenerationType.TABLE, generator = "tableGenerator")
-//    @TableGenerator(name = "tableGenerator", initialValue = 3)
-    private Long id;
-    */
 
     @EmbeddedId
     private GroupPK id;
@@ -49,33 +40,32 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
 
     @Size(min = 10)
     @Column(name = "description")
+    @Field("description")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "module", insertable = false, updatable = false)
+    @DBRef
     private Module module;
 
-//    @OneToMany(mappedBy = "group")
-//    private Set<Staff> staff = new HashSet<>();
-
     @ManyToMany
-//    @JsonManagedReference
     @JoinTable(name = "staff_group",
             joinColumns = {
                 @JoinColumn(name = "group_id", referencedColumnName = "id"),
                 @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = {
                 @JoinColumn(name = "staff_id", referencedColumnName = "id") })
-//    @BatchSize(size = 10)
+    // @BatchSize(size = 10)
+    @DBRef
     private Set<Staff> staffs = new HashSet<>();
 
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "groups_permission",
             joinColumns = {
                 @JoinColumn(name = "group_id", referencedColumnName = "id"),
                 @JoinColumn(name = "module", referencedColumnName = "module")},
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
+    @DBRef
     private Set<Permission> permissions = new HashSet<>();
 
     @NotNull(message = "isDeleted cannot be null")
@@ -179,32 +169,13 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
         this.permissions = permissions;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Group)) return false;
-//        if (!super.equals(o)) return false;
-//        Group group = (Group) o;
-//        return Objects.equals(id, group.id) &&
-//                Objects.equals(name, group.name) &&
-//                Objects.equals(description, group.description);/*&&
-//                Objects.equals(staffs, group.staffs) &&
-//                Objects.equals(permissions, group.permissions);*/
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(super.hashCode(), id, name, description/*, staffs, permissions*/);
-//    }
-
     @Override
     public String toString() {
         return "Group{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-//                ", staffs=" + getStaffs() +
-//                ", permissions=" + getPermissions() +
+                ", module='" + module + '\'' +
                 '}';
     }
 }

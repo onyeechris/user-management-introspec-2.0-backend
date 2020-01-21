@@ -1,19 +1,16 @@
 package com.activedge.usermgt.service;
 
-import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.repository.PermissionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 /**
@@ -74,7 +71,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional(readOnly = true)
     public Page<PermissionDTO> findAll(String module, Pageable pageable) {
         log.debug("Request to get all Permissions");
-        return permissionRepository.findAllByModule_Code(pageable, module)
+        return permissionRepository.findAllByModule_Id(pageable, module)
             .map(permissionMapper::toDto);
     }
 
@@ -87,7 +84,7 @@ public class PermissionServiceImpl implements PermissionService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<PermissionDTO> findOne(Long id) {
+    public Optional<PermissionDTO> findOne(String id) {
         log.debug("Request to get Permission : {}", id);
         return permissionRepository.findById(id)
             .map(permissionMapper::toDto);
@@ -99,7 +96,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         log.debug("Request to delete Permission : {}", id);
         permissionRepository.deleteById(id);
     }

@@ -8,7 +8,6 @@ import com.activedge.usermgt.model.dto.ModuleDTO;
 import com.activedge.usermgt.service.ModuleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.DigestUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -55,10 +55,10 @@ public class AppModuleController {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<ModuleDTO> createModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<ModuleDTO> createModules(@Valid @RequestBody ModuleDTO moduleDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, moduleDTO);
 
-        if (errors.hasErrors() || moduleDTO.getCode() == null) {
+        if (errors.hasErrors() || moduleDTO.getId() == null) {
             log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
                     .map(x -> x.getDefaultMessage())
@@ -67,8 +67,8 @@ public class AppModuleController {
 
         ModuleDTO result = moduleService.save(moduleDTO);
 
-        return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getCode()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getCode().toString()))
+        return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
@@ -83,10 +83,10 @@ public class AppModuleController {
      */
     @PutMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<ModuleDTO> updateModules(@Valid @RequestBody ModuleDTO moduleDTO, Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<ModuleDTO> updateModules(@Valid @RequestBody ModuleDTO moduleDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, moduleDTO);
 
-        if (errors.hasErrors() || moduleDTO.getCode() == null) {
+        if (errors.hasErrors() || moduleDTO.getId() == null) {
             log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
                     .map(x -> x.getDefaultMessage())
@@ -96,7 +96,7 @@ public class AppModuleController {
         ModuleDTO result = moduleService.save(moduleDTO);
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getCode().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
@@ -109,7 +109,7 @@ public class AppModuleController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, @ApiIgnore Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Module for app: {}", app);
         Page<ModuleDTO> page;
 
@@ -117,9 +117,7 @@ public class AppModuleController {
 
         page = moduleService.findAll(pageable);
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/auth-service/modules?eagerload=%b", eagerload));
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
     /**
@@ -138,9 +136,7 @@ public class AppModuleController {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
         }
 
-        HttpHeaders headers = HeaderUtil.createAlert("retrieve", "/auth-service/"+ENTITY_NAME+"/" + id);
-
-        return new ResponseEntity<>(modulesDTO.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(modulesDTO.get(), HttpStatus.OK);
     }
 
     /**

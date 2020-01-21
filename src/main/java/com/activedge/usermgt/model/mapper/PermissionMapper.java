@@ -1,10 +1,10 @@
 package com.activedge.usermgt.model.mapper;
 
 
-import com.activedge.usermgt.model.AuthorityPK;
 import com.activedge.usermgt.model.Permission;
 import com.activedge.usermgt.model.dto.PermissionDTO;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.Set;
 
@@ -14,16 +14,16 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {})
 public interface PermissionMapper extends EntityMapper<PermissionDTO, Permission> {
 
-    @Mapping(source = "module.code", target = "modul")
+    @Mapping(source = "module.id", target = "modul")
     PermissionDTO toDto(Permission permission);
 
     @Mapping(target = "grps", ignore = true)
-    @Mapping(source = "modul", target = "module.code")
+    @Mapping(source = "modul", target = "module.id")
     Permission toEntity(PermissionDTO permissionDTO);
 
     Set<PermissionDTO> toDtoSet(Set<Permission> permissions);
 
-    default Permission fromId(Long id) {
+    default Permission fromId(String id) {
         if (id == null) {
             return null;
         }

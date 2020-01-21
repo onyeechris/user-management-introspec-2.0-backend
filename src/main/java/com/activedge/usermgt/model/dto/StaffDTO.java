@@ -25,7 +25,7 @@ import java.util.*;
 public class StaffDTO implements Serializable {
 
     @ApiModelProperty(notes = "The database generated staff ID")
-    private Long id;
+    private String id;
 
     @ApiModelProperty(notes = "The staff first name with maximum of 50 characters", required = true)
     @NotNull(message = "Staff firstname is required")
