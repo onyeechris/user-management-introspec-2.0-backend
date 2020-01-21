@@ -12,11 +12,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.skyscreamer.jsonassert.*;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
@@ -36,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @FixMethodOrder(MethodSorters.JVM)
-//@TestMethodOrder(OrderAnnotation.class)
+@ActiveProfiles({"mongo"})
 public class PermissionControllerTest {
 
     @LocalServerPort
@@ -46,7 +48,7 @@ public class PermissionControllerTest {
 
     HttpHeaders headers = new HttpHeaders();
 
-    private static Long id;
+    private static String id;
 
     @Before
     public void before() {
@@ -54,6 +56,33 @@ public class PermissionControllerTest {
                 "sysdev@aet.com", "sysdevsecret"));
         headers.add("Module", "ATM");
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void testAddPermission() throws JSONException {
+
+        PermissionDTO permission = new PermissionDTO();
+
+        permission.setAction("Test Endpoint");
+        permission.setDescription("My test endpoint description");
+
+        HttpEntity<PermissionDTO> entity = new HttpEntity<PermissionDTO>(permission, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/auth-service/permissions"),
+                HttpMethod.POST, entity, String.class);
+
+        JSONObject jsonObject = new JSONObject(response.getBody());
+
+        id = jsonObject.getString("id");
+
+        String expected = "{\n" +
+                "    \"action\": \"Test Endpoint\",\n" +
+                "    \"description\": \"My test endpoint description\"\n" +
+                "}";
+
+        JSONAssert.assertEquals(expected, response.getBody(), JSONCompareMode.LENIENT);
+
     }
 
     @Test
@@ -71,7 +100,7 @@ public class PermissionControllerTest {
         // Verify if all id's in payload is integer value
         int aLength = ((JSONArray)((JSONObject)JSONParser.parseJSON(response.getBody())).get("payload")).length();
         // create array of customizations one for each array element
-        RegularExpressionValueMatcher<Object> regExValueMatcher = new RegularExpressionValueMatcher<Object>("\\d+");  // matches one or more digits
+        RegularExpressionValueMatcher<Object> regExValueMatcher = new RegularExpressionValueMatcher<Object>("\\w+");  // matches one or more digits
         Customization[] customizations = new Customization[aLength];
         for (int i=0; i<aLength; i++) {
             String contextPath = "payload["+i+"].id";
@@ -92,38 +121,11 @@ public class PermissionControllerTest {
     }
 
     @Test
-    public void testAddPermission() throws JSONException {
-
-        PermissionDTO permission = new PermissionDTO();
-
-        permission.setAction("Test Endpoint");
-        permission.setDescription("My test endpoint description");
-
-        HttpEntity<PermissionDTO> entity = new HttpEntity<PermissionDTO>(permission, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/auth-service/permissions"),
-                HttpMethod.POST, entity, String.class);
-
-        JSONObject jsonObject = new JSONObject(response.getBody());
-
-        id = jsonObject.getLong("id");
-
-        String expected = "{\n" +
-                "    \"action\": \"Test Endpoint\",\n" +
-                "    \"description\": \"My test endpoint description\"\n" +
-                "}";
-
-        JSONAssert.assertEquals(expected, response.getBody(), JSONCompareMode.LENIENT);
-
-    }
-
-    @Test
     public void testUpdatePermission() throws JSONException {
 
         PermissionDTO permission = new PermissionDTO();
 
-//        permission.setId(id);
+        permission.setId(id);
         permission.setAction("Test Endpoint changed");
         permission.setDescription("My test endpoint description too");
 
