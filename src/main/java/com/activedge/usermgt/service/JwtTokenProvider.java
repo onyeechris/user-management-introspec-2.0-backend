@@ -78,10 +78,10 @@ public class JwtTokenProvider {
 
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-        log.debug("Token set to expire @{} {}", expiryDate, authentication.getAuthorities());
+        log.debug("Token set to expire @{} {}", expiryDate);
 
         return Jwts.builder()
-                .setSubject(authentication.getPrincipal().toString())
+                .setSubject(authentication.getName())
                 .claim("authorities", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .claim("permissions", staffPermissions)
