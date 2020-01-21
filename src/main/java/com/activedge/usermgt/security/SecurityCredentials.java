@@ -156,7 +156,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 registry.addMapping("/auth-service/**")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedOrigins("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*, Authorization");
             }
         };
     }
@@ -174,5 +174,4 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             contextSource.setPassword("zflexpass");
             return contextSource;
     }
-
 }

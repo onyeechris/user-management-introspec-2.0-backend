@@ -3,7 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import {
   Button,
   Col,
-  Input, FormText, Label,
+  Input, Label,
   ModalFooter,
   FormFeedback,
   FormGroup,
@@ -18,11 +18,25 @@ const translate = (pageString) => {
   )
 }
 
+let passKey = '';
+
+const updatePass = (value) => {
+  console.log("got here");
+  if (value) {
+    console.log(value);
+    passKey = value;
+  }
+}
+
 const required = value => value ? undefined : 'Required';
 // const maxLength = max => value =>
 //   value && value.length > max ? `Must be ${max} characters or less` : undefined
 const minLength = min => value => {
   return value && value.length < min ? `Must be ${min} characters or more` : undefined
+}
+
+const passwordCheck = value => {
+  return value !== passKey ? `Password does not match!` : undefined
 }
 // const maxLength15 = maxLength(15)
 const password = minLength(6);
@@ -53,6 +67,19 @@ const renderField = ({ input, label, type, meta: { touched, error, warning } }) 
     />
     {/* <input {...input} placeholder={label} type={type} /> */}
     {/* {touched && ((error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>) || (warning && <span>{warning}</span>))} */}
+    {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
+
+  </div>
+)
+
+const renderPasswordField = ({ input, label, type, meta: { touched, error, warning } }) => (
+  <div>
+    <Input
+      type={type}
+      placeholder={label}
+      // onChange={e => updatePass(e)}
+      {...input}
+    />
     {touched && error && <span><FormFeedback className="help-block" style={{ 'display': 'block' }}>{error}</FormFeedback></span>}
 
   </div>
@@ -158,18 +185,31 @@ let CreateStaffForm = (props) => {
       </FormGroup>
       <FormGroup row>
         <Col md="3">
-          <Label htmlFor="password">{translate("Password")} <span style={{ color: 'red' }}>*</span></Label>
+          <Label htmlFor="password_check">{translate("Password")} <span style={{ color: 'red' }}>*</span></Label>
         </Col>
         <Col xs="12" md="9">
           {/* <Input type="password" id="password" name="password" placeholder="Password" required
                         onChange={this.updateValue.bind(this, 'password')}
                       /> */}
+          <Field name="password_check" type="password"
+            component={renderPasswordField}
+            label="Password"
+            validate={[password, updatePass]}
+          />
+          {/* <FormText className="help-block">Choose a strong password</FormText> */}
+        </Col>
+      </FormGroup>
+
+      <FormGroup row>
+        <Col md="3">
+          <Label htmlFor="password">{translate("Confirm Password")} <span style={{ color: 'red' }}>*</span></Label>
+        </Col>
+        <Col xs="12" md="9">
           <Field name="password" type="password"
             component={renderField}
-            label="Password"
-            validate={[required, password]}
+            label="Confirm Password"
+            validate={[required, passwordCheck]}
           />
-          <FormText className="help-block">Choose a strong password</FormText>
         </Col>
       </FormGroup>
 

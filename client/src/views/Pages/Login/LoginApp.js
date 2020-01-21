@@ -41,6 +41,7 @@ class LoginApp extends Component {
         this.login = this.login.bind(this);
         this.redirectUser = this.redirectUser.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.change = this.change.bind(this);
     }
 
     storedLanguage = ''
@@ -147,6 +148,7 @@ class LoginApp extends Component {
             // Un-comment this line
             // window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint;
 
+            // window.location.href = "http://" + redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + "/#/dashboard";
             window.location.href = "http://" + redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
 
             // window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint;
@@ -155,7 +157,7 @@ class LoginApp extends Component {
         if (this.state.redirectToUrl) {
             // Redirect to the calling URL
             const redirectUrl = sessionStorage.getItem("redirectUrl");
-            window.location.href = redirectUrl;
+            window.location.href = "http://" + redirectUrl;
         }
         return (
             <div className="app flex-row align-items-center">
