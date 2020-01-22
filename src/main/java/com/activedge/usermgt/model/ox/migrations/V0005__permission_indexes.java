@@ -3,6 +3,7 @@ package com.activedge.usermgt.model.ox.migrations;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
+import org.bson.types.ObjectId;
 import ox.engine.exception.OxException;
 import ox.engine.internal.OxAction;
 import ox.engine.internal.OxEnvironment;
@@ -26,7 +27,7 @@ public class V0005__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", 1)
+                .add("_id", new ObjectId())
                 .add("action", "VIEW-JOURNAL")
                 .add("description", "creating ATM branch endpoint")
                 .add("module", new DBRef("introspec_modules", "ATM"))
@@ -34,7 +35,7 @@ public class V0005__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", 2)
+                .add("_id", new ObjectId())
                 .add("action", "EDIT-JOURNAL")
                 .add("description", "editing ATM branch endpoint")
                 .add("module", new DBRef("introspec_modules", "ATM"))
@@ -42,7 +43,7 @@ public class V0005__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", 3)
+                .add("_id", new ObjectId())
                 .add("action", "VIEW-FILES")
                 .add("description", "creating SETTLEMENT branch endpoint")
                 .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
@@ -50,7 +51,7 @@ public class V0005__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", 4)
+                .add("_id", new ObjectId())
                 .add("action", "EDIT-FILES")
                 .add("description", "editing SETTLEMENT branch endpoint")
                 .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
@@ -58,7 +59,7 @@ public class V0005__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", 5)
+                .add("_id", new ObjectId())
                 .add("action", "VIEW-AUDIT")
                 .add("description", "creating AUDIT branch endpoint")
                 .add("module", new DBRef("introspec_modules", "ADMIN"))
