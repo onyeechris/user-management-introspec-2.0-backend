@@ -36,11 +36,15 @@ logging:
         usermgt: DEBUG
 #    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
+#  path=/var/logs/app.log
 
 security:
   jwt:
     secret: ${introspec_sso_jwt_secret:JwtSecretKey123}
     expiration: 8_60_60_000 # 24 hours
+
+cors:
+  allowed_headers: X-Requested-With,Content-Type,Authorization,Module,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers,affiliateCode,Affiliate,Affiliate-Code
 
 server:
   port: ${introspec_sso_port:9100}
