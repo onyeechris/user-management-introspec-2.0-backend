@@ -1,5 +1,6 @@
 package com.activedge.usermgt.config;
 
+import com.activedge.usermgt.util.LoggingInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -62,6 +63,12 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add( new PageableHandlerMethodArgumentResolver());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry)
+    {
+        registry.addInterceptor(new LoggingInterceptor()).addPathPatterns("/**");
     }
 
 }

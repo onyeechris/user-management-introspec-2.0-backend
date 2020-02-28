@@ -58,8 +58,19 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .and()
                 // Add a filter to check token for secured resource
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-
                 .authorizeRequests()
+                .antMatchers(
+                        "/",
+                        "/favicon.ico",
+                        "/manifest.json",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/index.html", "/static/**", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
