@@ -6,5 +6,6 @@ spring:
       repositories:
         enabled: false
     mongodb:
-      uri: mongodb://localhost:27017/usermgt
+      uri: mongodb://localhost:27017/
+      database: usermgt
 
