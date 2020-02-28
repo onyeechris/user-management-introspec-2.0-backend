@@ -1,4 +1,4 @@
-FROM node:8.16.2 as builder
+FROM ppc64le/node:8 as builder
 WORKDIR /app
 
 COPY ./package.json ./package-lock.json ./
