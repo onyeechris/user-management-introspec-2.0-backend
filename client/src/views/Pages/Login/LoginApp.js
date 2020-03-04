@@ -11,6 +11,7 @@ import { bindActionCreators } from "redux";
 
 import { FormattedMessage } from "react-intl";
 import LoginForm from "./LoginForm";
+const queryString = require("query-string");
 
 class LoginApp extends Component {
 	constructor (props) {
@@ -32,6 +33,7 @@ class LoginApp extends Component {
 	componentDidMount () {
 		this.storedLanguage = localStorage.se8lementLang;
 		this.setState({ value: localStorage.se8lementLang });
+		console.log("LOCATIONG", this.props.match);
 	}
 
 	change (event) {
@@ -103,25 +105,27 @@ class LoginApp extends Component {
 
 			// Encypt Token
 			let ciphertext = CryptoJS.AES.encrypt(myToken, "introspecAppToken").toString();
-
-			console.log(referralUrl);
-			console.log(referralUrl.hash);
+			debugger;
+			console.log("referralUrl", referralUrl);
+			debugger;
+			console.log("referralUrl.hash", referralUrl.hash);
 
 			let lastIndexInHash = referralUrl.hash.indexOf("/");
 			let urlEndpoint = referralUrl.hash.substring(lastIndexInHash + 1, referralUrl.hash.length + 1);
 			let redirectUrl = referralUrl.searchParams.get("redirectUrl");
-
-			console.log(urlEndpoint);
+			debugger;
+			console.log("urlEndpoint", urlEndpoint);
+			debugger;
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang);
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash);
+			debugger;
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint);
-			window.location.href =
-				"http://" + redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
+			window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
 		}
 		if (this.state.redirectToUrl) {
 			// Redirect to the calling URL
 			const redirectUrl = sessionStorage.getItem("redirectUrl");
-			window.location.href = "http://" + redirectUrl;
+			window.location.href = redirectUrl;
 		}
 		return (
 			<div className='app flex-row align-items-center'>
