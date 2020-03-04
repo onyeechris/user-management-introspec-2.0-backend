@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[154],{1191:function(e,n,r){"use strict";r.r(n);var u=r(0),a=r.n(u);n.default=function(){return a.a.createElement("div",null,"hello from POSacquirerSummarySearchResult")}}}]);
-//# sourceMappingURL=154.d770b89e.chunk.js.map

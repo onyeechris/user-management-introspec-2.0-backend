@@ -118,9 +118,11 @@ class LoginApp extends Component {
 			debugger;
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang);
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash);
-			debugger;
 			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint);
-			window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
+			const url = redirectUrl + referralUrl.hash + "?lang=" + appLang + "&var=" + ciphertext;
+			console.log("redirect url", url);
+			debugger;
+			window.location.href = url;
 		}
 		if (this.state.redirectToUrl) {
 			// Redirect to the calling URL
