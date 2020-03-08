@@ -1,5 +1,7 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.model.StaffModule;
+import com.activedge.usermgt.repository.StaffModuleRepository;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
+import java.util.Set;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
@@ -65,7 +69,7 @@ public class UserJWTController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // check if user belongs to the specified App before generating token
-        if(staffModuleService.findByModuleAndEmail(module, loginRequest.getUsername()) != null) {
+        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication);
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);

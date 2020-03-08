@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service Implementation for managing StaffModule.
@@ -63,9 +64,9 @@ public class StaffModuleServiceImpl implements StaffModuleService {
     }
 
     @Override
-    public StaffModuleDTO findByModuleAndEmail(String module, String email) {
-        log.debug("Request to get StaffModules by {} and ", module, email);
-        return staffModuleMapper.toDto(staffModuleRepository.findByModule_IdAndStaff_Email(module, email));
+    public boolean matchModuleAndEmail(String module, String email) {
+        Set<StaffModule> sm = staffModuleRepository.findByModule_Id(module);
+        return sm.stream().anyMatch(x -> x.getStaff().getEmail().equals(email));
     }
 
     /**

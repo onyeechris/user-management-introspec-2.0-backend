@@ -36,7 +36,7 @@ public interface StaffModuleService {
      */
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
-    StaffModuleDTO findByModuleAndEmail(String module, String email);
+    boolean matchModuleAndEmail(String module, String email);
 
 
     /**
