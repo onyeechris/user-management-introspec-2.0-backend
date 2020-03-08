@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 
+import com.activedge.usermgt.service.StaffModuleService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,15 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -36,13 +40,18 @@ public class UserJWTController {
 
     private AuthenticationManager authenticationManager;
 
-    public UserJWTController(JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager) {
+    private StaffModuleService staffModuleService;
+
+    public UserJWTController(JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager, StaffModuleService staffModuleService) {
         this.tokenProvider = tokenProvider;
         this.authenticationManager = authenticationManager;
+        this.staffModuleService = staffModuleService;
     }
 
     @PostMapping
-    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Module", required = false) String module, BindingResult result) throws NotSupportedException {
+        String jwt;
+
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
         if(errorMap != null) return errorMap;
 
@@ -54,7 +63,13 @@ public class UserJWTController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication);
+
+        // check if user belongs to the specified App before generating token
+        if(staffModuleService.findByModuleAndEmail(module, loginRequest.getUsername()) != null) {
+            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication);
+        } else {
+            throw new NotSupportedException("User account not supported in the specified App: " + module);
+        }
 
         return ResponseEntity.ok(new JWTResponse(true, jwt));
     }

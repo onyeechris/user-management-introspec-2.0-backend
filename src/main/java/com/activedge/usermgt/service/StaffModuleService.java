@@ -36,6 +36,8 @@ public interface StaffModuleService {
      */
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
+    StaffModuleDTO findByModuleAndEmail(String module, String email);
+
 
     /**
      * Get the "id" staffModule.

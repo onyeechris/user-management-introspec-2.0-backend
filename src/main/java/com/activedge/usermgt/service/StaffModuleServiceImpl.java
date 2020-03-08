@@ -62,6 +62,12 @@ public class StaffModuleServiceImpl implements StaffModuleService {
             .map(staffModuleMapper::toDto);
     }
 
+    @Override
+    public StaffModuleDTO findByModuleAndEmail(String module, String email) {
+        log.debug("Request to get StaffModules by {} and ", module, email);
+        return staffModuleMapper.toDto(staffModuleRepository.findByModule_IdAndStaff_Email(module, email));
+    }
+
     /**
      * Get all the staffModules.
      *
