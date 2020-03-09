@@ -6,5 +6,5 @@ spring:
       repositories:
         enabled: false
     mongodb:
-      uri: ${introspec_sso_db_url:mongodb://localhost:37017/}
+      uri: ${introspec_sso_db_url:mongodb://localhost:27017/}
       database: ${introspec_sso_db_name:usermgt}
