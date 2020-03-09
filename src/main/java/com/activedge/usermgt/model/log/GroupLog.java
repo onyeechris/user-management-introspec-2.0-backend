@@ -3,10 +3,13 @@ package com.activedge.usermgt.model.log;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.enumeration.Action;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -17,12 +20,13 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Document(collection = "groups_audit")
 public class GroupLog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    private Long id;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id;
 
     @ManyToOne
     @JoinColumns({
@@ -33,6 +37,7 @@ public class GroupLog {
                     name = "module_id",
                     referencedColumnName = "module", foreignKey = @ForeignKey(name = "FK_group_module_history_log")),
     })
+    @DBRef
     private Group group;
 
     @Type(type = "text")

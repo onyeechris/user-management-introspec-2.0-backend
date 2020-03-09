@@ -2,17 +2,21 @@ package com.activedge.usermgt.exception;
 
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
 import java.util.*;
 
@@ -22,9 +26,9 @@ import java.util.*;
 @Slf4j
 @ControllerAdvice
 public class ExceptionParser {
-	
+
 	@ExceptionHandler(ValidationException.class)
-	public @ResponseBody Object handleCustomException(ValidationException ve, HttpServletRequest request) {
+	public @ResponseBody Object handleCustomException(ValidationException ve, HttpServletRequest request, HttpServletResponse response) {
 		log.info("...caught validation exception...");
 
 		Map<String, Object> errors = new HashMap<>();
@@ -36,7 +40,7 @@ public class ExceptionParser {
 	}
 
 	@ExceptionHandler(ActivityRequiredException.class)
-	public @ResponseBody Object handleActivityRequiredException(ActivityRequiredException ar, HttpServletRequest request) {
+	public @ResponseBody Object handleActivityRequiredException(ActivityRequiredException ar, HttpServletRequest request, HttpServletResponse response) {
 		log.info("...caught action required exception...");
 //        Throwable t = ar.getCause();
         ar.printStackTrace();
@@ -58,7 +62,7 @@ public class ExceptionParser {
 	}
 
 	@ExceptionHandler(ServletRequestBindingException.class)
-	public final ResponseEntity<Object> handleHeaderException(Exception ex, WebRequest request)
+	public final ResponseEntity<Object> handleHeaderException(Exception ex, HttpServletRequest request, HttpServletResponse response)
     {
 		Map<String, Object> errors = new HashMap<>();
 		errors.put("status", HttpStatus.BAD_REQUEST.value());
@@ -68,8 +72,8 @@ public class ExceptionParser {
 	}
 	
 	@ExceptionHandler(Exception.class)
-	public @ResponseBody Object handleGeneralException(Exception e, HttpServletRequest request) throws Exception {
-		log.info("...caught generic exception...");
+	public Object handleGeneralException(@RequestBody Object o, Exception e, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("...caught generic exception..." + IOUtils.toString(request.getInputStream()));
 
 		Map<String, Object> errors = new HashMap<>();
 		errors.put("status", HttpStatus.BAD_REQUEST.value());
