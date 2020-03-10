@@ -105,21 +105,9 @@ class LoginApp extends Component {
 
 			// Encypt Token
 			let ciphertext = CryptoJS.AES.encrypt(myToken, "introspecAppToken").toString();
-			debugger;
-			console.log("referralUrl", referralUrl);
-			debugger;
-			console.log("referralUrl.hash", referralUrl.hash);
-
 			let lastIndexInHash = referralUrl.hash.indexOf("/");
 			let urlEndpoint = referralUrl.hash.substring(lastIndexInHash + 1, referralUrl.hash.length + 1);
 			let redirectUrl = referralUrl.searchParams.get("redirectUrl");
-			debugger;
-			console.log("urlEndpoint", urlEndpoint);
-			debugger;
-			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang);
-			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash);
-			debugger;
-			console.log(redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + urlEndpoint);
 			window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
 		}
 		if (this.state.redirectToUrl) {
