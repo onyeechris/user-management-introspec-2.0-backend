@@ -73,7 +73,7 @@ public class ExceptionParser {
 	
 	@ExceptionHandler(Exception.class)
 	public Object handleGeneralException(@RequestBody Object o, Exception e, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		log.info("...caught generic exception..." + IOUtils.toString(request.getInputStream()));
+		log.info("...caught generic exception...");
 
 		Map<String, Object> errors = new HashMap<>();
 		errors.put("status", HttpStatus.BAD_REQUEST.value());

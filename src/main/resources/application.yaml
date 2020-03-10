@@ -29,11 +29,16 @@ spring:
 logging:
   level:
     org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
       hibernate:
         SQL: DEBUG
     com:
       activedge:
         usermgt: DEBUG
+
 #    root: DEBUG
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
 #  path=/var/logs/app.log
