@@ -108,7 +108,8 @@ class LoginApp extends Component {
 			let lastIndexInHash = referralUrl.hash.indexOf("/");
 			let urlEndpoint = referralUrl.hash.substring(lastIndexInHash + 1, referralUrl.hash.length + 1);
 			let redirectUrl = referralUrl.searchParams.get("redirectUrl");
-			window.location.href = redirectUrl + "?var=" + ciphertext + "&lang=" + appLang + referralUrl.hash;
+			const url = redirectUrl + referralUrl.hash + "?lang=" + appLang + "&var=" + ciphertext;
+			window.location.href = url;
 		}
 		if (this.state.redirectToUrl) {
 			// Redirect to the calling URL
