@@ -1,21 +1,20 @@
 ##	IntroSpec User Management Development Repository
 
- IntroSpec Single Sign On Service.
+ # IntroSpec Single Sign On Service.
 
  With React.js clientSide and Spring-boot backend.
  
  Powered by Spring Security and JWT
 
-- All endpoints are exposed on **Port: 9100**
+- All endpoints are exposed on **Port: 9100** by default but may be controlled with environmental variables.
 
-
-######Application Requirements:
+## Application Requirements:
 - Java 8+
 - Maven 3+
 - Node 8+
 - PostgreSQL 9+
 
-######Deploying and Running application:
+### Deploying and Running application:
 > Step One: Build the client side (from the root directory, navigate to the client folder)
 ```
 ~/client$> npm install
@@ -30,7 +29,7 @@ Once the service is up, you can navigate to the URL below.
 
 `http://localhost:9100`
 				
-####   WIP 
+###   WIP 
 
 #### Database Information
 ```
@@ -41,11 +40,7 @@ Once the service is up, you can navigate to the URL below.
 ```
 You can update the application.yml file to your postgre username and password in lines 33 and 34 respectively.
 
-
-
-
-
-##User Management Application Sign In
+## User Management Application Sign In
 
 Prerequisite: The User Management module should be pulled and running on your localhost. Follow the README.MD file in the root directory for instruction on how to startup the application's frontend and backend servers.
 
@@ -127,5 +122,36 @@ To run the backend, please use:
 
 ```
 mvn clean package -DskipTests spring-boot:run
+```
+
+## Deploying (Google Cloud)
+
+Mirror git repo (on bitbucket.org) to GCP and create build triggers. You can run the following to deploy the triggers in this project.  
+
+### Create build triggers
+
+```
+curl -X POST https://cloudbuild.googleapis.com/v1/projects/celtic-fact-251818/triggers -H "Content-Type: application/json" -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" --data-binary @deployment/cloudbuild/tag-trigger.json
+```
+
+A successful response gives something similar to:
+
+```
+{
+  "id": "b1867579-1dec-4f0a-988f-fa361aee375c",
+  "createTime": "2020-03-11T21:00:03.239083742Z",
+  "triggerTemplate": {
+    "projectId": "celtic-fact-251818",
+    "repoName": "bitbucket_activeedge_usermgt-ui",
+    "tagName": ".*"
+  },
+  "description": "tagged release build",
+  "substitutions": {
+    "_CLOUDSDK_COMPUTE_ZONE": "europe-west1-d",
+    "_CLOUDSDK_CONTAINER_CLUSTER": "cluster-1"
+  },
+  "name": "tagged-release-build-002",
+  "filename": "deployment/cloudbuild/prod.yaml"
+}
 ```
 

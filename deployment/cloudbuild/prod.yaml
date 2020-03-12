@@ -1,0 +1,72 @@
+steps:
+
+  # Maven build
+  - id: 'mvn-package'
+    name: 'maven'
+    args: ['mvn', 'clean', 'package']
+
+  # Build-ppc
+  - id: 'build-ppc'
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: 'bash'
+    args: 
+      - '-c'
+      - |
+          docker build -t activedgetechnologies/usermgt-backend:ppc-$TAG_NAME -t activedgetechnologies/usermgt-backend:ppc-latest -f ./deployment/DockerfilePPC .
+  
+  # Build: others
+  - id: 'build-linux'
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: 'bash'
+    args: 
+      - '-c'
+      - |
+          docker build -t activedgetechnologies/usermgt-backend:$TAG_NAME -t activedgetechnologies/usermgt-backend:latest -f ./deployment/Dockerfile .
+
+  
+  # Login to provide credentials for the push.
+  # PASSWORD is decrypted before this step runs.
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker login --username=activedgetechnologies --password=$$PASSWORD']
+    secretEnv: ['PASSWORD']
+
+  # Push the image to Dockerhub.
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'activedgetechnologies/usermgt-backend:ppc-$TAG_NAME']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'activedgetechnologies/usermgt-backend:ppc-latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'activedgetechnologies/usermgt-backend:$TAG_NAME']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'activedgetechnologies/usermgt-backend:latest']
+
+  # Deploy Linux image to GCP
+  - id: 'deploy'
+    name: 'gcr.io/cloud-builders/gcloud'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=${_CLOUDSDK_COMPUTE_ZONE}'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=${_CLOUDSDK_CONTAINER_CLUSTER}'
+      - 'KUBECONFIG=/kube/config'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          CLUSTER=$$(gcloud config get-value container/cluster)
+          PROJECT=$$(gcloud config get-value core/project)
+          ZONE=$$(gcloud config get-value compute/zone)
+          
+          gcloud container clusters get-credentials "$${CLUSTER}" \
+            --project "$${PROJECT}" \
+            --zone "$${ZONE}"
+
+          sed -i 's|activedgetechnologies/usermgt-backend:.*|activedgetechnologies/usermgt-backend:$TAG_NAME|' ./deployment/kubernetes/deployments/prod/*.yaml
+          
+          kubectl get ns production || kubectl create ns production
+          kubectl apply --namespace default --recursive -f deployment/kubernetes/deployments/prod
+          kubectl apply --namespace default --recursive -f deployment/kubernetes/services
+
+secrets:
+- kmsKeyName: projects/celtic-fact-251818/locations/global/keyRings/introspec-keyring/cryptoKeys/introspec-key
+  secretEnv:
+    PASSWORD: CiQAzammhJg3E0ixFv2EPq6bUbXfgHoU5BWFMBuUFwh6EDGUj0kSOABgfAAZU7ACgobxT50RFpfp6GxqCDOU2LGFa3BthtbmqKxZT9KoAnGOhw9KN9uJlwIGgipFk6pa

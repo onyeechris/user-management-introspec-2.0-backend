@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usermgt-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: usermgt-backend-deployment
+  template:
+    metadata:
+      labels:
+        component: usermgt-backend-deployment
+    spec:
+      containers:
+        - name: usermgt-backend
+          image: activedgetechnologies/usermgt-backend:1.4.15
+          resources:
+            requests:
+              memory: 800M
+              cpu: 500m
+            limits:
+              memory: 800M
+              cpu: 500m
+          ports:
+            - containerPort: 8080
+          env:
+            - name: introspec_sso_port
+              value: "8080"
+            - name: introspec_sso_db_url
+              value: mongodb://mongo-service:27017/
+            - name: introspec_sso_db_name
+              value: introspec_sso
+            - name: introspec_sso_db_user
+              value: introspec_sso
+            - name: introspec_sso_db_password
+              valueFrom:
+                secretKeyRef:
+                  name: introspec-secrets
+                  key: usermgt_backend_db_password
+            - name: introspec_sso_jwt_token
+              valueFrom:
+                secretKeyRef:
+                  name: introspec-secrets
+                  key: usermgt_backend_jwt_token
