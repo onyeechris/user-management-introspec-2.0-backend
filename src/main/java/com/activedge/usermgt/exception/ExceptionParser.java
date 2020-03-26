@@ -9,10 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.WebRequest;
@@ -72,6 +69,7 @@ public class ExceptionParser {
 	}
 	
 	@ExceptionHandler(Exception.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "generic exception.")
 	public Object handleGeneralException(@RequestBody Object o, Exception e, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("...caught generic exception...");
 
@@ -81,7 +79,7 @@ public class ExceptionParser {
 
 		e.printStackTrace();
 
-		return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 		
 	}
 	

@@ -110,7 +110,7 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
     @Pointcut("within(@org.springframework.web.bind.annotation.ControllerAdvice *)")
     public void controllerAdvice() {}
 
-    @Before("controllerAdvice() && args(body, exception, request, response)")
+    @After("controllerAdvice() && args(body, exception, request, response)")
     public void logAllAfterThrowing(JoinPoint joinPoint, Object body, Throwable exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         StringBuilder logMessage = new StringBuilder();
         logMessage.append("method: ").append(request.getMethod()).append("\t");
@@ -230,7 +230,7 @@ class MessageReceiver {
             reqBody.setClient(message[1]);
             reqBody.setUser(message[2]);
             reqBody.setHeaders(message[3]);
-            reqBody.setPayload(message[5] == null ? "" : message[5]);
+            reqBody.setPayload(message.length > 5 ? message[5] : "");
         } finally {
             reqBody.setDump(msg);
         }
