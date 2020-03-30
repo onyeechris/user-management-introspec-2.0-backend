@@ -68,8 +68,8 @@ public class ExceptionParser {
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "generic exception.")
+//	@ExceptionHandler(Exception.class)
+//	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "generic exception.")
 	public Object handleGeneralException(@RequestBody Object o, Exception e, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("...caught generic exception...");
 

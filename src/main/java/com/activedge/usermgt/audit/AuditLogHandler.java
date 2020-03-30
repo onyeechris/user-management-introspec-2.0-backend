@@ -1,4 +1,4 @@
-package com.activedge.usermgt.model.log;
+package com.activedge.usermgt.audit;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,11 +10,6 @@ import javax.jms.Queue;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.activedge.usermgt.repository.ReqBodyRepository;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import org.aspectj.lang.JoinPoint;
@@ -22,7 +17,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +62,6 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
 
         // async log
         this.jmsMessagingTemplate.convertAndSend(this.queue, s);
-
     }
 
     @Pointcut("execution(* *.*(..))") // the pointcut expression
@@ -102,15 +95,19 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
         log.error("Cause : " + exception.getCause());
     }
 
-    @Pointcut("within(com.activedge.usermgt..*)")
-    public void logAnyFunctionWithinResource() {
-        System.out.println("Just logging...");
-    }
+//    @Pointcut("within(com.activedge.usermgt..*)")
+//    public void logAnyFunctionWithinResource() {
+//    }
+
+//    @Before("controller()")
+//    public void loggingAll(JoinPoint joinPoint) {
+//        System.out.println("Just logging...");
+//    }
 
     @Pointcut("within(@org.springframework.web.bind.annotation.ControllerAdvice *)")
     public void controllerAdvice() {}
 
-    @After("controllerAdvice() && args(body, exception, request, response)")
+    @Before("controllerAdvice() && args(body, exception, request, response)")
     public void logAllAfterThrowing(JoinPoint joinPoint, Object body, Throwable exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         StringBuilder logMessage = new StringBuilder();
         logMessage.append("method: ").append(request.getMethod()).append("\t");
@@ -146,7 +143,7 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
             logMessage.append("status: ").append(response.getStatus()).append("\t");
             logMessage.append("remoteAddress: ").append(request.getRemoteAddr()).append("\t");
 
-            log.debug("Method " + className + "." + methodName + " ()" + " execution time : " + elapsedTime + " ms " + logMessage);
+            log.info("Method " + className + "." + methodName + " ()" + " execution time : " + elapsedTime + " ms " + logMessage);
 
             return result;
         } catch (IllegalArgumentException e) {
@@ -211,31 +208,4 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
 // JSESSIONID=D2706A9EC8314649D4B4A2AF654B9435", accept-encoding:"gzip, deflate", content-length:"25", connection:"keep-alive",
 // Content-Type:"application/json;charset=UTF-8"]<;payload=For God so love the world>
 
-}
-
-@Component
-class MessageReceiver {
-
-    @Autowired
-    private ReqBodyRepository repository;
-
-    @JmsListener(destination = "auditlog.queue")
-    public void receiveQueue(String s) {
-        // Todo: Extract String into object
-        String msg = s.replaceAll("; ", "--");
-        String[] message = msg.split(";");
-        ReqBody reqBody = new ReqBody();
-        try {
-            reqBody.setUrl(message[0]);
-            reqBody.setClient(message[1]);
-            reqBody.setUser(message[2]);
-            reqBody.setHeaders(message[3]);
-            reqBody.setPayload(message.length > 5 ? message[5] : "");
-        } finally {
-            reqBody.setDump(msg);
-        }
-
-        repository.save(reqBody);
-
-    }
 }
