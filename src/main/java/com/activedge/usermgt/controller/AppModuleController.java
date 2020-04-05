@@ -113,8 +113,6 @@ public class AppModuleController {
         log.debug("REST request to get a page of Module for app: {}", app);
         Page<ModuleDTO> page;
 
-        String md5Hex = DigestUtils.md5DigestAsHex("SETTLEMENT".getBytes());
-
         page = moduleService.findAll(pageable);
 
         return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
@@ -152,4 +150,5 @@ public class AppModuleController {
         moduleService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
+
 }

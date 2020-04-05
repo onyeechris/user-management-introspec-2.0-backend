@@ -2,13 +2,14 @@ package com.activedge.usermgt.model;
 
 import com.activedge.usermgt.model.enumeration.Severity;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -16,7 +17,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @Document(collection = "http_trace")
-public class CustomHttpTrace implements Serializable {
+public class CustomHttpTrace {
     @Id
     private String id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
