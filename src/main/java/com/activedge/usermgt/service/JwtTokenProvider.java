@@ -83,7 +83,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("authorities", authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                    .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .claim("permissions", staffPermissions)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)

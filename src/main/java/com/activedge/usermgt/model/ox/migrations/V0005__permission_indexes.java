@@ -21,7 +21,7 @@ public class V0005__permission_indexes implements Migration {
                 .addAttribute("action", OrderingType.ASC)
                 .unique()
                 .setCollection("permissions")
-                .addAttribute("_id",OrderingType.ASC)
+                //.addAttribute("_id",OrderingType.ASC)
                 .ifNotExists()
         );
 

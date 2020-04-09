@@ -26,6 +26,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
@@ -64,7 +66,11 @@ public class GroupController extends BaseEntity {
      */
     @PostMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> createGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> createGroups(
+            HttpServletRequest request, HttpServletResponse response,
+            @Valid @RequestBody GroupDTO groupDTO,
+            @RequestHeader(value = "Module", required = true) String module,
+            @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors()) {
@@ -121,7 +127,12 @@ public class GroupController extends BaseEntity {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllGroups(@RequestHeader(value = "Module", required = true) String module, @RequestParam(value = "app", defaultValue="all") String app, @ApiIgnore Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllGroups(
+            @RequestHeader(value = "Module", required = true) String module,
+            @RequestParam(value = "app", defaultValue="all") String app,
+            @ApiIgnore Pageable pageable,
+            @RequestParam(required = false, defaultValue = "false") boolean eagerload,
+            HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         log.debug("REST request to get a page of Group for app: {}", app);
         Page<GroupDTO> page;
 

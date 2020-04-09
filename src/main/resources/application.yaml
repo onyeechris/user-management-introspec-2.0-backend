@@ -2,6 +2,15 @@ spring:
   profiles:
     active: mongo # mongo | jpa
 
+  activemq:
+    in-memory: true
+    pool:
+      enabled: false
+#    broker-url: tcp://localhost:61616
+#    user: admin
+#    password: admin
+
+
   application:
       name: auth-service
 
@@ -29,12 +38,18 @@ spring:
 logging:
   level:
     org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
       hibernate:
         SQL: DEBUG
     com:
       activedge:
-        usermgt: DEBUG
-#    root: DEBUG
+        usermgt: INFO
+
+
+    root: INFO
 #  file: ${java.io.tmpdir}/${spring.application.name}.log
 #  path=/var/logs/app.log
 

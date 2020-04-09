@@ -16,8 +16,11 @@ public class V0002__group_indexes implements Migration {
         DB db = oxEnvironment.getMongoDatabase();
         oxEnvironment.execute(OxAction
                 .createIndex("group_id_idx")
+                .addAttribute("module", OrderingType.ASC)
+                .addAttribute("name", OrderingType.ASC)
+                .unique()
                 .setCollection("groups")
-                .addAttribute("_id",OrderingType.ASC)
+                //.addAttribute("_id",OrderingType.ASC)
                 .ifNotExists()
         );
 

@@ -89,7 +89,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/userapps/**").hasAnyRole("ADMIN", "USER", "DEV", "AUDITOR")
                 .antMatchers("/userapps/**").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/management/audits/**").hasAnyRole("AUDITOR", "ADMIN")
+                .antMatchers(HttpMethod.GET, "/audit/**").hasAnyRole("AUDITOR", "ADMIN")
 
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
 
@@ -112,6 +112,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
         // check AD
+        /*
         auth
             .ldapAuthentication()
 //                .userDnPatterns("uid={0},ou=users,ou=guests")
@@ -121,6 +122,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .passwordCompare()
 //                .passwordEncoder()
             .passwordAttribute("mail");
+            */
 
 /*
         auth
@@ -159,7 +161,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 //                Collections.singletonList("ldap://ldap.forumsys.com:389"), "dc=example,dc=com");
 //                Collections.singletonList("ldap://www.zflexldap.com:389"), "cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
             LdapContextSource contextSource = new LdapContextSource();
-            contextSource.setUrl("ldap://www.zflexldap.com:389");
+            contextSource.setUrl("ldap://ldap.forumsys.com:389");
             contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
             contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
             contextSource.setPassword("zflexpass");
