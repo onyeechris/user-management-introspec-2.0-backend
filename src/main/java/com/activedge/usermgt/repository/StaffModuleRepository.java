@@ -13,6 +13,7 @@ public interface StaffModuleRepository extends PagingAndSortingRepository<StaffM
 
     Page<StaffModule> findAllByModule_Id(Pageable pageable, String module);
 
+    // Associations can only be pointed to directly or via their id property!
     StaffModule findByModule_IdAndStaff_Email(String module, String email);
 
     Set<StaffModule> findByModule_Id(String module);

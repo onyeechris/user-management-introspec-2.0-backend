@@ -73,7 +73,7 @@ public class JwtTokenProvider {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
-                        System.out.println("jdbc: >>" + staffPermissions);
+                        // System.out.println("jdbc: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     }).orElse("null");
         }
