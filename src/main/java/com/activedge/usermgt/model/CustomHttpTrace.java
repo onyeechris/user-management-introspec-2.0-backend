@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter
 //@Builder()
 @ToString
 @NoArgsConstructor
+@Entity
+@Table(name = "http_trace")
 @Document(collection = "http_trace")
 public class CustomHttpTrace {
     @Id

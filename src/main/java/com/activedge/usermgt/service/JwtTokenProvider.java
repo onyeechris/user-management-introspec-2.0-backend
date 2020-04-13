@@ -2,6 +2,7 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.model.*;
 import com.activedge.usermgt.model.enumeration.Type;
+import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.security.AuthoritiesConstants;
 import io.jsonwebtoken.*;
@@ -29,6 +30,9 @@ public class JwtTokenProvider {
     private StaffRepository staffRepository;
 
     @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
     private BCryptPasswordEncoder encoder;
 
     @Value("${security.jwt.secret}")
@@ -37,7 +41,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.expiration}")
     private int jwtExpirationInMs;
 
-    public String getJwtToken(Authentication authentication) {
+    public String getJwtToken(Authentication authentication, String module) {
         Set<String> staffPermissions = new HashSet<>();
         String token = "";
 
@@ -46,9 +50,11 @@ public class JwtTokenProvider {
             LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
             token = staffRepository.findOneWithAuthoritiesByEmail(userPrincipal.getUsername().toLowerCase())
                     .map(staff -> {
+                        // --- Fetch all groups this staff belongs to and populate its permission
+                        List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
                         for(Group group: staff.getGroups()) {
                             for(Permission permission: group.getPermissions()) {
-                                staffPermissions.add(permission.getAction());
+                                staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
 //                        System.out.println("ldap: >>" + staffPermissions);
@@ -60,12 +66,14 @@ public class JwtTokenProvider {
             User user = (User) authentication.getPrincipal();
             token = staffRepository.findOneWithAuthoritiesByEmail(user.getUsername().toLowerCase())
                     .map(staff -> {
-                        for(Group group: staff.getGroups()) {
+                        // --- Fetch all groups this staff belongs to and populate its permission
+                        List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
+                        for(Group group: groups) {
                             for(Permission permission: group.getPermissions()) {
-                                staffPermissions.add(permission.getAction());
+                                staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
-//                        System.out.println("jdbc: >>" + staffPermissions);
+                        System.out.println("jdbc: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     }).orElse("null");
         }

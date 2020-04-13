@@ -2,6 +2,7 @@ package com.activedge.usermgt.repository;
 
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
+import com.activedge.usermgt.model.Staff;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,5 +37,7 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
     Optional<Group> findAllById(@Param("id") GroupPK id);
 
     Page<Group> findAllByModule_Id(String module, Pageable pageable);
+
+    List<Group> findAllByModule_IdAndStaffsContains(String module, Staff staff);
 
 }

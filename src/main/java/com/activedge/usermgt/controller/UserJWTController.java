@@ -87,7 +87,7 @@ public class UserJWTController {
 
         // check if user belongs to the specified App before generating token
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
-            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication);
+            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
             // log successful login
             audit(req, authentication);
         } else {
