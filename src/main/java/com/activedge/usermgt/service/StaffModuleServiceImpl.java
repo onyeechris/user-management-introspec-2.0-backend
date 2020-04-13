@@ -91,7 +91,7 @@ public class StaffModuleServiceImpl implements StaffModuleService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<StaffModuleDTO> findOne(Long id) {
+    public Optional<StaffModuleDTO> findOne(String id) {
         log.debug("Request to get StaffModule : {}", id);
         return staffModuleRepository.findById(id)
             .map(staffModuleMapper::toDto);
@@ -103,7 +103,7 @@ public class StaffModuleServiceImpl implements StaffModuleService {
      * @param id the id of the entity
      */
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         log.debug("Request to delete StaffModule : {}", id);
         staffModuleRepository.deleteById(id);
     }

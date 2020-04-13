@@ -128,7 +128,7 @@ public class UserAppController {
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
-    public ResponseEntity<StaffModuleDTO> getStaffModule(@PathVariable Long id) {
+    public ResponseEntity<StaffModuleDTO> getStaffModule(@PathVariable String id) {
         log.debug("REST request to get StaffModule : {}", id);
         Optional<StaffModuleDTO> staffModuleDTO = staffModuleService.findOne(id);
 
@@ -147,7 +147,7 @@ public class UserAppController {
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
     @ApiOperation(value = "Delete a single "+ENTITY_NAME)
-    public ResponseEntity<Void> deleteStaffModule(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStaffModule(@PathVariable String id) {
         log.debug("REST request to delete StaffModule : {}", id);
         staffModuleService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();

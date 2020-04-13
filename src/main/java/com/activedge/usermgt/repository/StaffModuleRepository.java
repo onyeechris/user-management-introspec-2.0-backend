@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface StaffModuleRepository extends PagingAndSortingRepository<StaffModule, Long> {
+public interface StaffModuleRepository extends PagingAndSortingRepository<StaffModule, String> {
 
     Page<StaffModule> findAllByModule_Id(Pageable pageable, String module);
 
