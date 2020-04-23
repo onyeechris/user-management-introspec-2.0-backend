@@ -65,3 +65,6 @@ server:
   port: ${introspec_sso_port:9100}
   servlet:
     context-path: /${spring.application.name}
+
+introspecsso:
+  backend: ldap
