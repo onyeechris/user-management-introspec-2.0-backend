@@ -108,21 +108,20 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // check JDBC
-        auth
-            .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        // auth
+        //    .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
         // check AD
-        /*
         auth
             .ldapAuthentication()
-//                .userDnPatterns("uid={0},ou=users,ou=guests")
-            .userSearchBase("ou=users")
+            .userSearchBase("ou=people")
             .userSearchFilter("uid={0}")
-            .contextSource(contextSource())
-            .passwordCompare()
-//                .passwordEncoder()
-            .passwordAttribute("mail");
-            */
+            .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
+            .groupSearchFilter("member={0}")
+            .contextSource(contextSource());
+            //.passwordCompare()
+            //.passwordEncoder(new LdapShaPasswordEncoder());
+            //.passwordAttribute("userPass");
 
 /*
         auth
@@ -156,15 +155,19 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Bean
     public LdapContextSource contextSource() {
-//        return  new DefaultSpringSecurityContextSource(
-//                Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
-//                Collections.singletonList("ldap://ldap.forumsys.com:389"), "dc=example,dc=com");
-//                Collections.singletonList("ldap://www.zflexldap.com:389"), "cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
             LdapContextSource contextSource = new LdapContextSource();
-            contextSource.setUrl("ldap://ldap.forumsys.com:389");
-            contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
-            contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
-            contextSource.setPassword("zflexpass");
+//            contextSource.setUrl("ldap://www.zflexldap.com:389");
+//            contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
+//            contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
+//            contextSource.setPassword("zflexpass");
+//            contextSource.setUrl("ldap://ldap.forumsys.com:389");
+//            contextSource.setBase("dc=example,dc=com");
+//            contextSource.setUserDn("cn=read-only-admin,dc=example,dc=com");
+//            contextSource.setPassword("password");
+            contextSource.setUrl("ldap://localhost:389");
+            contextSource.setBase("dc=planetexpress,dc=com");
+            contextSource.setUserDn("cn=admin,dc=planetexpress,dc=com");
+            contextSource.setPassword("GoodNewsEveryone"); // https://github.com/rroemhild/docker-test-openldap
             return contextSource;
     }
 }

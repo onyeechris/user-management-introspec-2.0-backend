@@ -1,11 +1,8 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.model.CustomHttpTrace;
-import com.activedge.usermgt.model.StaffModule;
-import com.activedge.usermgt.repository.StaffModuleRepository;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
-
 import com.activedge.usermgt.service.StaffModuleService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,24 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.filter.RequestContextFilter;
 
 import javax.jms.Queue;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
-import java.io.IOException;
 import java.util.Date;
-import java.util.Set;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
@@ -86,13 +77,13 @@ public class UserJWTController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // check if user belongs to the specified App before generating token
-        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
+//        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
             // log successful login
             audit(req, authentication);
-        } else {
-            throw new NotSupportedException("User account not supported in the specified App: " + module);
-        }
+//        } else {
+//            throw new NotSupportedException("User account not supported in the specified App: " + module);
+//        }
 
         return ResponseEntity.ok(new JWTResponse(true, jwt));
     }
