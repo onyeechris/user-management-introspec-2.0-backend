@@ -5,8 +5,6 @@ import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
-import javax.naming.Name;
-
 @Entry(base = "ou=users", objectClasses = { "person", "inetOrgPerson", "top" })
 public class LdapUser  {
     @Value("${security.jwt.expiration}")
@@ -14,12 +12,11 @@ public class LdapUser  {
 
     @Value("${security.jwt.secret}")
     private String secret;
-    @Id
-    private Name id;
 
+    @Id
+    private @Attribute(name = "uid") String userid;
     private @Attribute(name = "ou") String organization;
     private @Attribute(name = "cn") String username;
-    private @Attribute(name = "uid") String userid;
     private @Attribute(name = "userPassword") String password;
 
     public LdapUser() {
@@ -28,14 +25,6 @@ public class LdapUser  {
     public LdapUser(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public Name getId() {
-        return id;
-    }
-
-    public void setId(Name id) {
-        this.id = id;
     }
 
     public String getUsername() {

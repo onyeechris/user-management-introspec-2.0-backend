@@ -2,11 +2,14 @@ package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.CustomUserDetailsService;
-import com.activedge.usermgt.service.LdapUserService;
+import com.activedge.usermgt.service.conditions.DbCondition;
+import com.activedge.usermgt.service.conditions.LdapCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -25,7 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private CustomUserDetailsService userDetailsService; // loads the user from the database (or any data source) service.
+    private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private StaffRepository staffRepository;
@@ -34,9 +37,8 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
-    @Lazy
     @Autowired
-    LdapUserService ldapUserService;
+    private Environment env;
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -104,56 +106,41 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
-    // define the password encoder to be used by the auth manager to compare and verify passwords.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // check JDBC
-        // auth
-        //    .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-
-        // check AD
-        auth
-            .ldapAuthentication()
-            .userSearchBase("ou=people")
-            .userSearchFilter("uid={0}")
-            .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
-            .groupSearchFilter("member={0}")
-            .contextSource(contextSource());
-            //.passwordCompare()
-            //.passwordEncoder(new LdapShaPasswordEncoder());
-            //.passwordAttribute("userPass");
-
-/*
-        auth
-            .ldapAuthentication()
-            .userDnPatterns("uid={0},ou=people")
-            .userSearchBase("ou=people")
-            .userSearchFilter("uid={0}")
-            .groupSearchBase("ou=group") // map LDAP groups to roles in Spring
-//            .groupSearchFilter("uniqueMember={0}")
-            .contextSource(contextSource())
-//            .contextSource()
-//                .url("ldap://localhost:12345/dc=memorynotfound,dc=com")
-//                .and()
-            .passwordCompare();
-//            .passwordEncoder(new LdapShaPasswordEncoder())
-//            .passwordEncoder(passwordEncoder())
-//            .passwordAttribute("userPassword");
-        */
-
+        if(env.getRequiredProperty("introspecsso.backend").equalsIgnoreCase("ldap")) {
+            // check AD
+            auth
+                .ldapAuthentication()
+                .userSearchBase("ou=people")
+                .userSearchFilter("uid={0}")
+                .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
+                .groupSearchFilter("member={0}")
+                .contextSource(contextSource());
+                //.passwordCompare()
+                //.passwordEncoder(new LdapShaPasswordEncoder());
+                //.passwordAttribute("userPass");
+        } else {
+            // check JDBC
+            auth
+                .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        }
     }
 
     @Bean
+    @Conditional(LdapCondition.class)
     public LdapTemplate ldapTemplate() {
         return new LdapTemplate(contextSource());
     }
 
     @Bean
+    @Conditional(DbCondition.class)
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
+    @Conditional(LdapCondition.class)
     public LdapContextSource contextSource() {
             LdapContextSource contextSource = new LdapContextSource();
 //            contextSource.setUrl("ldap://www.zflexldap.com:389");

@@ -48,6 +48,10 @@ public interface StaffService {
      */
     Optional<StaffDTO> findOne(String id);
 
+
+    StaffDTO search(String searchId);
+
+
     /**
      * Delete the "id" staff.
      *

@@ -7,7 +7,7 @@ import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
-import com.activedge.usermgt.service.LdapUserService;
+import com.activedge.usermgt.service.LdapService;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -43,12 +42,12 @@ public class StaffController {
     private static final String ENTITY_NAME = "staffs";
 
     private final StaffService staffService;
-    private final LdapUserService ldapUserService;
+    private final LdapService ldapService;
     private final ModuleRepository moduleRepository;
 
-    public StaffController(StaffService staffService, LdapUserService ldapUserService, ModuleRepository moduleRepository) {
+    public StaffController(StaffService staffService, LdapService ldapService, ModuleRepository moduleRepository) {
         this.staffService = staffService;
-        this.ldapUserService = ldapUserService;
+        this.ldapService = ldapService;
         this.moduleRepository = moduleRepository;
     }
 

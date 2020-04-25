@@ -77,13 +77,13 @@ public class UserJWTController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // check if user belongs to the specified App before generating token
-//        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
+        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
             // log successful login
             audit(req, authentication);
-//        } else {
-//            throw new NotSupportedException("User account not supported in the specified App: " + module);
-//        }
+        } else {
+            throw new NotSupportedException("User account not supported in the specified App: " + module);
+        }
 
         return ResponseEntity.ok(new JWTResponse(true, jwt));
     }
