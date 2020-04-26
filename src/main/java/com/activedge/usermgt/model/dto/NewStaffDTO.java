@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -28,6 +29,11 @@ public class NewStaffDTO extends StaffDTO {
     }
 
     public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public NewStaffDTO(String password, @NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email) {
+        super(first_name, last_name, phone, email);
         this.password = password;
     }
 

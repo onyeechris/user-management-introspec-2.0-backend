@@ -47,13 +47,12 @@ public class LdapService implements StaffService {
 
     @Override
     public Page<StaffDTO> findAll(Pageable pageable) {
-        Page<LdapUser> users = ldapRepository.findAll(pageable);
-        return staffDTOAdapter.transform(users);
+        return staffDTOAdapter.transform(ldapRepository.findAll());
     }
 
     @Override
     public Optional<StaffDTO> findOne(String id) {
-        Optional<LdapUser> staff = ldapRepository.findById(id);
+        Optional<LdapUser> staff = ldapRepository.findByUserid(id);
         return staffDTOAdapter.transform(staff);
     }
 
@@ -61,22 +60,29 @@ public class LdapService implements StaffService {
     public Optional<StaffDTO> search(final String searchId) {
         Optional<LdapUser> newUser = ldapRepository.findByUserid(searchId);
         Optional<StaffDTO> user = staffDTOAdapter.transform(newUser);
+        StaffDTO uzer = new StaffDTO();
+
         if(user.isPresent()) {
-            // if found save to db
             try {
-                staffService.save(user.get());
+                StaffDTO usr = user.get();
+                // check that this user was not previously imported before saving
+                Optional<StaffDTO> s1 = staffService.search(usr.getEmail());
+                if(s1.isPresent()) {
+                    uzer = s1.get();
+                } else {
+                    log.info("...saving imported staff");
+                    uzer = staffService.save(new NewStaffDTO(usr.getPhone(), usr.getFirst_name(), usr.getLast_name(), usr.getPhone(), usr.getEmail()));
+                }
             } catch (ActivityRequiredException e) {
-                e.printStackTrace();
-            } catch (NotFoundException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
-        return user;
+        return Optional.of(uzer);
     }
 
     @Override
     public void delete(String id) {
-        ldapRepository.deleteById(id);
+        //ldapRepository.deleteById(id);
     }
 
     private String digestSHA(final String password) {

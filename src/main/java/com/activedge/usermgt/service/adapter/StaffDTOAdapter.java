@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class StaffDTOAdapter {
@@ -15,15 +17,20 @@ public class StaffDTOAdapter {
     public Optional<StaffDTO> transform(Optional<LdapUser> l_user) {
         if(l_user.isPresent()) {
             LdapUser l_usr = l_user.get();
-            return Optional.of(new StaffDTO(l_usr.getFullname().split(" ")[0], l_usr.getFullname().split(" ")[1],l_usr.getMail(),l_usr.getUserid()));
+            return Optional.of(new StaffDTO(l_usr.getFullname().split(" ")[0], l_usr.getFullname().split(" ")[1],l_usr.getUserid(),l_usr.getMail()));
         } else {
             return Optional.empty();
         }
     }
 
-    public Page<StaffDTO> transform(Page<LdapUser> l_users) {
-        return new PageImpl<>(l_users.stream()
-                .map(x -> new StaffDTO(x.getFullname().split(" ")[0], x.getFullname().split(" ")[1],x.getMail(),x.getUserid()))
-                .collect(Collectors.toList()));
+    public Page<StaffDTO> transform(Iterable<LdapUser> l_users) {
+        Iterator<LdapUser> lu = l_users.iterator();
+        List<StaffDTO> userList = new ArrayList<>();
+
+        while(lu.hasNext()) {
+            LdapUser x = lu.next();
+            userList.add(new StaffDTO(x.getFullname().split(" ")[0], x.getFullname().split(" ")[1],x.getUserid(),x.getMail()));
+        }
+        return new PageImpl<>(userList);
     }
 }

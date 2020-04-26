@@ -2,7 +2,6 @@ package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.CustomUserDetailsService;
-import com.activedge.usermgt.service.conditions.DbCondition;
 import com.activedge.usermgt.service.conditions.LdapCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +107,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        if(env.getRequiredProperty("introspecsso.backend").equalsIgnoreCase("ldap")) {
+//        if(env.getRequiredProperty("introspecsso.backend").equalsIgnoreCase("ldap")) {
             // check AD
             auth
                 .ldapAuthentication()
@@ -120,11 +119,11 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 //.passwordCompare()
                 //.passwordEncoder(new LdapShaPasswordEncoder());
                 //.passwordAttribute("userPass");
-        } else {
+//        } else {
             // check JDBC
             auth
                 .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        }
+//        }
     }
 
     @Bean
@@ -134,7 +133,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @Conditional(DbCondition.class)
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

@@ -161,7 +161,7 @@ public class StaffController {
      * @param username the username of the staffDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
-    @GetMapping("/"+ENTITY_NAME+"/{username}")
+    @GetMapping("/"+ENTITY_NAME+"/import/{username}")
     @ApiOperation(value = "Import a staff from LDAP using their username")
     public ResponseEntity<StaffDTO> importStaff(@PathVariable String username) throws Exception {
         log.debug("REST request to import {} : {}", ENTITY_NAME, username);

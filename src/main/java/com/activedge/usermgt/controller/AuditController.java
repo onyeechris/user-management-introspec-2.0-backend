@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +31,9 @@ public class AuditController {
 
     private static final String ENTITY_NAME = "audit";
 
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 25;
+
     private final TraceService traceService;
 
     public AuditController(TraceService traceService) {
@@ -43,7 +49,14 @@ public class AuditController {
      */
     @GetMapping("/"+ENTITY_NAME)
     @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllCustomHttpTraces(@RequestParam(value = "app", defaultValue="all") String app, @ApiIgnore Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<ResponseWrapper> getAllCustomHttpTraces(
+            @RequestParam(value = "app", defaultValue="all") String app,
+            @ApiIgnore
+            @PageableDefault(page = DEFAULT_PAGE_NUMBER, size = DEFAULT_PAGE_SIZE)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
+            }) Pageable pageable,
+            @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of CustomHttpTrace for app: {}", app);
         Page<CustomHttpTrace> page;
 
