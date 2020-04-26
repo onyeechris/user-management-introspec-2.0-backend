@@ -11,6 +11,7 @@ import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,23 +25,20 @@ import java.util.Set;
 /**
  * Service Implementation for managing Staff.
  */
-@Service
 @Transactional
+@Service("db_service")
 public class StaffServiceImpl implements StaffService {
 
     private final Logger log = LoggerFactory.getLogger(StaffServiceImpl.class);
 
-    private final StaffRepository staffRepository;
+    @Autowired
+    private StaffRepository staffRepository;
 
-    private final BCryptPasswordEncoder encoder;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
-    private final StaffMapper staffMapper;
-
-    public StaffServiceImpl(StaffRepository staffRepository, StaffMapper staffMapper, BCryptPasswordEncoder encoder) {
-        this.staffRepository = staffRepository;
-        this.staffMapper = staffMapper;
-        this.encoder = encoder;
-    }
+    @Autowired
+    private StaffMapper staffMapper;
 
     /**
      * Save a staff.
@@ -130,6 +128,12 @@ public class StaffServiceImpl implements StaffService {
         log.debug("Request to get Staff : {}", id);
         return staffRepository.findById(id)
             .map(staffMapper::toDto);
+    }
+
+    @Override
+    public Optional<StaffDTO> search(String searchId) {
+        return staffRepository.findByEmail(searchId)
+                .map(staffMapper::toDto);
     }
 
     /**

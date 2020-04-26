@@ -7,12 +7,13 @@ import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
-import com.activedge.usermgt.service.LdapService;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,13 +42,17 @@ public class StaffController {
 
     private static final String ENTITY_NAME = "staffs";
 
-    private final StaffService staffService;
-    private final LdapService ldapService;
+    @Autowired
+    @Qualifier("db_service")
+    private StaffService staffService;
+
+    @Autowired
+    @Qualifier("ldap_service")
+    private StaffService ldapService;
+
     private final ModuleRepository moduleRepository;
 
-    public StaffController(StaffService staffService, LdapService ldapService, ModuleRepository moduleRepository) {
-        this.staffService = staffService;
-        this.ldapService = ldapService;
+    public StaffController(ModuleRepository moduleRepository) {
         this.moduleRepository = moduleRepository;
     }
 
@@ -144,6 +149,26 @@ public class StaffController {
 
         if (!staffDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for id " + id);
+        }
+
+        return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
+
+    }
+
+    /**
+     * GET  /staff/import/:username : import staff with username from LDAP.
+     *
+     * @param username the username of the staffDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
+     */
+    @GetMapping("/"+ENTITY_NAME+"/{username}")
+    @ApiOperation(value = "Import a staff from LDAP using their username")
+    public ResponseEntity<StaffDTO> importStaff(@PathVariable String username) throws Exception {
+        log.debug("REST request to import {} : {}", ENTITY_NAME, username);
+        Optional<StaffDTO> staffDTO = ldapService.search(username);
+
+        if (!staffDTO.isPresent()) {
+            throw new ValidationException("No "+ENTITY_NAME+" was found for username " + username);
         }
 
         return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
