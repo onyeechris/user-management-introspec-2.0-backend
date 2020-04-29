@@ -4,6 +4,7 @@ import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.LdapUser;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.repository.LdapRepository;
 import com.activedge.usermgt.service.adapter.StaffDTOAdapter;
 import javassist.NotFoundException;
@@ -71,7 +72,7 @@ public class LdapService implements StaffService {
                     uzer = s1.get();
                 } else {
                     log.info("...saving imported staff");
-                    uzer = staffService.save(new NewStaffDTO(usr.getPhone(), usr.getFirst_name(), usr.getLast_name(), usr.getPhone(), usr.getEmail()));
+                    uzer = staffService.save(new NewStaffDTO(usr.getPhone(), usr.getFirst_name(), usr.getLast_name(),  usr.getEmail(), usr.getPhone(), Type.USER));
                 }
             } catch (ActivityRequiredException e) {
                 log.error(e.getMessage());

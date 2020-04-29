@@ -1,5 +1,6 @@
 package com.activedge.usermgt.model.dto;
 
+import com.activedge.usermgt.model.enumeration.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -32,8 +33,8 @@ public class NewStaffDTO extends StaffDTO {
         this.password = password;
     }
 
-    public NewStaffDTO(String password, @NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email) {
-        super(first_name, last_name, phone, email);
+    public NewStaffDTO(String password, @NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type type) {
+        super(first_name, last_name, phone, email, type);
         this.password = password;
     }
 

@@ -62,11 +62,12 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
 
-    public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email) {
+    public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type user_type) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.phone = phone;
         this.email = email;
+        this.user_type = user_type;
     }
 
     @Override

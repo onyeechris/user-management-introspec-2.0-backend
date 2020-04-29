@@ -52,7 +52,7 @@ public class JwtTokenProvider {
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
-                        for(Group group: staff.getGroups()) {
+                        for(Group group: groups) {
                             for(Permission permission: group.getPermissions()) {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
@@ -68,12 +68,13 @@ public class JwtTokenProvider {
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
+//                        [Group{id=GroupPK(module=com.activedge.usermgt.model.Module@168bef24, id=adddf8c5431442609fc8fa3c4e0748d9), name='group_users', description='A group-wide user.', module='com.activedge.usermgt.model.Module@403dafd9'}]
                         for(Group group: groups) {
                             for(Permission permission: group.getPermissions()) {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
-                        // System.out.println("jdbc: >>" + staffPermissions);
+//                         System.out.println("jdbc: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     }).orElse("null");
         }

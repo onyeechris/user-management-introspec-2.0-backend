@@ -77,8 +77,6 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
-//        String currentUserPosition = staffRepository.findOneByEmailIgnoreCase(SecurityUtils.getCurrentUserLogin().get()).get().getType().name();
-
         log.info("Logging StaffDTO:{} by User:{}, Password:{}", staffDTO, staffDTO.getPassword());
 
         Staff staff = staffMapper.toEntity(staffDTO);
