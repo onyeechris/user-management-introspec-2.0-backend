@@ -8,9 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsMessagingTemplate;
+import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DefaultDirObjectFactory;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,13 +28,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
 /**
  * Controller to authenticate users.
  */
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class UserJWTController {
@@ -88,6 +97,38 @@ public class UserJWTController {
         return ResponseEntity.ok(new JWTResponse(true, jwt));
     }
 
+    @PostMapping("/test-ldap")
+    public String testLdap(@RequestBody LdapRequest request) {
+        List res = null;
+        try {
+            log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+            LdapContextSource sourceLdapCtx = new LdapContextSource();
+            sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+            sourceLdapCtx.setUserDn(request.getSourceBindAccount());
+            sourceLdapCtx.setBase(request.getSourceBase());
+            sourceLdapCtx.setPassword(request.getSourcePassword());
+            sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
+            sourceLdapCtx.afterPropertiesSet();
+            LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
+            // Authenticate:
+            ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
+            log.info("....Authenticated !");
+            res = ldapTemplate.search(
+                    request.getBase(),
+                    request.getFilter(),
+                    (AttributesMapper) attrs -> {
+                        List<String> memberof = new ArrayList();
+                        for (Enumeration vals = attrs.getAll(); vals.hasMoreElements();) {
+                            memberof.add(vals.nextElement().toString());
+                        }
+                        return memberof;
+                    });
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return String.valueOf(res);
+    }
+
     private void audit(HttpServletRequest req, Authentication authentication) {
         endtime = System.currentTimeMillis();
         CustomHttpTrace cTrace = new CustomHttpTrace.CustomHttpTraceBuilder()
@@ -123,6 +164,20 @@ public class UserJWTController {
         private String username;
         @NotBlank(message = "Password cannot be blank")
         private String password;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class LdapRequest {
+        private String sourceHost;
+        private String sourcePort;
+        private String sourceBase;
+        private String sourceBindAccount;
+        private String sourcePassword;
+        private String base;
+        private String filter;
+        private String protocol;
     }
 
 }
