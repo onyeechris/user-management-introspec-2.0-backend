@@ -107,23 +107,19 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        if(env.getRequiredProperty("introspecsso.backend").equalsIgnoreCase("ldap")) {
-            // check AD
-            auth
-                .ldapAuthentication()
-                .userSearchBase("ou=people")
-                .userSearchFilter("uid={0}")
-                .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
-                .groupSearchFilter("member={0}")
-                .contextSource(contextSource());
-                //.passwordCompare()
-                //.passwordEncoder(new LdapShaPasswordEncoder());
-                //.passwordAttribute("userPass");
-//        } else {
-            // check JDBC
-            auth
-                .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//        }
+        auth
+            .userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+
+        auth
+            .ldapAuthentication()
+            .userSearchBase("ou=people")
+            .userSearchFilter("uid={0}")
+            .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
+            .groupSearchFilter("member={0}")
+            .contextSource(contextSource());
+            //.passwordCompare()
+            //.passwordEncoder(new LdapShaPasswordEncoder());
+            //.passwordAttribute("userPass");
     }
 
     @Bean
