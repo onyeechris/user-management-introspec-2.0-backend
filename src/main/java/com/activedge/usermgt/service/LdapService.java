@@ -53,13 +53,13 @@ public class LdapService implements StaffService {
 
     @Override
     public Optional<StaffDTO> findOne(String id) {
-        Optional<LdapUser> staff = ldapRepository.findByUserid(id);
+        Optional<LdapUser> staff = ldapRepository.findByUsername(id);
         return staffDTOAdapter.transform(staff);
     }
 
     @Override
     public Optional<StaffDTO> search(final String searchId) {
-        Optional<LdapUser> newUser = ldapRepository.findByUserid(searchId);
+        Optional<LdapUser> newUser = ldapRepository.findByUsername(searchId);
         Optional<StaffDTO> user = staffDTOAdapter.transform(newUser);
         StaffDTO uzer = new StaffDTO();
 

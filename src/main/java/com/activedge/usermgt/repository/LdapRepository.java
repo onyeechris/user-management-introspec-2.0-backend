@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface LdapRepository extends CrudRepository<LdapUser, Name> {
 
-    Optional<LdapUser> findByUserid(String userid);
+    Optional<LdapUser> findByUsername(String userid);
 
     Page<LdapUser> findByUsernameLikeIgnoreCase(Pageable pageable, String username);
 

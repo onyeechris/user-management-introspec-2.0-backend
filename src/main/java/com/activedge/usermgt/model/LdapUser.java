@@ -17,29 +17,23 @@ public class LdapUser  {
 
     @Id
     private Name id;
-    private @Attribute(name = "SID") String userid;
     private @Attribute(name = "ou") String organization;
     private @Attribute(name = "CN") String fullname;
-    private @Attribute(name = "City") String city;
-    private @Attribute(name = "Department") String department;
-    private @Attribute(name = "Description") String description;
+    private @Attribute(name = "Name") String name;
+    private @Attribute(name = "GivenName") String givenname;
     private @Attribute(name = "DistinguishedName") String distinguishedName;
-    private @Attribute(name = "sn") String username;
+    private @Attribute(name = "sn") String surname;
     private @Attribute(name = "EmailAddress") String mail;
-    private @Attribute(name = "EmployeeID") String employeeID;
-    private @Attribute(name = "memberOf") String member;
-    private @Attribute(name = "MobilePhone") String phone;
-    private @Attribute(name = "Title") String title;
-    private @Attribute(name = "SamAccountName") String samAccountName;
+    private @Attribute(name = "SamAccountName") String username;
     private @Attribute(name = "sAMAccountType") String samAccountType;
-    private @Attribute(name = "userPrincipalName") String userPrincipalName;
+    private @Attribute(name = "UserPrincipalName") String userPrincipalName;
     private @Attribute(name = "userPassword") String password;
 
     public LdapUser() {
     }
 
     public LdapUser(String username, String password) {
-        this.username = username;
+        this.username = this.username;
         this.password = password;
     }
 
