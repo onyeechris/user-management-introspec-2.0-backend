@@ -157,7 +157,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             contextSource.setBase(env.getRequiredProperty("ldap.base"));
             contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
             contextSource.setPassword(env.getRequiredProperty("ldap.password")); // https://github.com/rroemhild/docker-test-openldap
-//            contextSource.afterPropertiesSet();
+            contextSource.afterPropertiesSet();
             return contextSource;
     }
 }
