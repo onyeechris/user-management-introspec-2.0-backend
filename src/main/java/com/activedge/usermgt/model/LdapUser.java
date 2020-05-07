@@ -1,24 +1,38 @@
 package com.activedge.usermgt.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
 
-@Entry(base = "ou=people", objectClasses = { "person", "inetOrgPerson", "top" })
+//@Entry(base = "ou=people", objectClasses = { "person", "inetOrgPerson", "top" })
+//@Entry(base = "ou=usr", objectClasses = { "top",  "person", "organizationalPerson", "user" })
+@Entry(objectClasses = { "top",  "person", "organizationalPerson", "user" })
+@Getter
+@Setter
 public class LdapUser  {
 
     @Id
     private Name id;
-    private @Attribute(name = "uid") String userid;
+    private @Attribute(name = "SID") String userid;
     private @Attribute(name = "ou") String organization;
-    private @Attribute(name = "cn") String fullname;
+    private @Attribute(name = "CN") String fullname;
+    private @Attribute(name = "City") String city;
+    private @Attribute(name = "Department") String department;
+    private @Attribute(name = "Description") String description;
+    private @Attribute(name = "DistinguishedName") String distinguishedName;
     private @Attribute(name = "sn") String username;
-    private @Attribute(name = "mail") String mail;
-    private @Attribute(name = "description") String description;
-    private @Attribute(name = "member") String member;
-    private @Attribute(name = "title") String title;
+    private @Attribute(name = "EmailAddress") String mail;
+    private @Attribute(name = "EmployeeID") String employeeID;
+    private @Attribute(name = "memberOf") String member;
+    private @Attribute(name = "MobilePhone") String phone;
+    private @Attribute(name = "Title") String title;
+    private @Attribute(name = "SamAccountName") String samAccountName;
+    private @Attribute(name = "sAMAccountType") String samAccountType;
+    private @Attribute(name = "userPrincipalName") String userPrincipalName;
     private @Attribute(name = "userPassword") String password;
 
     public LdapUser() {
@@ -29,83 +43,5 @@ public class LdapUser  {
         this.password = password;
     }
 
-    public Name getId() {
-        return id;
-    }
 
-    public void setId(Name id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
-
-    public String getFullname() {
-        return fullname;
-    }
-
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getMember() {
-        return member;
-    }
-
-    public void setMember(String member) {
-        this.member = member;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

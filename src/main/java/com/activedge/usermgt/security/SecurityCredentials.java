@@ -112,10 +112,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
         auth
             .ldapAuthentication()
-            .userSearchBase("ou=people")
-            .userSearchFilter("uid={0}")
-            .groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
-            .groupSearchFilter("member={0}")
+            .userSearchBase("ou=" + env.getRequiredProperty("ldap.ou"))
+            .userSearchFilter(env.getRequiredProperty("ldap.filter") + "={0}")
+            //.groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
+            //.groupSearchFilter("member={0}")
             .contextSource(contextSource());
             //.passwordCompare()
             //.passwordEncoder(new LdapShaPasswordEncoder());
@@ -124,8 +124,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Conditional(LdapCondition.class)
-    public LdapTemplate ldapTemplate() {
-        return new LdapTemplate(contextSource());
+    public LdapTemplate ldapTemplate() throws Exception {
+        LdapTemplate ldapTemplate = new LdapTemplate(contextSource());
+        ldapTemplate.setIgnorePartialResultException(true);
+        ldapTemplate.setIgnoreNameNotFoundException(true);
+        ldapTemplate.afterPropertiesSet();
+        return ldapTemplate;
     }
 
     @Bean
@@ -145,10 +149,15 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 //            contextSource.setBase("dc=example,dc=com");
 //            contextSource.setUserDn("cn=read-only-admin,dc=example,dc=com");
 //            contextSource.setPassword("password");
-            contextSource.setUrl("ldap://localhost:389");
-            contextSource.setBase("dc=planetexpress,dc=com");
-            contextSource.setUserDn("cn=admin,dc=planetexpress,dc=com");
-            contextSource.setPassword("GoodNewsEveryone"); // https://github.com/rroemhild/docker-test-openldap
+//            contextSource.setUrl("ldap://localhost:389");
+//            contextSource.setBase("dc=planetexpress,dc=com");
+//            contextSource.setUserDn("cn=admin,dc=planetexpress,dc=com");
+//            contextSource.setPassword("GoodNewsEveryone"); // https://github.com/rroemhild/docker-test-openldap
+            contextSource.setUrl(env.getRequiredProperty("ldap.url"));
+            contextSource.setBase(env.getRequiredProperty("ldap.base"));
+            contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
+            contextSource.setPassword(env.getRequiredProperty("ldap.password")); // https://github.com/rroemhild/docker-test-openldap
+//            contextSource.afterPropertiesSet();
             return contextSource;
     }
 }

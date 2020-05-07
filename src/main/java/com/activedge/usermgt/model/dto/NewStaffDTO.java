@@ -11,6 +11,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import java.util.UUID;
+
 import static com.activedge.usermgt.config.Constants.PASSWORD_MAX_LENGTH;
 import static com.activedge.usermgt.config.Constants.PASSWORD_MIN_LENGTH;
 
@@ -33,9 +35,10 @@ public class NewStaffDTO extends StaffDTO {
         this.password = password;
     }
 
+    // LdapUser Creation Constructor
     public NewStaffDTO(String password, @NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type type) {
         super(first_name, last_name, phone, email, type);
-        this.password = password;
+        this.password = UUID.randomUUID().toString();
     }
 
     @Override

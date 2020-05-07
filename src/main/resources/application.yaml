@@ -70,11 +70,9 @@ introspecsso:
   backend: ldap
 
 ldap:
-  url: ldap://localhost:389
-  base: dc=planetexpress,dc=com
-  user_dn: cn=admin,dc=planetexpress,dc=com
-  password: GoodNewsEveryone
-  user_search_base: people
-  user_search_filter: uid
-  group_search_base: people
-  group_search_filter: member
+  url: ${test_ldap_url:ldap://10.8.104.10:389}
+  base: ${test_ldap_base:OU=Usr,DC=ecobank,DC=group}
+  user: ${test_ldap_user:CN=INTROSPEC_SERV,OU=AppStation,OU=EPG,OU=Usr,DC=ecobank,DC=group}
+  password: ${test_ldap_password:1nt@GH4acce$$}
+  ou: ${test_ldap_ou:user}
+  filter: ${test_ldap_filter:SamAccountName}
