@@ -17,7 +17,6 @@ public class LdapUser  {
 
     @Id
     private Name id;
-    private @Attribute(name = "ou") String organization;
     private @Attribute(name = "CN") String fullname;
     private @Attribute(name = "Name") String name;
     private @Attribute(name = "GivenName") String givenname;
