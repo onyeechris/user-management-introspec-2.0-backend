@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
-                        System.out.println("ldap: >>" + staffPermissions);
+//                        System.out.println("ldap: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     })
                     .orElse(createNewUserToken(authentication, staffPermissions));
@@ -74,7 +74,7 @@ public class JwtTokenProvider {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
-                         System.out.println("jdbc: >>" + staffPermissions);
+//                         System.out.println("jdbc: >>" + staffPermissions);
                         return generateToken(authentication, staffPermissions);
                     }).orElse("null");
         }
