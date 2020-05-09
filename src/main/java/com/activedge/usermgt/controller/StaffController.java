@@ -176,7 +176,7 @@ public class StaffController {
 
         StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
 
-        Optional<StaffDTO> staffDTO = ldapService.search(username);
+        Optional<StaffDTO> staffDTO = service.search(username);
 
         if (!staffDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for username " + username);
