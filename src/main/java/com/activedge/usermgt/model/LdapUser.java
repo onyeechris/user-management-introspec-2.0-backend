@@ -19,11 +19,11 @@ public class LdapUser  {
     private Name id;
     private @Attribute(name = "CN") String fullname;
     private @Attribute(name = "Name") String name;
-    private @Attribute(name = "GivenName") String givenname;
-    private @Attribute(name = "DistinguishedName") String distinguishedName;
+    private @Attribute(name = "givenName") String givenname;
+    private @Attribute(name = "distinguishedName") String distinguishedName;
     private @Attribute(name = "sn") String surname;
     private @Attribute(name = "EmailAddress") String mail;
-    private @Attribute(name = "SamAccountName") String username;
+    private @Attribute(name = "sAMAccountName") String username;
     private @Attribute(name = "sAMAccountType") String samAccountType;
     private @Attribute(name = "UserPrincipalName") String userPrincipalName;
     private @Attribute(name = "userPassword") String password;

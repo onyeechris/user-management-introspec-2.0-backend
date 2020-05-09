@@ -70,9 +70,9 @@ introspecsso:
   backend: ldap
 
 ldap:
-  url: ${test_ldap_url:ldap://10.8.104.10:389}
-  base: ${test_ldap_base:OU=Usr,DC=ecobank,DC=group}
-  user: ${test_ldap_user:CN=INTROSPEC_SERV,OU=AppStation,OU=EPG,OU=Usr,DC=ecobank,DC=group}
-  password: ${test_ldap_password:1nt@GH4acce$$}
-  ou: ${test_ldap_ou:user}
-  filter: ${test_ldap_filter:SamAccountName}
+  url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
+  base: ${introspec_sso_ldap_base:CN=Users,DC=activedge,DC=local}
+  user: ${introspec_sso_ldap_user:activedge\ad-admin}
+  password: ${introspec_sso_ldap_password:Active1directory;}
+  ou: ${introspec_sso_ldap_ou:}
+  filter: ${introspec_sso_ldap_filter:sAMAccountName}

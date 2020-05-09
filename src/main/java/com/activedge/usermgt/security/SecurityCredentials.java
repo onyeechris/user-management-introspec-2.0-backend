@@ -112,7 +112,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
         auth
             .ldapAuthentication()
-            .userSearchBase("ou=" + env.getRequiredProperty("ldap.ou"))
+            .userSearchBase(env.getRequiredProperty("ldap.ou"))
             .userSearchFilter(env.getRequiredProperty("ldap.filter") + "={0}")
             //.groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
             //.groupSearchFilter("member={0}")
