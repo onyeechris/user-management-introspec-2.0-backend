@@ -36,8 +36,8 @@ public class NewStaffDTO extends StaffDTO {
     }
 
     // LdapUser Creation Constructor
-    public NewStaffDTO(String password, @NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type type) {
-        super(first_name, last_name, phone, email, type);
+    public NewStaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 3, message = "Username length too short.") String username, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type type) {
+        super(first_name, last_name, username, email, type);
         this.password = UUID.randomUUID().toString();
     }
 

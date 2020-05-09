@@ -20,4 +20,6 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Strin
 
     Optional<Staff> findByEmail(String email);
 
+    Optional<Staff> findByUsername(String username);
+
 }

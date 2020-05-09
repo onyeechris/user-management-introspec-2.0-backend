@@ -26,7 +26,7 @@ import java.util.Set;
  * Service Implementation for managing Staff.
  */
 @Transactional
-@Service("db_service")
+@Service("db")
 public class StaffServiceImpl implements StaffService {
 
     private final Logger log = LoggerFactory.getLogger(StaffServiceImpl.class);
@@ -130,7 +130,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Optional<StaffDTO> search(String searchId) {
-        return staffRepository.findByEmail(searchId)
+        return staffRepository.findByUsername(searchId)
                 .map(staffMapper::toDto);
     }
 

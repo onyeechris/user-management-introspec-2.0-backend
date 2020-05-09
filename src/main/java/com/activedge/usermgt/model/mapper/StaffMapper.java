@@ -15,12 +15,14 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
 
     @Mapping(source = "hireDate", target = "hire_date")
     @Mapping(source = "type", target = "user_type")
+    @Mapping(source = "username", target = "username")
     StaffDTO toDto(Staff staff);
 
     Set<StaffDTO> toDtoSet(Set<Staff> staffs);
 
     @Mapping(source = "hire_date", target = "hireDate")
     @Mapping(source = "user_type", target = "type")
+    @Mapping(source = "username", target = "username")
     Staff toEntity(StaffDTO staffDTO);
 
     default Staff fromId(String id) {
