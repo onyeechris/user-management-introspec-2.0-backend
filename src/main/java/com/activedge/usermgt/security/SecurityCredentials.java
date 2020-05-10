@@ -2,11 +2,9 @@ package com.activedge.usermgt.security;
 
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.CustomUserDetailsService;
-import com.activedge.usermgt.service.conditions.LdapCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
@@ -130,7 +128,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Primary
-    @Conditional(LdapCondition.class)
     public LdapTemplate ldapTemplate() throws Exception {
         LdapTemplate ldapTemplate = new LdapTemplate(contextSource());
         ldapTemplate.setIgnorePartialResultException(true);
@@ -145,7 +142,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @Conditional(LdapCondition.class)
     public LdapContextSource contextSource() {
             LdapContextSource contextSource = new LdapContextSource();
             contextSource.setUrl(env.getRequiredProperty("ldap.url"));
