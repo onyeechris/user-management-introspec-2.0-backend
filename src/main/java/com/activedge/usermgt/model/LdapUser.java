@@ -8,8 +8,6 @@ import org.springframework.ldap.odm.annotations.Id;
 
 import javax.naming.Name;
 
-//@Entry(base = "ou=people", objectClasses = { "person", "inetOrgPerson", "top" })
-//@Entry(base = "ou=usr", objectClasses = { "top",  "person", "organizationalPerson", "user" })
 @Entry(objectClasses = { "top",  "person", "organizationalPerson", "user" })
 @Getter
 @Setter
@@ -32,9 +30,7 @@ public class LdapUser  {
     }
 
     public LdapUser(String username, String password) {
-        this.username = this.username;
+        this.username = username;
         this.password = password;
     }
-
-
 }
