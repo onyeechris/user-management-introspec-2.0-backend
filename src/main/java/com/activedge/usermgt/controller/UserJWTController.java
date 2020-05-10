@@ -28,10 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
@@ -98,35 +95,51 @@ public class UserJWTController {
     }
 
     @PostMapping("/test-ldap")
-    public String testLdap(@RequestBody LdapRequest request) {
-        List res = null;
-        try {
-            log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
-            LdapContextSource sourceLdapCtx = new LdapContextSource();
-            sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
-            sourceLdapCtx.setUserDn(request.getSourceBindAccount());
-            sourceLdapCtx.setBase(request.getSourceBase());
-            sourceLdapCtx.setPassword(request.getSourcePassword());
-            sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
-            sourceLdapCtx.afterPropertiesSet();
-            LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
-            // Authenticate:
-            ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
-            log.info("....Authenticated !");
-            res = ldapTemplate.search(
-                    request.getBase(),
-                    request.getFilter(),
-                    (AttributesMapper) attrs -> {
-                        List<String> memberof = new ArrayList();
-                        for (Enumeration vals = attrs.getAll(); vals.hasMoreElements();) {
-                            memberof.add(vals.nextElement().toString());
-                        }
-                        return memberof;
-                    });
-        } catch (Exception e) {
-            return e.getMessage();
+    public Map<String, String> testLdap(@RequestBody LdapRequest request) throws Exception {
+        Map<String, String> response = new HashMap<>();
+        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        LdapContextSource sourceLdapCtx = new LdapContextSource();
+        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUserDn(request.getSourceBindAccount());
+        sourceLdapCtx.setBase(request.getSourceBase());
+        sourceLdapCtx.setPassword(request.getSourcePassword());
+        sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
+        sourceLdapCtx.afterPropertiesSet();
+        LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
+
+        // Authenticate:
+        ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
+        log.info("....Authenticated !");
+
+        response.put("message", "Authentication Passed !");
+
+        return response;
+    }
+
+    @PostMapping("/test-ldap-search")
+    public Map<String, String> testLdapSearch(@RequestBody LdapRequest request) {
+        Map<String, String> response = new HashMap<>();
+        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        LdapContextSource sourceLdapCtx = new LdapContextSource();
+        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUserDn(request.getSourceBindAccount());
+        sourceLdapCtx.setBase(request.getSourceBase());
+        sourceLdapCtx.setPassword(request.getSourcePassword());
+        sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
+        sourceLdapCtx.afterPropertiesSet();
+        LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
+
+        List<String> res = ldapTemplate.search(
+                request.getBase(),
+                request.getFilter(),
+                (AttributesMapper<String>) attrs -> (String) attrs.get("DistinguishedName").get());
+
+        if(res.isEmpty()) {
+            throw new NoSuchElementException("No such user in AD.");
+        } else {
+            response.put("message", res.get(0));
+            return response;
         }
-        return String.valueOf(res);
     }
 
     private void audit(HttpServletRequest req, Authentication authentication) {

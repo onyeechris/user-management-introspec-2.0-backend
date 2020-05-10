@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
@@ -92,7 +94,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.GET, "/audit/**").hasAnyRole("AUDITOR", "ADMIN")
 
-                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/test-ldap-search").permitAll()
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();
@@ -105,6 +107,14 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    @Bean
+    public LdapAuthoritiesPopulator ldapAuthoritiesPopulator() throws Exception {
+        CustomLdapAuthoritiesPopulator populator = new CustomLdapAuthoritiesPopulator(contextSource(), env.getRequiredProperty("ldap.base"));
+        populator.setIgnorePartialResultException(true);
+        populator.setIgnoreNameNotFoundException(true);
+        return populator;
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
@@ -114,15 +124,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .ldapAuthentication()
             .userSearchBase(env.getRequiredProperty("ldap.ou"))
             .userSearchFilter(env.getRequiredProperty("ldap.filter") + "={0}")
-            //.groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
-            //.groupSearchFilter("member={0}")
-            .contextSource(contextSource());
-            //.passwordCompare()
-            //.passwordEncoder(new LdapShaPasswordEncoder());
-            //.passwordAttribute("userPass");
+            .contextSource(contextSource())
+            .ldapAuthoritiesPopulator(ldapAuthoritiesPopulator());
     }
 
     @Bean
+    @Primary
     @Conditional(LdapCondition.class)
     public LdapTemplate ldapTemplate() throws Exception {
         LdapTemplate ldapTemplate = new LdapTemplate(contextSource());
@@ -141,22 +148,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Conditional(LdapCondition.class)
     public LdapContextSource contextSource() {
             LdapContextSource contextSource = new LdapContextSource();
-//            contextSource.setUrl("ldap://www.zflexldap.com:389");
-//            contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
-//            contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
-//            contextSource.setPassword("zflexpass");
-//            contextSource.setUrl("ldap://ldap.forumsys.com:389");
-//            contextSource.setBase("dc=example,dc=com");
-//            contextSource.setUserDn("cn=read-only-admin,dc=example,dc=com");
-//            contextSource.setPassword("password");
-//            contextSource.setUrl("ldap://localhost:389");
-//            contextSource.setBase("dc=planetexpress,dc=com");
-//            contextSource.setUserDn("cn=admin,dc=planetexpress,dc=com");
-//            contextSource.setPassword("GoodNewsEveryone"); // https://github.com/rroemhild/docker-test-openldap
             contextSource.setUrl(env.getRequiredProperty("ldap.url"));
             contextSource.setBase(env.getRequiredProperty("ldap.base"));
             contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
-            contextSource.setPassword(env.getRequiredProperty("ldap.password")); // https://github.com/rroemhild/docker-test-openldap
+            contextSource.setPassword(env.getRequiredProperty("ldap.password"));
             contextSource.afterPropertiesSet();
             return contextSource;
     }
