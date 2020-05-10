@@ -94,7 +94,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.GET, "/audit/**").hasAnyRole("AUDITOR", "ADMIN")
 
-                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/test-ldap-search").permitAll()
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();
@@ -148,22 +148,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     @Conditional(LdapCondition.class)
     public LdapContextSource contextSource() {
             LdapContextSource contextSource = new LdapContextSource();
-//            contextSource.setUrl("ldap://www.zflexldap.com:389");
-//            contextSource.setBase("ou=guests,dc=zflexsoftware,dc=com");
-//            contextSource.setUserDn("cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com");
-//            contextSource.setPassword("zflexpass");
-//            contextSource.setUrl("ldap://ldap.forumsys.com:389");
-//            contextSource.setBase("dc=example,dc=com");
-//            contextSource.setUserDn("cn=read-only-admin,dc=example,dc=com");
-//            contextSource.setPassword("password");
-//            contextSource.setUrl("ldap://localhost:389");
-//            contextSource.setBase("dc=planetexpress,dc=com");
-//            contextSource.setUserDn("cn=admin,dc=planetexpress,dc=com");
-//            contextSource.setPassword("GoodNewsEveryone"); // https://github.com/rroemhild/docker-test-openldap
             contextSource.setUrl(env.getRequiredProperty("ldap.url"));
             contextSource.setBase(env.getRequiredProperty("ldap.base"));
             contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
-            contextSource.setPassword(env.getRequiredProperty("ldap.password")); // https://github.com/rroemhild/docker-test-openldap
+            contextSource.setPassword(env.getRequiredProperty("ldap.password"));
             contextSource.afterPropertiesSet();
             return contextSource;
     }

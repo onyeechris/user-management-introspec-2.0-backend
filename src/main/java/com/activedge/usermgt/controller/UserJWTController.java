@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
@@ -96,7 +95,8 @@ public class UserJWTController {
     }
 
     @PostMapping("/test-ldap")
-    public String testLdap(@RequestBody LdapRequest request) throws Exception {
+    public Map<String, String> testLdap(@RequestBody LdapRequest request) throws Exception {
+        Map<String, String> response = new HashMap<>();
         log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
         LdapContextSource sourceLdapCtx = new LdapContextSource();
         sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
@@ -111,12 +111,14 @@ public class UserJWTController {
         ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
         log.info("....Authenticated !");
 
-        return "Authentication Passed !";
+        response.put("message", "Authentication Passed !");
+
+        return response;
     }
 
     @PostMapping("/test-ldap-search")
-    public String testLdapSearch(@RequestBody LdapRequest request) {
-//        try {
+    public Map<String, String> testLdapSearch(@RequestBody LdapRequest request) {
+        Map<String, String> response = new HashMap<>();
         log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
         LdapContextSource sourceLdapCtx = new LdapContextSource();
         sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
@@ -127,14 +129,17 @@ public class UserJWTController {
         sourceLdapCtx.afterPropertiesSet();
         LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
 
-        String res = ldapTemplate.search(
+        List<String> res = ldapTemplate.search(
                 request.getBase(),
                 request.getFilter(),
                 (AttributesMapper<String>) attrs -> (String) attrs.get("DistinguishedName").get());
-//        } catch (Exception e) {
-//            return e.getMessage();
-//        }
-        return String.valueOf(res);
+
+        if(res.isEmpty()) {
+            throw new NoSuchElementException("No such user in AD.");
+        } else {
+            response.put("message", res.get(0));
+            return response;
+        }
     }
 
     private void audit(HttpServletRequest req, Authentication authentication) {

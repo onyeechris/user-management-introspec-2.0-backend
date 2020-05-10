@@ -1,16 +1,11 @@
 package com.activedge.usermgt.model.ox.migrations;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBRef;
 import ox.engine.exception.OxException;
 import ox.engine.internal.OxEnvironment;
 import ox.engine.structure.Migration;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
 
 public class V0010__permission_updates implements Migration {
 
@@ -34,6 +29,7 @@ public class V0010__permission_updates implements Migration {
                 .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
                 .get());
 
+        /*
         db.getCollection("groups").insert(BasicDBObjectBuilder
                 .start()
                 .add("_id", new BasicDBObject("_id", UUID.randomUUID().toString().replaceAll("-", ""))
@@ -48,6 +44,7 @@ public class V0010__permission_updates implements Migration {
                 .add("isDeleted", false)
                 .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
                 .get());
+        */
 
     }
 
