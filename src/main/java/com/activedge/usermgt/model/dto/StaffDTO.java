@@ -47,6 +47,9 @@ public class StaffDTO implements Serializable {
     @Email(message = "Please enter a correct email address")
     private String email;
 
+    @ApiModelProperty(notes = "The staff username", required = true)
+    private String username;
+
     @ApiModelProperty(notes = "The staff account type", required = true, example = "USER")
     @NotNull(message = "Staff ADMIN or USER type is required.")
     private Type user_type;
@@ -62,10 +65,10 @@ public class StaffDTO implements Serializable {
     @ApiModelProperty(notes = "The staff active status")
     private Boolean activated;
 
-    public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 9, max = 13, message = "phone number length too short or long.") String phone, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type user_type) {
+    public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 3, message = "Username length too short.") String username, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type user_type) {
         this.first_name = first_name;
         this.last_name = last_name;
-        this.phone = phone;
+        this.username = username;
         this.email = email;
         this.user_type = user_type;
     }
@@ -77,6 +80,7 @@ public class StaffDTO implements Serializable {
                 ", first_name='" + first_name + '\'' +
                 ", last_name='" + last_name + '\'' +
                 ", phone='" + phone + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", user_type=" + user_type +
                 ", hire_date=" + hire_date +

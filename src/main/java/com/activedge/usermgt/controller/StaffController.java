@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,17 +45,23 @@ public class StaffController {
     private static final String ENTITY_NAME = "staffs";
 
     @Autowired
-    @Qualifier("db_service")
+    @Qualifier("db")
     private StaffService staffService;
 
     @Autowired
-    @Qualifier("ldap_service")
+    @Qualifier("ldap")
     private StaffService ldapService;
+
+    private final Environment env;
+
+    private final ApplicationContext appCtx;
 
     private final ModuleRepository moduleRepository;
 
-    public StaffController(ModuleRepository moduleRepository) {
+    public StaffController(ModuleRepository moduleRepository, Environment env, ApplicationContext appCtx) {
         this.moduleRepository = moduleRepository;
+        this.env = env;
+        this.appCtx = appCtx;
     }
 
     /**
@@ -165,7 +173,10 @@ public class StaffController {
     @ApiOperation(value = "Import a staff from LDAP using their username")
     public ResponseEntity<StaffDTO> importStaff(@PathVariable String username) throws Exception {
         log.debug("REST request to import {} : {}", ENTITY_NAME, username);
-        Optional<StaffDTO> staffDTO = ldapService.search(username);
+
+        StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
+
+        Optional<StaffDTO> staffDTO = service.search(username);
 
         if (!staffDTO.isPresent()) {
             throw new ValidationException("No "+ENTITY_NAME+" was found for username " + username);

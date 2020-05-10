@@ -21,14 +21,14 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Slf4j
-@Service("ldap_service")
+@Service("ldap")
 public class LdapService implements StaffService {
 
     @Autowired
     private LdapRepository ldapRepository;
 
     @Autowired
-    @Qualifier("db_service")
+    @Qualifier("db")
     private StaffService staffService;
 
     @Autowired
@@ -67,12 +67,12 @@ public class LdapService implements StaffService {
             try {
                 StaffDTO usr = user.get();
                 // check that this user was not previously imported before saving
-                Optional<StaffDTO> s1 = staffService.search(usr.getPhone());
+                Optional<StaffDTO> s1 = staffService.search(usr.getUsername());
                 if(s1.isPresent()) {
                     uzer = s1.get();
                 } else {
                     log.info("...saving imported staff");
-                    uzer = staffService.save(new NewStaffDTO(usr.getPhone(), usr.getFirst_name(), usr.getLast_name(),  usr.getEmail(), usr.getPhone(), Type.USER));
+                    uzer = staffService.save(new NewStaffDTO(usr.getFirst_name(), usr.getLast_name(), usr.getUsername(), usr.getEmail(), Type.USER));
                 }
             } catch (ActivityRequiredException e) {
                 log.error(e.getMessage());

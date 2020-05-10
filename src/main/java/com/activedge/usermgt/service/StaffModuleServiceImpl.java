@@ -66,7 +66,11 @@ public class StaffModuleServiceImpl implements StaffModuleService {
     @Override
     public boolean matchModuleAndEmail(String module, String email) {
         Set<StaffModule> sm = staffModuleRepository.findByModule_Id(module);
-        return sm.stream().anyMatch(x -> x.getStaff().getEmail().equals(email)) || email.equals("admin@aet.com");
+        return sm.stream().anyMatch(x -> {
+            String eml = x.getStaff().getEmail() == null ? "" : x.getStaff().getEmail();
+            String usn = x.getStaff().getUsername() == null ? "" : x.getStaff().getUsername();
+            return eml.equals(email) || usn.equals(email);
+        });
     }
 
     /**

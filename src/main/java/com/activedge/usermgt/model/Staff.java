@@ -57,6 +57,9 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Email
     private String email;
 
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+
     @NotNull
     @Size(min = 50, max = 100)
     private String password;
