@@ -71,8 +71,8 @@ introspecsso:
 
 ldap:
   url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
-  base: ${introspec_sso_ldap_base:CN=Users,DC=activedge,DC=local}
+  base: ${introspec_sso_ldap_base:DC=activedge,DC=local}
   user: ${introspec_sso_ldap_user:activedge\ad-admin}
   password: ${introspec_sso_ldap_password:Active1directory;}
-  ou: ${introspec_sso_ldap_ou:}
+  ou: ${introspec_sso_ldap_ou:ou=staffs}
   filter: ${introspec_sso_ldap_filter:sAMAccountName}

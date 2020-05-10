@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
@@ -105,6 +107,14 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    @Bean
+    public LdapAuthoritiesPopulator ldapAuthoritiesPopulator() throws Exception {
+        CustomLdapAuthoritiesPopulator populator = new CustomLdapAuthoritiesPopulator(contextSource(), env.getRequiredProperty("ldap.base"));
+        populator.setIgnorePartialResultException(true);
+        populator.setIgnoreNameNotFoundException(true);
+        return populator;
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
@@ -114,15 +124,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .ldapAuthentication()
             .userSearchBase(env.getRequiredProperty("ldap.ou"))
             .userSearchFilter(env.getRequiredProperty("ldap.filter") + "={0}")
-            //.groupSearchBase("ou=people") // Optional: map LDAP groups to roles in Spring
-            //.groupSearchFilter("member={0}")
-            .contextSource(contextSource());
-            //.passwordCompare()
-            //.passwordEncoder(new LdapShaPasswordEncoder());
-            //.passwordAttribute("userPass");
+            .contextSource(contextSource())
+            .ldapAuthoritiesPopulator(ldapAuthoritiesPopulator());
     }
 
     @Bean
+    @Primary
     @Conditional(LdapCondition.class)
     public LdapTemplate ldapTemplate() throws Exception {
         LdapTemplate ldapTemplate = new LdapTemplate(contextSource());

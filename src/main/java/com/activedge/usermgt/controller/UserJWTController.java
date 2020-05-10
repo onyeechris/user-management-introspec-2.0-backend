@@ -28,9 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
@@ -98,34 +96,46 @@ public class UserJWTController {
     }
 
     @PostMapping("/test-ldap")
-    public String testLdap(@RequestBody LdapRequest request) {
-        List res = null;
-        try {
-            log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
-            LdapContextSource sourceLdapCtx = new LdapContextSource();
-            sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
-            sourceLdapCtx.setUserDn(request.getSourceBindAccount());
-            sourceLdapCtx.setBase(request.getSourceBase());
-            sourceLdapCtx.setPassword(request.getSourcePassword());
-            sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
-            sourceLdapCtx.afterPropertiesSet();
-            LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
-            // Authenticate:
-            ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
-            log.info("....Authenticated !");
-            res = ldapTemplate.search(
-                    request.getBase(),
-                    request.getFilter(),
-                    (AttributesMapper) attrs -> {
-                        List<String> memberof = new ArrayList();
-                        for (Enumeration vals = attrs.getAll(); vals.hasMoreElements();) {
-                            memberof.add(vals.nextElement().toString());
-                        }
-                        return memberof;
-                    });
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+    public String testLdap(@RequestBody LdapRequest request) throws Exception {
+        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        LdapContextSource sourceLdapCtx = new LdapContextSource();
+        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUserDn(request.getSourceBindAccount());
+        sourceLdapCtx.setBase(request.getSourceBase());
+        sourceLdapCtx.setPassword(request.getSourcePassword());
+        sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
+        sourceLdapCtx.afterPropertiesSet();
+        LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
+
+        // Authenticate:
+        ldapTemplate.getContextSource().getContext(request.getSourceBindAccount(), request.getSourcePassword());
+        log.info("....Authenticated !");
+
+        return "Authentication Passed !";
+    }
+
+    @PostMapping("/test-ldap-search")
+    public String testLdapSearch(@RequestBody LdapRequest request) {
+//        try {
+        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        LdapContextSource sourceLdapCtx = new LdapContextSource();
+        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUserDn(request.getSourceBindAccount());
+        sourceLdapCtx.setBase(request.getSourceBase());
+        sourceLdapCtx.setPassword(request.getSourcePassword());
+        sourceLdapCtx.setDirObjectFactory(DefaultDirObjectFactory.class);
+        sourceLdapCtx.afterPropertiesSet();
+        LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
+
+        List<Object> res = ldapTemplate.search(
+                request.getBase(),
+                request.getFilter(),
+                (AttributesMapper) attrs -> {
+                    return (String) attrs.get("DistinguishedName").get();
+                });
+//        } catch (Exception e) {
+//            return e.getMessage();
+//        }
         return String.valueOf(res);
     }
 
