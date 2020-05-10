@@ -23,7 +23,7 @@ public class V0007__group_indexes implements Migration {
                 .start()
                 .add("_id", new BasicDBObject("_id", UUID.randomUUID().toString().replaceAll("-", ""))
                         .append("module", new DBRef("introspec_modules", "SETTLEMENT")))
-                .add("name", "group_users")
+                .add("name", "Group Users")
                 .add("description", "A group-wide user.")
                 .add("staffs", new ArrayList<>())
                 .add("permissions", Arrays.asList(
@@ -60,7 +60,7 @@ public class V0007__group_indexes implements Migration {
                 .start()
                 .add("_id", new BasicDBObject("_id", UUID.randomUUID().toString().replaceAll("-", ""))
                         .append("module", new DBRef("introspec_modules", "SETTLEMENT")))
-                .add("name", "group_admins")
+                .add("name", "Group Admins")
                 .add("description", "A group-wide admin that can perform all the activities of a group user and can manage affiliate settings.")
                 .add("staffs", new ArrayList<>())
                 .add("permissions", Arrays.asList(
@@ -109,7 +109,7 @@ public class V0007__group_indexes implements Migration {
                 .start()
                 .add("_id", new BasicDBObject("_id", UUID.randomUUID().toString().replaceAll("-", ""))
                         .append("module", new DBRef("introspec_modules", "SETTLEMENT")))
-                .add("name", "auditor")
+                .add("name", "Auditors")
                 .add("description", "Can view reports across all affiliates.")
                 .add("staffs", new ArrayList<>())
                 .add("permissions", Arrays.asList(
