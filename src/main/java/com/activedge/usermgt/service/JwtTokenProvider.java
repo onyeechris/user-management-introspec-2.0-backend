@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
@@ -58,9 +57,9 @@ public class JwtTokenProvider {
                             }
                         }
 //                        System.out.println("ldap: >>" + staffPermissions);
-                        return generateToken(authentication, staffPermissions);
+                        return generateToken(authentication, staffPermissions, staff.getAuthorities());
                     })
-                    .orElse(createNewUserToken(authentication, staffPermissions));
+                    .orElse(null);
         } else {
             // do JDBC
             User user = (User) authentication.getPrincipal();
@@ -68,21 +67,20 @@ public class JwtTokenProvider {
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
-//                        [Group{id=GroupPK(module=com.activedge.usermgt.model.Module@168bef24, id=adddf8c5431442609fc8fa3c4e0748d9), name='group_users', description='A group-wide user.', module='com.activedge.usermgt.model.Module@403dafd9'}]
                         for(Group group: groups) {
                             for(Permission permission: group.getPermissions()) {
                                 staffPermissions.add(module.toLowerCase() + "." + permission.getId());
                             }
                         }
 //                         System.out.println("jdbc: >>" + staffPermissions);
-                        return generateToken(authentication, staffPermissions);
+                        return generateToken(authentication, staffPermissions, staff.getAuthorities());
                     }).orElse("null");
         }
 
         return token;
     }
 
-    private String generateToken(Authentication authentication, Set<String> staffPermissions) {
+    private String generateToken(Authentication authentication, Set<String> staffPermissions, Set<Authority> staffAuthorities) {
         Date now = new Date(System.currentTimeMillis());
 
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -91,8 +89,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("authorities", authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .claim("authorities", staffAuthorities.stream().map(Authority::getId).collect(Collectors.toList()))
                 .claim("permissions", staffPermissions)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
@@ -176,7 +173,7 @@ public class JwtTokenProvider {
 
         log.debug("Created new staff - {}", staff);
 
-        return generateToken(auth, staffPermissions);
+        return generateToken(auth, staffPermissions, staff.getAuthorities());
     }
 
 }
