@@ -127,12 +127,10 @@ public class UserJWTController {
         sourceLdapCtx.afterPropertiesSet();
         LdapTemplate ldapTemplate = new LdapTemplate(sourceLdapCtx);
 
-        List<Object> res = ldapTemplate.search(
+        String res = ldapTemplate.search(
                 request.getBase(),
                 request.getFilter(),
-                (AttributesMapper) attrs -> {
-                    return (String) attrs.get("DistinguishedName").get();
-                });
+                (AttributesMapper<String>) attrs -> (String) attrs.get("DistinguishedName").get());
 //        } catch (Exception e) {
 //            return e.getMessage();
 //        }
