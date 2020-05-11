@@ -24,13 +24,8 @@ public class LdapUser  {
     private @Attribute(name = "sAMAccountName") String username;
     private @Attribute(name = "sAMAccountType") String samAccountType;
     private @Attribute(name = "UserPrincipalName") String userPrincipalName;
-    private @Attribute(name = "userPassword") String password;
 
     public LdapUser() {
     }
 
-    public LdapUser(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
 }
