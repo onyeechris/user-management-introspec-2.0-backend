@@ -1,0 +1,78 @@
+spring:
+  profiles:
+    active: mongo # mongo | jpa
+
+  activemq:
+    in-memory: true
+    pool:
+      enabled: false
+#    broker-url: tcp://localhost:61616
+#    user: admin
+#    password: admin
+
+
+  application:
+      name: auth-service
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+  ldap:
+    # Embedded Spring LDAP
+    #
+    # urls: ldap://localhost:12345
+    # base: dc=memorynotfound,dc=com
+    # username: uid=admin
+    # password: secret
+    embedded:
+      base-dn: dc=memorynotfound,dc=com
+      credential:
+        username: uid=admin
+        password: secret
+      ldif: classpath:schema.ldif
+      port: 12345
+      validation:
+        enabled: false
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+      hibernate:
+        SQL: DEBUG
+    com:
+      activedge:
+        usermgt: INFO
+
+
+    root: INFO
+#  file: ${java.io.tmpdir}/${spring.application.name}.log
+#  path=/var/logs/app.log
+
+security:
+  jwt:
+    secret: ${introspec_sso_jwt_secret:JwtSecretKey123}
+    expiration: 8_60_60_000 # 24 hours
+
+cors:
+  allowed_headers: X-Requested-With,Content-Type,Authorization,Module,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers,affiliateCode,Affiliate,Affiliate-Code
+
+server:
+  port: ${introspec_sso_port:9100}
+  servlet:
+    context-path: /${spring.application.name}
+
+introspecsso:
+  backend: ${introspec_sso_auth_mode:ldap} # db | ldap
+
+ldap:
+  url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
+  base: ${introspec_sso_ldap_base:DC=activedge,DC=local}
+  user: ${introspec_sso_ldap_user:activedge\ad-admin}
+  password: ${introspec_sso_ldap_password:Active1directory;}
+  ou: ${introspec_sso_ldap_ou:ou=staffs}
+  filter: ${introspec_sso_ldap_filter:sAMAccountName}

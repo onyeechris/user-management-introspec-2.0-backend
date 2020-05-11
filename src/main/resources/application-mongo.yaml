@@ -1,0 +1,10 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  data:
+    jpa:
+      repositories:
+        enabled: false
+    mongodb:
+      uri: ${introspec_sso_db_url:mongodb://localhost:27017/}
+      database: ${introspec_sso_db_name:usermgt}

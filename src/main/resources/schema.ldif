@@ -1,0 +1,38 @@
+dn: dc=memorynotfound,dc=com
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: memorynotfound
+
+dn: ou=group,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: group
+
+dn: ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+dn: uid=john,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: John Doe
+uid: john
+password: password
+
+dn: cn=developers,ou=group,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: developers
+ou: developer
+uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
+
+dn: cn=managers,ou=group,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: managers
+ou: manager
+uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
