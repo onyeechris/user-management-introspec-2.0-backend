@@ -97,9 +97,9 @@ public class UserJWTController {
     @PostMapping("/test-ldap")
     public Map<String, String> testLdap(@RequestBody LdapRequest request) throws Exception {
         Map<String, String> response = new HashMap<>();
-        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        log.info("Connecting to LDAP " + request.getSourceBase() + "...");
         LdapContextSource sourceLdapCtx = new LdapContextSource();
-        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUrl("ldap://" + request.getSourceHost() + ":389/");
         sourceLdapCtx.setUserDn(request.getSourceBindAccount());
         sourceLdapCtx.setBase(request.getSourceBase());
         sourceLdapCtx.setPassword(request.getSourcePassword());
@@ -119,9 +119,9 @@ public class UserJWTController {
     @PostMapping("/test-ldap-search")
     public Map<String, String> testLdapSearch(@RequestBody LdapRequest request) {
         Map<String, String> response = new HashMap<>();
-        log.info("Connecting to LDAP " + request.getSourceBase() + ":" + request.getSourcePort() + "...");
+        log.info("Connecting to LDAP " + request.getSourceBase() + "...");
         LdapContextSource sourceLdapCtx = new LdapContextSource();
-        sourceLdapCtx.setUrl(request.getProtocol() + "://" + request.getSourceHost() + ":" + request.getSourcePort() + "/");
+        sourceLdapCtx.setUrl("ldap://" + request.getSourceHost() + ":389/");
         sourceLdapCtx.setUserDn(request.getSourceBindAccount());
         sourceLdapCtx.setBase(request.getSourceBase());
         sourceLdapCtx.setPassword(request.getSourcePassword());
@@ -184,13 +184,11 @@ public class UserJWTController {
     @NoArgsConstructor
     private static class LdapRequest {
         private String sourceHost;
-        private String sourcePort;
         private String sourceBase;
         private String sourceBindAccount;
         private String sourcePassword;
         private String base;
         private String filter;
-        private String protocol;
     }
 
 }
