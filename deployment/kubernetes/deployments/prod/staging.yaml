@@ -43,3 +43,17 @@ spec:
                 secretKeyRef:
                   name: introspec-secrets
                   key: usermgt_backend_jwt_token
+            - name: introspec_sso_ldap_url
+              value: ldap://localhost:389
+            - name: introspec_sso_ldap_base
+              value: dc=evince,dc=local
+            - name: introspec_sso_ldap_user
+              value: sas@evince.local
+            - name: introspec_sso_ldap_password
+              value: F2016*Z2016
+            - name: introspec_sso_ldap_ou
+              value: ""
+            - name: introspec_sso_ldap_filter
+              value: sAMAccountName
+            - name: introspec_sso_auth_mode
+              value: db

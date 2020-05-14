@@ -1,5 +1,9 @@
 steps:
-
+  # Grab dockerhub password from secret manager
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args: [ '-c', 'gcloud secrets versions access latest --secret=aet-docker-hub-password > decrypted-data.txt' ]
+  
   # Maven build
   - id: 'mvn-package'
     name: 'maven'
@@ -28,8 +32,9 @@ steps:
   # PASSWORD is decrypted before this step runs.
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
-    args: ['-c', 'docker login --username=activedgetechnologies --password=$$PASSWORD']
-    secretEnv: ['PASSWORD']
+    args: [ '-c', 'docker login --username=activedgetechnologies --password-stdin < decrypted-data.txt']
+    #args: ['-c', 'docker login --username=activedgetechnologies --password=$$PASSWORD']
+    #secretEnv: ['PASSWORD']
 
   # Push the image to Dockerhub.
   - name: 'gcr.io/cloud-builders/docker'
@@ -66,7 +71,7 @@ steps:
           kubectl apply --namespace default --recursive -f deployment/kubernetes/deployments/prod
           kubectl apply --namespace default --recursive -f deployment/kubernetes/services
 
-secrets:
-- kmsKeyName: projects/celtic-fact-251818/locations/global/keyRings/introspec-keyring/cryptoKeys/introspec-key
-  secretEnv:
-    PASSWORD: CiQAzammhJg3E0ixFv2EPq6bUbXfgHoU5BWFMBuUFwh6EDGUj0kSOABgfAAZU7ACgobxT50RFpfp6GxqCDOU2LGFa3BthtbmqKxZT9KoAnGOhw9KN9uJlwIGgipFk6pa
+#secrets:
+#- kmsKeyName: projects/celtic-fact-251818/locations/global/keyRings/introspec-keyring/cryptoKeys/introspec-key
+#  secretEnv:
+#    PASSWORD: CiQAzammhJg3E0ixFv2EPq6bUbXfgHoU5BWFMBuUFwh6EDGUj0kSOABgfAAZU7ACgobxT50RFpfp6GxqCDOU2LGFa3BthtbmqKxZT9KoAnGOhw9KN9uJlwIGgipFk6pa
