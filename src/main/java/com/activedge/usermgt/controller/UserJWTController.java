@@ -1,6 +1,7 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.model.CustomHttpTrace;
+import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
@@ -140,6 +141,14 @@ public class UserJWTController {
             response.put("message", res.get(0));
             return response;
         }
+    }
+
+    @Autowired
+    LdapSetting ldapSetting;
+
+    @GetMapping("/ldap-settings")
+    public LdapSetting getLdapSetting(){
+        return ldapSetting;
     }
 
     private void audit(HttpServletRequest req, Authentication authentication) {
