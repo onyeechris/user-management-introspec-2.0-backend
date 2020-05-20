@@ -47,7 +47,7 @@ public class JwtTokenProvider {
         if(authentication.getPrincipal() instanceof LdapUserDetailsImpl) {
             // do LDAP
             LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsername(userPrincipal.getUsername().toLowerCase())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(userPrincipal.getUsername())
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
@@ -63,7 +63,7 @@ public class JwtTokenProvider {
         } else {
             // do JDBC
             User user = (User) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsername(user.getUsername().toLowerCase())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(user.getUsername())
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);

@@ -19,7 +19,7 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Strin
     Optional<Staff> findOneWithAuthoritiesByEmail(String email);
 
     @EntityGraph(attributePaths = {"authorities", "groups"})
-    Optional<Staff> findOneWithAuthoritiesByUsername(String username);
+    Optional<Staff> findOneWithAuthoritiesByUsernameIgnoreCase(String username);
 
     Optional<Staff> findByEmail(String email);
 

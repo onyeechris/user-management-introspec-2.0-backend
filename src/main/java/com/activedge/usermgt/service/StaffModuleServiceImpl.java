@@ -69,7 +69,7 @@ public class StaffModuleServiceImpl implements StaffModuleService {
         return sm.stream().anyMatch(x -> {
             String eml = x.getStaff().getEmail() == null ? "" : x.getStaff().getEmail();
             String usn = x.getStaff().getUsername() == null ? "" : x.getStaff().getUsername();
-            return eml.equals(email) || usn.equals(email);
+            return eml.equalsIgnoreCase(email) || usn.equalsIgnoreCase(email);
         });
     }
 
