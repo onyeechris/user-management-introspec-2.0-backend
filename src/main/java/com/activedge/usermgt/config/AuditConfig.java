@@ -20,7 +20,6 @@ public class AuditConfig implements AuditorAware<String>{
     public Optional<String> getCurrentAuditor() {
 
         return SecurityContextHolder.getContext().getAuthentication() == null ? Optional.of("SYSTEM") : Optional.of(SecurityContextHolder.getContext().getAuthentication().getName());
-
     }
 
     @Bean

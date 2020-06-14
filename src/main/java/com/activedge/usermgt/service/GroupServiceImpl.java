@@ -177,7 +177,6 @@ public class GroupServiceImpl implements GroupService {
         log.debug("Request to get module Group" + groupRepository.findAll(pageable));
         return groupRepository.findAllWithEagerRelationships(pageable).map(groupMapper::toDto);
     }
-    
 
     /**
      * Get one groups by id.
