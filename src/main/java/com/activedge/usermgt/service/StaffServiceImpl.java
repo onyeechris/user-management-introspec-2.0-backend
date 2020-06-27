@@ -61,7 +61,21 @@ public class StaffServiceImpl implements StaffService {
             s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
             s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
             s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
-            s.setType(staff.getType() == null ? s.getType() : staff.getType());
+            if(staff.getType() == null) {
+                s.setType(s.getType());
+                s.setAuthorities(s.getAuthorities());
+            } else {
+                s.setType(staff.getType());
+                // remove old authority
+                s.getAuthorities().clear();
+
+                // remove new authority
+                Authority authority = new Authority();
+                authority.setId("ROLE_" + staff.getType());
+                authority.setName("ROLE_" + staff.getType());
+
+                s.getAuthorities().add(authority);
+            }
             s.setActivated(staff.isActivated() == null ? s.isActivated() : staff.isActivated());
             staff = s;
             log.info("Updating Staff ... {}", staff);
