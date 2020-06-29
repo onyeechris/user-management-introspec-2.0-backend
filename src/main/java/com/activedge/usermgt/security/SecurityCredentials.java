@@ -72,7 +72,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js"
                 ).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/index.html", "/static/**", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
                 .antMatchers(HttpMethod.GET, "/permissions/**").hasAnyRole("ADMIN", "DEV", "AUDITOR")
@@ -96,7 +96,6 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();
-
     }
 
     @Override

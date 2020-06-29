@@ -49,7 +49,7 @@ public class CorsConfig implements Filter {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(false);
         config.setAllowedOrigins(new ArrayList<>(getOrigins()));
-        config.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET", "DELETE", "PUT"));
+        config.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT"));
         config.setAllowedHeaders(new ArrayList<>(getHeaders()));
         config.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", config);

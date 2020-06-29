@@ -66,10 +66,10 @@ public class StaffServiceImpl implements StaffService {
                 s.setAuthorities(s.getAuthorities());
             } else {
                 s.setType(staff.getType());
-                // remove old authority
+                // clear old authorities -> refactor to remove a single authority if need be.
                 s.getAuthorities().clear();
 
-                // remove new authority
+                // add new authority
                 Authority authority = new Authority();
                 authority.setId("ROLE_" + staff.getType());
                 authority.setName("ROLE_" + staff.getType());
