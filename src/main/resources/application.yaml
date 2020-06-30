@@ -60,7 +60,7 @@ security:
 
 cors:
   allowed_headers: X-Requested-With,Content-Type,Authorization,Module,Origin,Accept,Access-Control-Request-Method,Access-Control-Request-Headers,affiliateCode,Affiliate,Affiliate-Code
-  allowed_origins: ${introspec_sso_cors_origins:http://localhost:3019,http://10.8.243.1,https://10.8.243.1}
+  allowed_origins: ${introspec_sso_cors_origins:http://localhost:3019,http://localhost:3005,http://10.8.243.1,https://10.8.243.1}
 
 server:
   port: ${introspec_sso_port:9100}
