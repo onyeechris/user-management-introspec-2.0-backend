@@ -9,6 +9,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @Profile("mongo")
 @Configuration
 @EnableMongoAuditing
-@EnableMongoRepositories({"com.activedge.usermgt.repository"})
+@EnableMongoRepositories({"com.activedge.usermgt.repository", "com.activedge.usermgt.config"})
 public class MongoConfig {
 }
