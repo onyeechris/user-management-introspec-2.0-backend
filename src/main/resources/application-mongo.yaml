@@ -6,4 +6,4 @@ spring:
       repositories:
         enabled: false
     mongodb:
-      uri: ${introspec_sso_mongo_uri}
+      uri: ${introspec_sso_mongo_uri:mongodb://localhost:27017/usermgt}
