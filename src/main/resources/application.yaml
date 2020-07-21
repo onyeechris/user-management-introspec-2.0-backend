@@ -2,17 +2,8 @@ spring:
   profiles:
     active: mongo # mongo | jpa
 
-  activemq:
-    in-memory: true
-    pool:
-      enabled: false
-#    broker-url: tcp://localhost:61616
-#    user: admin
-#    password: admin
-
-
   application:
-      name: auth-service
+      name: ${introspec_sso_context_path:auth-service}
 
   jackson:
     serialization:
