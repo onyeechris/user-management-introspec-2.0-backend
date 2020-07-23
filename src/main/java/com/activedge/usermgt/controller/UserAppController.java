@@ -5,8 +5,6 @@ import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.StaffModuleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -26,10 +23,10 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller for managing StaffModule.
+ * Access UserApp controller for assigning staffs/users to Introspec Apps
  */
 @RestController
 @RequestMapping("/")
-@Api(value="userApp", description="Access UserApp controller for assigning staffs/users to Introspec Apps")
 public class UserAppController {
 
     private final Logger log = LoggerFactory.getLogger(UserAppController.class);
@@ -52,8 +49,7 @@ public class UserAppController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, staffModuleDTO);
 
         if (errors.hasErrors()) {
@@ -83,8 +79,7 @@ public class UserAppController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, @ApiIgnore Errors errors) throws URISyntaxException, ServletRequestBindingException {
+    public ResponseEntity<StaffModuleDTO> updateStaffModule(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to update StaffModule : {}", staffModuleDTO);
 
         if (errors.hasErrors() || staffModuleDTO.getId() == null) {
@@ -111,11 +106,10 @@ public class UserAppController {
      */
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @GetMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaffModules(
             @RequestHeader(value = "Module", required = true) String module,
             @RequestHeader(value = "Authorization", required = true) String authUser,
-            @ApiIgnore Pageable pageable) {
+            Pageable pageable) {
 
         return new ResponseEntity<>(new ResponseWrapper(staffModuleService.findAllByModule(module, pageable)), HttpStatus.OK);
     }
@@ -127,7 +121,6 @@ public class UserAppController {
      * @return the ResponseEntity with status 200 (OK) and with body the staffModuleDTO, or with status 404 (Not Found)
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<StaffModuleDTO> getStaffModule(@PathVariable String id) {
         log.debug("REST request to get StaffModule : {}", id);
         Optional<StaffModuleDTO> staffModuleDTO = staffModuleService.findOne(id);
@@ -146,7 +139,6 @@ public class UserAppController {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteStaffModule(@PathVariable String id) {
         log.debug("REST request to delete StaffModule : {}", id);
         staffModuleService.delete(id);

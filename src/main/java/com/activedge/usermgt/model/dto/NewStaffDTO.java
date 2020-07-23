@@ -3,8 +3,6 @@ package com.activedge.usermgt.model.dto;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
@@ -18,10 +16,10 @@ import static com.activedge.usermgt.config.Constants.PASSWORD_MIN_LENGTH;
 
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(description = "The New Staff Transfer Entity")
+//@ApiModel(description = "The New Staff Transfer Entity")
 public class NewStaffDTO extends StaffDTO {
 
-    @ApiModelProperty(notes = "The staff password", required = true)
+//    @ApiModelProperty(notes = "The staff password", required = true)
     @NotNull(message = "Staff password is required.")
     @JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)

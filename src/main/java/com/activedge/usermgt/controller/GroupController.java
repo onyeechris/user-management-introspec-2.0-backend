@@ -10,9 +10,6 @@ import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.GroupService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +34,10 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Group.
+ * Staff permission group. A staff inherits ALL permissions assigned to the group.
  */
 @RestController
 @RequestMapping("/")
-@Api(value="group", description="Staff permission group. A staff inherits ALL permissions assigned to the group.")
 public class GroupController extends BaseEntity {
 
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
@@ -65,12 +61,11 @@ public class GroupController extends BaseEntity {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Create a new "+ENTITY_NAME)
     public ResponseEntity<GroupDTO> createGroups(
             HttpServletRequest request, HttpServletResponse response,
             @Valid @RequestBody GroupDTO groupDTO,
             @RequestHeader(value = "Module", required = true) String module,
-            @ApiIgnore Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+            Errors errors) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors()) {
@@ -93,14 +88,14 @@ public class GroupController extends BaseEntity {
      * PUT  /groups : Updates an existing groups.
      *
      * @param groupDTO the groupDTO to update
+     * @param flag a 0|1 value to delete|add permissions to group
      * @return the ResponseEntity with status 200 (OK) and with body the updated groupDTO,
      * or with status 400 (Bad Request) if the groupDTO is not valid,
      * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
-    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, @ApiIgnore Errors errors, @ApiParam(value = "A 0|1 value to delete|add permissions to group", required = true) @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors, @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
 
         if (errors.hasErrors() || groupDTO.getId() == null) {
@@ -126,11 +121,10 @@ public class GroupController extends BaseEntity {
      * @return the ResponseEntity with status 200 (OK) and the list of groups in body
      */
     @GetMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllGroups(
             @RequestHeader(value = "Module", required = true) String module,
             @RequestParam(value = "app", defaultValue="all") String app,
-            @ApiIgnore Pageable pageable,
+            Pageable pageable,
             @RequestParam(required = false, defaultValue = "false") boolean eagerload,
             HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         log.debug("REST request to get a page of Group for app: {}", app);
@@ -156,7 +150,6 @@ public class GroupController extends BaseEntity {
      * @return the ResponseEntity with status 200 (OK) and with body the groupsDTO, or with status 404 (Not Found)
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<GroupDTO> getGroups(@RequestHeader(value = "Module", required = true) String mdl, @RequestParam(value = "app", defaultValue="all") String app, @PathVariable String id) throws ServletRequestBindingException {
         log.debug("REST request to get Group :{}, App:{}", id, app);
 
@@ -178,7 +171,6 @@ public class GroupController extends BaseEntity {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteGroups(@RequestHeader(value = "Module", required = true) String mdl, @PathVariable String id) throws ServletRequestBindingException {
         log.debug("REST request to delete GROUP : {}", id);
 

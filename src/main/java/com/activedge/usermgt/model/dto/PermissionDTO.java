@@ -1,8 +1,6 @@
 package com.activedge.usermgt.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,13 +14,13 @@ import java.io.Serializable;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(description = "The Permission Transfer Entity")
+//@ApiModel(description = "The Permission Transfer Entity")
 public class PermissionDTO implements Serializable {
 
-    @ApiModelProperty(notes = "The database generated permission ID")
+//    @ApiModelProperty(notes = "The database generated permission ID")
     private String id;
 
-    @ApiModelProperty(notes = "Permission action", required = true)
+//    @ApiModelProperty(notes = "Permission action", required = true)
     @NotNull(message = "PermissionDTO action is required")
     @Size(min = 3, message = "The permission action length is too short. Should be at least 3 charater")
     private String action;

@@ -1,0 +1,41 @@
+== Audit Controller API
+
+Audit API documentation for interacting with the audits service
+
+=== GET /audit
+
+.curl sample request
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/curl-request.adoc[]
+
+[source,python]
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/http-request.adoc[]
+
+.Response fields
+[source,json]
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/response-body.adoc[]
+[source,json]
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/http-response.adoc[]
+//include::{snippets}/audit-controller-test/fetch-all-tracelog-test/response-fields.adoc[]
+
+=== GET /audit/{status}
+
+.curl sample request
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/curl-request.adoc[]
+//include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/path-parameters.adoc[]
+//.Http Response
+//include::{snippets}/shouldGetOneCustomer/http-response.adoc[]
+//.Output
+//include::{snippets}/shouldGetOneCustomer/response-fields.adoc[]
+//[source,python]
+//include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/http-request.adoc[]
+
+//.Response fields
+//[source,json]
+//include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/response-body.adoc[]
+//[source,json]
+//include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/http-response.adoc[]
+//include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/response-fields.adoc[]
+
+== Audit API Generated
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/auto-section.adoc[]
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/auto-section.adoc[]
