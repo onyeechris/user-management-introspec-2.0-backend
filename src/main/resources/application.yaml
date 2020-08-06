@@ -38,6 +38,9 @@ spring:
 logging:
   level:
     org:
+      apache:
+        tomcat: DEBUG
+        catalina: DEBUG
       springframework:
         web:
           filter:
@@ -66,6 +69,13 @@ server:
   port: ${introspec_sso_port:9100}
   servlet:
     context-path: /${spring.application.name}
+  tomcat:
+    basedir: logs
+    accesslog:
+      enabled: true
+      pattern: common #'%t %a "%r" %s (%D ms)'
+      prefix: access_log
+      suffix: .log
 
 introspecsso:
   backend: ${introspec_sso_auth_mode:db} # db | ldap
@@ -78,3 +88,15 @@ ldap:
   ou: ${introspec_sso_ldap_ou:ou=staffs}
   filter: ${introspec_sso_ldap_filter:sAMAccountName}
 
+management:
+#  This will trigger security
+#  server:
+#    port: 9200
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      cors:
+        allowed-origins: ${cors.allowed_origins}
+        allowed-methods: GET
+#      base-path: /admin-console-metrics

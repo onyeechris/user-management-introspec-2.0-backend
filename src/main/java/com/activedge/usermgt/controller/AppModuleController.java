@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
  * REST controller for managing Module.
  */
 @RestController
-//@RequestMapping("/")
 public class AppModuleController {
 
     private final Logger log = LoggerFactory.getLogger(AppModuleController.class);
@@ -40,7 +39,7 @@ public class AppModuleController {
     }
 
     /**
-     * POST  /modules : Create a new modules.
+     * Create a new modules.
      *
      * @param moduleDTO the moduleDTO to create
      * @return the ResponseEntity with status 201 (Created) and with body the new moduleDTO, or with status 400 (Bad Request) if the modules has already an ID
@@ -59,13 +58,15 @@ public class AppModuleController {
 
         ModuleDTO result = moduleService.save(moduleDTO);
 
+        System.out.println(result);
+
         return ResponseEntity.created(new URI("/auth-service/"+ENTITY_NAME+"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * PUT  /modules : Updates an existing modules.
+     * Update an existing module.
      *
      * @param moduleDTO the moduleDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated moduleDTO,
@@ -87,20 +88,20 @@ public class AppModuleController {
         ModuleDTO result = moduleService.save(moduleDTO);
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId()))
             .body(result);
     }
 
     /**
-     * GET  /modules : get all the modules.
+     * Get all registered modules.
      *
      * @param pageable the pagination information
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
      * @return the ResponseEntity with status 200 (OK) and the list of modules in body
      */
     @GetMapping("/"+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllModules(@RequestParam(value = "app", defaultValue="all") String app, Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Module for app: {}", app);
+    public ResponseEntity<ResponseWrapper> getAllModules(Pageable pageable) {
+        log.debug("REST request to get all appModules");
+
         Page<ModuleDTO> page;
 
         page = moduleService.findAll(pageable);
@@ -109,7 +110,7 @@ public class AppModuleController {
     }
 
     /**
-     * GET  /modules/:id : get the "id" modules.
+     * GET a single module by its "id".
      *
      * @param id the id of the modulesDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the modulesDTO, or with status 404 (Not Found)
@@ -127,7 +128,7 @@ public class AppModuleController {
     }
 
     /**
-     * DELETE  /modules/:id : delete the "id" modules.
+     * Delete a single module by its id.
      *
      * @param id the id of the modulesDTO to delete
      * @return the ResponseEntity with status 200 (OK)
@@ -136,6 +137,7 @@ public class AppModuleController {
     public ResponseEntity<Void> deleteModules(@PathVariable String id) {
         log.debug("REST request to delete GROUP : {}", id);
         moduleService.delete(id);
+//        return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 

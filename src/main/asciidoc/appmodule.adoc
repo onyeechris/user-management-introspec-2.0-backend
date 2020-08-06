@@ -1,0 +1,10 @@
+== AppModule Controller API
+
+AppModule API documentation for interacting with the module service
+
+== AppModule API Generated
+include::{snippets}/app-module-controller-test/save-appmodule-test/auto-section.adoc[]
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-section.adoc[]
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-section.adoc[]
+include::{snippets}/app-module-controller-test/update-appmodule-test/auto-section.adoc[]
+include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-section.adoc[]

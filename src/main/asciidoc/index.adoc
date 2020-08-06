@@ -15,6 +15,7 @@ This documentation is a developer's guide to how the User Management REST API is
 
 //include::auth.adoc[]
 include::audit.adoc[]
+include::appmodule.adoc[]
 
 |===
 | Verb | Usage

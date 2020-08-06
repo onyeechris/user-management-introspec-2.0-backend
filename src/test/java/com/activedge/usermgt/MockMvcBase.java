@@ -4,21 +4,19 @@ import capital.scalable.restdocs.AutoDocumentation;
 import capital.scalable.restdocs.SnippetRegistry;
 import capital.scalable.restdocs.jackson.JacksonResultHandlers;
 import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
-import com.activedge.usermgt.controller.AuditController;
+import com.activedge.usermgt.repository.StaffRepository;
+import com.activedge.usermgt.security.JwtAuthenticationEntryPoint;
 import com.activedge.usermgt.security.SecurityCredentials;
+import com.activedge.usermgt.service.CustomUserDetailsService;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsMessagingTemplate;
-import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.cli.CliDocumentation;
@@ -42,12 +40,9 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//@RunWith(SpringRunner.class)
 @ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@WebMvcTest(AuditController.class)
-@EnableSpringDataWebSupport
-//@SpringBootTest
 public abstract class MockMvcBase {
+
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
 
@@ -61,18 +56,21 @@ public abstract class MockMvcBase {
     private SecurityCredentials securityCredentials;
 
     @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private StaffRepository staffRepository;
+
+    @MockBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @MockBean
     @Qualifier("jwtAuthFilter")
     private Filter filter;
 
     @MockBean
     @Qualifier("springSecurityFilterChain")
     private Filter filter2;
-
-//    @MockBean
-//    private TraceService traceService;
-
-//    Caused by: java.lang.IllegalStateException: Unable to register mock bean javax.servlet.Filter expected a single matching bean to replace but found [auditLogHandler, corsConfig, corsFilter, formContentFilter, jwtAuthFilter, jwtAuthenticationFilter, requestContextFilter, springSecurityFilterChain]
-
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -81,9 +79,6 @@ public abstract class MockMvcBase {
     private WebApplicationContext context;
 
     protected MockMvc mockMvc;
-
-    @Rule
-    public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
@@ -100,7 +95,7 @@ public abstract class MockMvcBase {
                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
                                 .uris()
                                 .withScheme("http")
-                                .withHost("demo.mimacom.com")
+                                .withHost("localhost")
                                 .withPort(443)
                                 .and().snippets()
                                 .withDefaults(CliDocumentation.curlRequest(),

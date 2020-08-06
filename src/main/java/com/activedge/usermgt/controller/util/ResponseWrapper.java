@@ -28,8 +28,10 @@ public class ResponseWrapper {
 	}
 
 	@Data
-//	@ApiModel(description = "The Meta Transfer Entity for returning summary for list items")
-	class MetaFields {
+	/**
+	 * The Meta Transfer Entity for returning summary for list items
+	 */
+	public class MetaFields {
 		private int size;
 		private int number;
 		private int numberOfElements;

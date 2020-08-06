@@ -2,6 +2,8 @@ package com.activedge.usermgt.config;
 
 
 import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -33,6 +35,11 @@ public class AuditConfig implements AuditorAware<String>{
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         return converter;
+    }
+
+    @Bean
+    public HttpTraceRepository httpTraceRepository() {
+        return new InMemoryHttpTraceRepository();
     }
 
 }
