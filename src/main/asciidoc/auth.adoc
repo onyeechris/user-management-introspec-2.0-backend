@@ -1,0 +1,5 @@
+== Authorization Resource
+
+Authorization resource for obtaining valid jwt tokens.
+
+include::{snippets}/user-j-w-t-controller-test/authenticate-test/auto-section.adoc[]

@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class MockMvcBase {
 
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
+    protected JwtTokenProvider jwtTokenProvider;
 
     @MockBean
     private JmsMessagingTemplate jmsMessagingTemplate;
@@ -96,7 +96,7 @@ public abstract class MockMvcBase {
                                 .uris()
                                 .withScheme("http")
                                 .withHost("localhost")
-                                .withPort(443)
+                                .withPort(9100)
                                 .and().snippets()
                                 .withDefaults(CliDocumentation.curlRequest(),
                                         HttpDocumentation.httpRequest(),
@@ -109,7 +109,7 @@ public abstract class MockMvcBase {
                                         AutoDocumentation.requestParameters(),
                                         AutoDocumentation.description(),
                                         AutoDocumentation.methodAndPath(),
-                                        AutoDocumentation.authorization("Bearer: ..."),
+                                        AutoDocumentation.authorization("Bearer: <valid_jwt_token_required>"),
 //                                AutoDocumentation.section()
                                         AutoDocumentation.sectionBuilder()
                                                 .snippetNames(

@@ -66,6 +66,12 @@ public class UserJWTController {
         this.staffModuleService = staffModuleService;
     }
 
+    /**
+     * Obtain a new JWT token.
+     *
+     * @param module the appModule key. <b>Note: This is a header parameter<b/>
+     * @return the ResponseEntity with status 200 (OK) and with body the modulesDTO, or with status 404 (Not Found)
+     */
     @PostMapping
     public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Module", required = false) String module, HttpServletRequest req, BindingResult result) throws NotSupportedException {
         starttime = System.currentTimeMillis();
@@ -86,6 +92,7 @@ public class UserJWTController {
         // check if user belongs to the specified App before generating token
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
+
             // log successful login
             audit(req, authentication);
         } else {
@@ -151,7 +158,7 @@ public class UserJWTController {
         return ldapSetting;
     }
 
-    private void audit(HttpServletRequest req, Authentication authentication) {
+    public boolean audit(HttpServletRequest req, Authentication authentication) {
         endtime = System.currentTimeMillis();
         CustomHttpTrace cTrace = new CustomHttpTrace.CustomHttpTraceBuilder()
                 .timestamp(new Date())
@@ -162,28 +169,43 @@ public class UserJWTController {
                 .queryParams(req.getQueryString())
                 .method(req.getMethod())
                 .timeTaken((endtime-starttime))
-                .payload(authentication.getPrincipal().toString())
+                .payload(authentication == null || authentication.getPrincipal() == null ? null : authentication.getPrincipal().toString())
                 .rawBody("n/a")
                 .build();
 
         // async log
         this.jmsMessagingTemplate.convertAndSend(this.queue, cTrace);
+
+        return true;
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
     private class JWTResponse {
+        /**
+         * Authentication response status
+         */
         private boolean status;
+
+        /**
+         * Generated JWT token
+         */
         private String token;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    private static class LoginRequest {
+    public static class LoginRequest {
+        /**
+         * Login username or email on database or AD
+         */
         @NotBlank(message = "Username cannot be blank")
         private String username;
+        /**
+         * Login password on database or AD
+         */
         @NotBlank(message = "Password cannot be blank")
         private String password;
     }

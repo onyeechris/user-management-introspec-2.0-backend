@@ -39,7 +39,7 @@ public class AppModuleController {
     }
 
     /**
-     * Create a new modules.
+     * This is an endpoint to create a new application module.
      *
      * @param moduleDTO the moduleDTO to create
      * @return the ResponseEntity with status 201 (Created) and with body the new moduleDTO, or with status 400 (Bad Request) if the modules has already an ID

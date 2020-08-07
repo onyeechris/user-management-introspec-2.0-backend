@@ -29,13 +29,9 @@ public class AuditController {
 
     private final TraceService traceService;
 
-//    public AuditController(TraceService traceService) {
-//        this.traceService = traceService;
-//    }
-
     /**
      * GET all Http trace logs.
-     * <p>
+     *
      * @param pageable optional pagination configuration
      * @return the ResponseEntity of http traces
      */
@@ -47,7 +43,7 @@ public class AuditController {
 
     /**
      * GET all Http trace logs by status.
-     * <p>
+     *
      * @param status the http trace status to retrieve
      * @param pageable optional pagination configuration
      * @return the ResponseEntity of http traces

@@ -62,7 +62,6 @@ public class AuditControllerTest extends MockMvcBase {
     @Test
     void fetchAllTracelogTest() throws Exception {
 
-
         when(this.traceService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trace1, trace2)));
 
         this.mockMvc.perform(get("/audit?page=1&size=15")

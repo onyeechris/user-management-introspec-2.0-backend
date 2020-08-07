@@ -1,6 +1,6 @@
 = User Managment (SSO) Developers Documentation
 :toc: right
-:toc-title: API Content
+:toc-title: Table of Contents
 :sectnums:
 :icons: font
 :doctype: book
@@ -9,13 +9,18 @@
 [NOTE]
 SS0 => Single Sign On
 
-[[overview-general]]
-== Overview
+[[overview]]
+= Overview
+
 This documentation is a developer's guide to how the User Management REST API is consumed.
 
-//include::auth.adoc[]
-include::audit.adoc[]
-include::appmodule.adoc[]
+[[overview-general]]
+== General
+
+[[overview-http-verbs]]
+=== HTTP verbs
+
+Definition of web terms.
 
 |===
 | Verb | Usage
@@ -38,7 +43,7 @@ include::appmodule.adoc[]
 
 Spring pagination facilities offer following request parameters:
 
-.Request parameters
+.Query parameters
 |===
 | Path | Type | Optional | Description
 
@@ -66,7 +71,7 @@ Pagination response has following structure:
 |===
 | Path | Type | Optional | Description
 
-| content
+| payload
 | Array[Object]
 | false
 | Actual items.
@@ -112,4 +117,13 @@ Pagination response has following structure:
 | Page number.
 |===
 
+[[resources]]
+= Resources
+
+include::auth.adoc[]
+include::audit.adoc[]
+include::appmodule.adoc[]
+
+[[footer]]
+= ...
 include::footer.adoc[]

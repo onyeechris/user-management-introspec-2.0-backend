@@ -2,9 +2,80 @@
 
 AppModule API documentation for interacting with the module service
 
-== AppModule API Generated
-include::{snippets}/app-module-controller-test/save-appmodule-test/auto-section.adoc[]
-include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-section.adoc[]
-include::{snippets}/app-module-controller-test/get-appmodule-test/auto-section.adoc[]
-include::{snippets}/app-module-controller-test/update-appmodule-test/auto-section.adoc[]
-include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-section.adoc[]
+=== Create AppModule
+include::{snippets}/app-module-controller-test/save-appmodule-test/auto-method-path.adoc[]
+
+include::{snippets}/app-module-controller-test/save-appmodule-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/app-module-controller-test/save-appmodule-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/app-module-controller-test/save-appmodule-test/curl-request.adoc[]
+.Request fields
+include::{snippets}/app-module-controller-test/save-appmodule-test/auto-request-fields.adoc[]
+.Http Response
+include::{snippets}/app-module-controller-test/save-appmodule-test/http-response.adoc[]
+//---------------------------
+=== Retrieve AppModules
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-method-path.adoc[]
+
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/curl-request.adoc[]
+.Request parameters
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/auto-request-parameters.adoc[]
+.Http Response
+include::{snippets}/app-module-controller-test/get-all-appmodules-test/http-response.adoc[]
+//--------------------------
+=== Retrieve AppModule
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-method-path.adoc[]
+
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/app-module-controller-test/get-appmodule-test/curl-request.adoc[]
+.Path parameters
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-path-parameters.adoc[]
+.Http Response
+include::{snippets}/app-module-controller-test/get-appmodule-test/http-response.adoc[]
+.Response fields
+include::{snippets}/app-module-controller-test/get-appmodule-test/auto-response-fields.adoc[]
+//---------------------------
+=== Edit AppModule
+include::{snippets}/app-module-controller-test/update-appmodule-test/auto-method-path.adoc[]
+
+include::{snippets}/app-module-controller-test/update-appmodule-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/app-module-controller-test/update-appmodule-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/app-module-controller-test/update-appmodule-test/curl-request.adoc[]
+.Request fields
+include::{snippets}/app-module-controller-test/update-appmodule-test/auto-request-fields.adoc[]
+.Http Response
+include::{snippets}/app-module-controller-test/update-appmodule-test/http-response.adoc[]
+//---------------------------
+=== Remove AppModule
+include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-method-path.adoc[]
+
+include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/app-module-controller-test/delete-appmodule-test/curl-request.adoc[]
+.Path parameters
+include::{snippets}/app-module-controller-test/delete-appmodule-test/auto-path-parameters.adoc[]
+.Http Response
+include::{snippets}/app-module-controller-test/delete-appmodule-test/http-response.adoc[]
+//---------------------------
