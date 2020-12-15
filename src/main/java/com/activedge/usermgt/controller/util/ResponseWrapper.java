@@ -15,6 +15,11 @@ public class ResponseWrapper {
 	
 	private Page<?> page;
 
+	/**
+	 * Metadata.
+	 *
+	 * @see <a href="http://localhost:9100/auth-service/#overview-pagination">Meta type documentation</a>
+	 */
 	private MetaFields meta = new MetaFields();
 
 	public ResponseWrapper(Page<?> page) {

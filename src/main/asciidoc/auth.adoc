@@ -2,4 +2,6 @@
 
 Authorization resource for obtaining valid jwt tokens.
 
+.curl Request
+include::{snippets}/user-j-w-t-controller-test/authenticate-test/curl-request.adoc[]
 include::{snippets}/user-j-w-t-controller-test/authenticate-test/auto-section.adoc[]

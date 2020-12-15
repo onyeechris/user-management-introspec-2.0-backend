@@ -6,6 +6,9 @@
 :doctype: book
 :source-highlighter: pygments
 
+//https://github.com/spring-projects/spring-restdocs/tree/master/spring-restdocs-core/src/main/resources/org/springframework/restdocs/templates/asciidoctor
+//https://github.com/ScaCap/spring-auto-restdocs/tree/master/spring-auto-restdocs-core/src/main/resources/org/springframework/restdocs/templates/asciidoctor
+
 [NOTE]
 SS0 => Single Sign On
 

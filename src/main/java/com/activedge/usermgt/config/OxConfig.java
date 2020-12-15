@@ -25,4 +25,8 @@ public class OxConfig {
         return ox;
 
     }
+
+    // Run mongodb with authentication.
+    // Check if subsequent run requires admin write to drop database. Ox
+    // For mongoBee requires a priviledge called system.indexes. access to  --- will it run with ReadWrite? or subsequently can it run with readWrite?
 }
