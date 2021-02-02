@@ -69,16 +69,16 @@ server:
   port: ${introspec_sso_port:9100}
   servlet:
     context-path: /${spring.application.name}
-  tomcat:
-    basedir: logs
-    accesslog:
-      enabled: true
-      pattern: common #'%t %a "%r" %s (%D ms)'
-      prefix: access_log
-      suffix: .log
+#  tomcat:
+#    basedir: logs
+#    accesslog:
+#      enabled: true
+#      pattern: common #'%t %a "%r" %s (%D ms)'
+#      prefix: access_log
+#      suffix: .log
 
 introspecsso:
-  backend: ${introspec_sso_auth_mode:db} # db | ldap
+  backend: ${introspec_sso_auth_mode:ldap} # db | ldap
 
 ldap:
   url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
