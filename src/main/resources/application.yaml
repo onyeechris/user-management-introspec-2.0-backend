@@ -78,7 +78,7 @@ server:
 #      suffix: .log
 
 introspecsso:
-  backend: ${introspec_sso_auth_mode:dp} # db | ldap
+  backend: ${introspec_sso_auth_mode:db} # db | ldap
 
 ldap:
   url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
