@@ -68,7 +68,7 @@ cors:
 server:
   port: ${introspec_sso_port:9100}
   servlet:
-    context-path: /${spring.application.name}
+    context-path: /${introspec_sso_context_path:${spring.application.name}}
 #  tomcat:
 #    basedir: logs
 #    accesslog:
@@ -78,7 +78,7 @@ server:
 #      suffix: .log
 
 introspecsso:
-  backend: ${introspec_sso_auth_mode:ldap} # db | ldap
+  backend: ${introspec_sso_auth_mode:dp} # db | ldap
 
 ldap:
   url: ${introspec_sso_ldap_url:ldap://137.116.126.254:389}
