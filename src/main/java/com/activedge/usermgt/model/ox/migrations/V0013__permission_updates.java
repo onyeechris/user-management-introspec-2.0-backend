@@ -39,6 +39,14 @@ public class V0013__permission_updates implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
+                .add("_id", "can_view_masterpass_reports")
+                .add("action", "can view masterpass reports")
+                .add("description", "Can view masterpass reports")
+                .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
+                .get());
+
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
                 .add("_id", "can_manage_masterpass")
                 .add("action", "can manage masterpass")
                 .add("description", "Can manage masterpass")

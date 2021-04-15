@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -21,6 +22,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 @Slf4j
 @EnableWebSecurity
@@ -141,13 +151,30 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public LdapContextSource contextSource() {
-            LdapContextSource contextSource = new LdapContextSource();
-            contextSource.setUrl(env.getRequiredProperty("ldap.url"));
-            contextSource.setBase(env.getRequiredProperty("ldap.base"));
-            contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
-            contextSource.setPassword(env.getRequiredProperty("ldap.password"));
-            contextSource.afterPropertiesSet();
-            return contextSource;
+    public LdapContextSource contextSource() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sslcontext = SSLContext.getInstance("SSL");
+        sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException{}
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }}, new java.security.SecureRandom());
+
+        HostnameVerifier allowAll = (hostname, session) -> true;
+
+        DefaultTlsDirContextAuthenticationStrategy tls = new DefaultTlsDirContextAuthenticationStrategy();
+        tls.setHostnameVerifier(allowAll);
+        tls.setSslSocketFactory(sslcontext.getSocketFactory());
+
+        LdapContextSource contextSource = new LdapContextSource();
+        contextSource.setAuthenticationStrategy(tls);
+        contextSource.setUrl(env.getRequiredProperty("ldap.url"));
+        contextSource.setBase(env.getRequiredProperty("ldap.base"));
+        contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
+        contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+        contextSource.setPooled(false);
+        contextSource.afterPropertiesSet();
+        return contextSource;
     }
 }
