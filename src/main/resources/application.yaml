@@ -10,7 +10,6 @@ spring:
 #    user: admin
 #    password: admin
 
-
   application:
       name: auth-service
 
