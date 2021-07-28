@@ -62,9 +62,9 @@ public class AuditControllerTest extends MockMvcBase {
     @Test
     void fetchAllTracelogTest() throws Exception {
 
-        when(this.traceService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trace1, trace2)));
+        when(this.traceService.findAll(any(Date.class), any(Date.class), any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trace1, trace2)));
 
-        this.mockMvc.perform(get("/audit?page=1&size=15")
+        this.mockMvc.perform(get("/audit?page=1&size=15&from=2020-12-31&to=2021-12-31")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
