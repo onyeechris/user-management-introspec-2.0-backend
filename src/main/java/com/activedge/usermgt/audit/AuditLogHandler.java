@@ -70,12 +70,12 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
                 .queryParams(req.getQueryString())
                 .method(req.getMethod())
                 .timeTaken((endtime-starttime))
-                .payload(matcher.find() ? matcher.group().split("=")[1].replaceAll("\"password\": \"[\\s\\S]+\"", "\"password\": \"***\"") : "n/a")
-                .rawBody(s.replaceAll("\"password\": \"[\\s\\S]+\"", "\"password\": \"***\""))
+                .payload(matcher.find() ? matcher.group().split("=")[1].replaceAll("\"password\":\"[\\s\\S]+\"", "\"password\":\"***\"") : "n/a")
+                .rawBody(s.replaceAll("\"password\":\"[\\s\\S]+\"", "\"password\":\"***\""))
                 .build();
 
         // async log
-         this.jmsMessagingTemplate.convertAndSend(this.queue, ctrace);
+        this.jmsMessagingTemplate.convertAndSend(this.queue, ctrace);
     }
 
     @Pointcut("execution(* *.*(..))") // the pointcut expression
