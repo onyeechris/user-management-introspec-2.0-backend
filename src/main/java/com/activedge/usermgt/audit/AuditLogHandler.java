@@ -3,12 +3,16 @@ package com.activedge.usermgt.audit;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 
 import javax.jms.Queue;
@@ -48,7 +52,7 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
 
     @Override
     protected void beforeRequest(HttpServletRequest request, String s) {
-        log.info("---> New Request: {} {}", request.getMethod(), request.getRequestURL());
+        log.info("New Request :: {} {}", request.getMethod(), request.getRequestURL());
         starttime = System.currentTimeMillis();
     }
 
@@ -107,6 +111,37 @@ public class AuditLogHandler extends AbstractRequestLoggingFilter {
 
         // async log
         this.jmsMessagingTemplate.convertAndSend(this.queue, cTrace);
+    }
+
+    @Pointcut("execution(* com.activedge.usermgt.controller..*(..)))")
+    private void inController() {}
+
+    @Pointcut("execution(* com.activedge.usermgt.service..*(..)))")
+    private void inService() {}
+
+    @Pointcut("execution(* com.activedge.usermgt.repository..*(..)))")
+    private void inRepository() {}
+
+    @Around("inController() || inService() || inRepository()")
+    public Object profileAllMethods(ProceedingJoinPoint proceedingJoinPoint) throws Throwable
+    {
+        MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+
+        //Get intercepted method details
+        String className = methodSignature.getDeclaringType().getSimpleName();
+        String methodName = methodSignature.getName();
+
+        final StopWatch stopWatch = new StopWatch();
+
+        //Measure method execution time
+        stopWatch.start();
+        Object result = proceedingJoinPoint.proceed();
+        stopWatch.stop();
+
+        //Log method execution time
+        log.info("Execution time of " + className + "." + methodName + " " + ":: " + stopWatch.getTotalTimeMillis() + " ms");
+
+        return result;
     }
 
 }

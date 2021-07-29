@@ -35,4 +35,9 @@ public class AuditConfig implements AuditorAware<String>{
         return converter;
     }
 
+//    @Bean
+//    public HttpTraceRepository httpTraceRepository() {
+//        return new InMemoryHttpTraceRepository();
+//    }
+
 }

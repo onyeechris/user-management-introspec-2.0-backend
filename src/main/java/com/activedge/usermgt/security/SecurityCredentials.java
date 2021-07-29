@@ -22,6 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.naming.NamingException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @EnableWebSecurity
 public class SecurityCredentials extends WebSecurityConfigurerAdapter {
@@ -121,8 +127,8 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             .ldapAuthentication()
             .userSearchBase(env.getRequiredProperty("ldap.ou"))
             .userSearchFilter(env.getRequiredProperty("ldap.filter") + "={0}")
-            .contextSource(contextSource())
-            .ldapAuthoritiesPopulator(ldapAuthoritiesPopulator());
+            .ldapAuthoritiesPopulator(ldapAuthoritiesPopulator())
+            .contextSource(contextSource());
     }
 
     @Bean
@@ -141,13 +147,19 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public LdapContextSource contextSource() {
-            LdapContextSource contextSource = new LdapContextSource();
-            contextSource.setUrl(env.getRequiredProperty("ldap.url"));
-            contextSource.setBase(env.getRequiredProperty("ldap.base"));
-            contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
-            contextSource.setPassword(env.getRequiredProperty("ldap.password"));
-            contextSource.afterPropertiesSet();
-            return contextSource;
+    public LdapContextSource contextSource() throws NoSuchAlgorithmException, KeyManagementException, NamingException {
+        Map<String, Object> props = new HashMap<>();
+        props.put("java.naming.factory.initial", "com.sun.jndi.ldap.LdapCtxFactory");
+        props.put("java.naming.ldap.factory.socket", "com.activedge.usermgt.security.certs.MySSLSocketFactory");
+
+        LdapContextSource contextSource = new LdapContextSource();
+        contextSource.setUrl(env.getRequiredProperty("ldap.url"));
+        contextSource.setBase(env.getRequiredProperty("ldap.base"));
+        contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
+        contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+        contextSource.setPooled(false);
+        contextSource.setBaseEnvironmentProperties(props);
+        contextSource.afterPropertiesSet();
+        return contextSource;
     }
 }

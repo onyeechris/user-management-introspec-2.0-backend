@@ -1,0 +1,33 @@
+== Audit Controller API
+
+Audit API documentation for interacting with the audits service
+
+//---------------------------
+=== Retrieve AuditLogs by status
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/auto-method-path.adoc[]
+
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/curl-request.adoc[]
+.Request parameters
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/auto-request-parameters.adoc[]
+.Http Response
+include::{snippets}/audit-controller-test/fetch-tracelog-by-status-test/http-response.adoc[]
+//--------------------------
+=== Retrieve all AuditLogs
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/auto-method-path.adoc[]
+
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/curl-request.adoc[]
+.Http Response
+include::{snippets}/audit-controller-test/fetch-all-tracelog-test/http-response.adoc[]
+//---------------------------

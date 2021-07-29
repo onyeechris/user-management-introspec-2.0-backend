@@ -8,8 +8,6 @@ import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -37,7 +34,6 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/")
-@Api(value="staff", description="Operations pertaining to bank's staff")
 public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
@@ -72,8 +68,7 @@ public class StaffController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping(value = "/"+ENTITY_NAME, produces = "application/json")
-    @ApiOperation(value = "Create a new "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
         log.info("---REST request to save a {} : {}, token: {}", ENTITY_NAME, staffDTO, SecurityUtils.getCurrentUserLogin());
 
         if (errors.hasErrors()) {
@@ -101,8 +96,7 @@ public class StaffController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Update an existing "+ENTITY_NAME)
-    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, @ApiIgnore Errors errors) throws Exception {
+    public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update {} : {}", ENTITY_NAME, staffDTO);
 
         if (errors.hasErrors() || staffDTO.getId() == null) {
@@ -126,8 +120,7 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
     @GetMapping("/"+ENTITY_NAME)
-    @ApiOperation(value = "Get all existing "+ENTITY_NAME)
-    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, @ApiIgnore Pageable pageable) throws ServletRequestBindingException {
+    public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
         log.debug("REST request to get a page of "+ENTITY_NAME);
 
         Page<StaffDTO> page = null;
@@ -150,7 +143,6 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
     @GetMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Get a single "+ENTITY_NAME+" based on their id")
     public ResponseEntity<StaffDTO> getStaff(@PathVariable String id) throws Exception {
         log.debug("REST request to get {} : {}", ENTITY_NAME, id);
         Optional<StaffDTO> staffDTO = staffService.findOne(id);
@@ -170,7 +162,6 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
     @GetMapping("/"+ENTITY_NAME+"/import/{username}")
-    @ApiOperation(value = "Import a staff from LDAP using their username")
     public ResponseEntity<StaffDTO> importStaff(@PathVariable String username) throws Exception {
         log.debug("REST request to import {} : {}", ENTITY_NAME, username);
 
@@ -193,7 +184,6 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/"+ENTITY_NAME+"/{id}")
-    @ApiOperation(value = "Delete a single "+ENTITY_NAME)
     public ResponseEntity<Void> deleteStaff(@PathVariable String id) {
         log.debug("REST request to delete {} : {}", ENTITY_NAME, id);
         staffService.delete(id);

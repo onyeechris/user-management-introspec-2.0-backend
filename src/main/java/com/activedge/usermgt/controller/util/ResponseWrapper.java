@@ -1,6 +1,5 @@
 package com.activedge.usermgt.controller.util;
 
-import io.swagger.annotations.ApiModel;
 import org.springframework.data.domain.Page;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,13 +8,18 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(description = "A wrapper Transfer Entity for returning list items")
+//@ApiModel(description = "A wrapper Transfer Entity for returning list items")
 public class ResponseWrapper {
 
 	private Object payload;
 	
 	private Page<?> page;
 
+	/**
+	 * Metadata.
+	 *
+	 * @see <a href="http://localhost:9100/auth-service/#overview-pagination">Meta type documentation</a>
+	 */
 	private MetaFields meta = new MetaFields();
 
 	public ResponseWrapper(Page<?> page) {
@@ -29,8 +33,10 @@ public class ResponseWrapper {
 	}
 
 	@Data
-	@ApiModel(description = "The Meta Transfer Entity for returning summary for list items")
-	class MetaFields {
+	/**
+	 * The Meta Transfer Entity for returning summary for list items
+	 */
+	public class MetaFields {
 		private int size;
 		private int number;
 		private int numberOfElements;

@@ -33,7 +33,7 @@ public class CorsConfig implements Filter {
         if(extOrigins.contains(request.getServerName())){
             chain.doFilter(request, response);
         } else {
-            throw new java.io.InvalidObjectException("Header injection exception thrown");
+            throw new java.io.InvalidObjectException("Header[" + request.getServerName() + "] injection exception thrown");
         }
     }
 
