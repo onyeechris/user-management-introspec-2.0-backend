@@ -39,6 +39,7 @@ public class StaffController {
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
 
     static final String STAFFS = "staffs";
+    private static final String STAFFS_DOWNLOAD = "staffs/download";
     private static final String STAFF_BY_ID = "staffs/{id}";
     private static final String STAFF_BY_USERNAME = "staffs/import/{username}";
 
@@ -144,7 +145,7 @@ public class StaffController {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
-    @GetMapping(STAFFS)
+    @GetMapping(STAFFS_DOWNLOAD)
     public ResponseEntity<ResponseWrapper> downloadAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
 
         Page<StaffDTO> page = null;
