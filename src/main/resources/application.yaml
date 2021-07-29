@@ -11,7 +11,7 @@ spring:
 #    password: admin
 
   application:
-      name: auth-service
+      name: ${introspec_sso_context_path:auth-service}
 
   jackson:
     serialization:
