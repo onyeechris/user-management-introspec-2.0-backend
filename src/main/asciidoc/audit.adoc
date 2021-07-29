@@ -31,3 +31,15 @@ include::{snippets}/audit-controller-test/fetch-all-tracelog-test/curl-request.a
 .Http Response
 include::{snippets}/audit-controller-test/fetch-all-tracelog-test/http-response.adoc[]
 //---------------------------
+=== Download AuditLogs
+include::{snippets}/audit-controller-test/download-all-tracelog-test/auto-method-path.adoc[]
+
+include::{snippets}/audit-controller-test/download-all-tracelog-test/auto-description.adoc[]
+
+==== Authorization
+include::{snippets}/audit-controller-test/download-all-tracelog-test/auto-authorization.adoc[]
+
+.curl sample request
+include::{snippets}/audit-controller-test/download-all-tracelog-test/curl-request.adoc[]
+.Http Response
+include::{snippets}/audit-controller-test/download-all-tracelog-test/http-response.adoc[]
