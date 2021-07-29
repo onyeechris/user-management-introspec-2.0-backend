@@ -39,9 +39,9 @@ public class StaffController {
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
 
     static final String STAFFS = "staffs";
-    private static final String STAFFS_DOWNLOAD = "staffs/download";
-    private static final String STAFF_BY_ID = "staffs/{id}";
-    private static final String STAFF_BY_USERNAME = "staffs/import/{username}";
+    private static final String STAFFS_DOWNLOAD = "download";
+    private static final String STAFF_BY_ID = "{id}";
+    private static final String STAFF_BY_USERNAME = "import/{username}";
 
     @Autowired
     @Qualifier("db")
@@ -70,7 +70,7 @@ public class StaffController {
      * @return the ResponseEntity with status 201 (Created) and with body the new staffDTO, or with status 400 (Bad Request) if the staff has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PostMapping(value = STAFFS, produces = "application/json")
+    @PostMapping(produces = "application/json")
     public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
         log.info("---REST request to save a {} : {}, token: {}", STAFFS, staffDTO, SecurityUtils.getCurrentUserLogin());
 
@@ -98,7 +98,7 @@ public class StaffController {
      * or with status 500 (Internal Server Error) if the staffDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping(STAFFS)
+    @PutMapping
     public ResponseEntity<StaffDTO> updateStaff(@Valid @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update {} : {}", STAFFS, staffDTO);
 
@@ -122,7 +122,7 @@ public class StaffController {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
-    @GetMapping(STAFFS)
+    @GetMapping
     public ResponseEntity<ResponseWrapper> getAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
         log.debug("REST request to get a page of "+ STAFFS);
 
