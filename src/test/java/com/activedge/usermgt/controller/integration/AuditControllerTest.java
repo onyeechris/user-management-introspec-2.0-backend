@@ -4,6 +4,7 @@ import com.activedge.usermgt.MockMvcBase;
 import com.activedge.usermgt.controller.AuditController;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.service.TraceService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,7 +13,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -68,6 +71,21 @@ public class AuditControllerTest extends MockMvcBase {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void downloadAllTracelogTest() throws Exception {
+
+        when(this.traceService.findAll(any(Date.class), any(Date.class), any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+
+        MvcResult result = this.mockMvc.perform(get("/audit/download?page=1&size=15&from=2020-12-31&to=2021-12-31")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals(200, result.getResponse().getStatus());
+        Assertions.assertEquals("application/octet-stream", result.getResponse().getContentType());
+
     }
 
 

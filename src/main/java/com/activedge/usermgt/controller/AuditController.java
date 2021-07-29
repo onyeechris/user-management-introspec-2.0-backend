@@ -64,7 +64,7 @@ public class AuditController {
      * @return the ResponseEntity of http traces
      */
     @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
-    public ResponseEntity getAllCustomHttpTracesByDateRangeExcel(
+    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByDateRangeExcel(
             @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
             @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
