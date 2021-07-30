@@ -1,5 +1,6 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
@@ -14,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -24,8 +27,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,6 +50,7 @@ public class StaffController {
     private static final String STAFFS_DOWNLOAD = "download";
     private static final String STAFF_BY_ID = "{id}";
     private static final String STAFF_BY_USERNAME = "import/{username}";
+    static final String FILENAME = "UserList";
 
     @Autowired
     @Qualifier("db")
@@ -146,18 +155,27 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
     @GetMapping(STAFFS_DOWNLOAD)
-    public ResponseEntity<ResponseWrapper> downloadAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws ServletRequestBindingException {
-
-        Page<StaffDTO> page = null;
+    public ResponseEntity<InputStreamResource> downloadAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws IOException {
+        ByteArrayInputStream in = null;
 
         Optional<Module> module = this.moduleRepository.findById(mdl);
 
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/octet-stream");
+        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
+
         if(!module.isPresent()) {
         } else {
-            page = staffService.findAll(pageable);
+            in = ExcelGenerator.generateUserList(staffService.findAll(pageable));
         }
 
-        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
     }
 
     /**
