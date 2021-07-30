@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@ApiModel(description = "A wrapper Transfer Entity for returning list items")
 public class ResponseWrapper {
 
 	private Object payload;

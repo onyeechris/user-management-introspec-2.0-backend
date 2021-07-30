@@ -1,44 +1,89 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.service.TraceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * REST controller for managing CustomHttpTrace.
  */
 @Slf4j
 @RestController
-@RequestMapping("audit")
+@RequestMapping(AuditController.AUDIT_CONTROLLER)
 @RequiredArgsConstructor
 public class AuditController {
 
-    private static final int DEFAULT_PAGE_NUMBER = 0;
+    static final String AUDIT_CONTROLLER = "audit";
+    static final String FILENAME = "AuditLogs";
+    static final String AUDIT_CONTROLLER_DOWNLOAD = "download";
+    private static final String THREE_DAYS_AGO = "#{new java.util.Date((new java.util.Date()).getTime()-3*24*60*60*1000)}";
+    private static final String NOW = "#{new java.util.Date()}";
     private static final int DEFAULT_PAGE_SIZE = 25;
+    private static final int DEFAULT_DOWNLOAD_PAGE_SIZE = 10000;
 
     private final TraceService traceService;
 
     /**
-     * GET all Http trace logs.
+     * GET all Http trace logs (by date range).
      *
      * @param pageable optional pagination configuration
      * @return the ResponseEntity of http traces
      */
     @GetMapping
-    public ResponseEntity<ResponseWrapper> getAllCustomHttpTraces(@PageableDefault(page = DEFAULT_PAGE_NUMBER, size = DEFAULT_PAGE_SIZE) @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) {
-        System.out.println("in....");
-        return new ResponseEntity<>(new ResponseWrapper(traceService.findAll(pageable)), HttpStatus.OK);
+    public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByDateRange(
+            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
+            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+            @PageableDefault(size = DEFAULT_PAGE_SIZE)
+            @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) {
+
+        return new ResponseEntity<>(new ResponseWrapper(traceService.findAll(from, to, pageable)), HttpStatus.OK);
+    }
+
+    /**
+     * GET all Http trace logs (by date range).
+     *
+     * @param pageable optional pagination configuration
+     * @return the ResponseEntity of http traces
+     */
+    @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
+    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByDateRangeExcel(
+            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
+            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+            @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
+            @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) throws IOException {
+
+        ByteArrayInputStream in = ExcelGenerator.generateAuditLogs(traceService.findAll(from, to, pageable));
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/octet-stream");
+        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
+
     }
 
     /**
@@ -51,7 +96,6 @@ public class AuditController {
     @GetMapping("/{status}")
     public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByStatus(@PathVariable Integer status, Pageable pageable) {
         log.debug("REST request to get a page of CustomHttpTrace for status: {}", status);
-        System.out.println("in.......");
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
 

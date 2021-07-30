@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
@@ -11,6 +12,7 @@ import javax.naming.Name;
 @Entry(objectClasses = { "top",  "person", "organizationalPerson", "user" })
 @Getter
 @Setter
+@ToString
 public class LdapUser  {
 
     @Id

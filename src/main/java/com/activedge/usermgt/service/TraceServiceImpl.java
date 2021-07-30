@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * Service Implementation for managing Trace.
  */
@@ -26,9 +28,9 @@ public class TraceServiceImpl implements TraceService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CustomHttpTrace> findAll(Pageable pageable) {
+    public Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable) {
         log.debug("Request to get all Trace");
-        return traceRepository.findAll(pageable);
+        return traceRepository.findAllByTimestampBetween(start, end, pageable);
     }
 
     @Override

@@ -15,7 +15,8 @@ class MessageReceiver {
     @JmsListener(destination = "auditlog.queue")
     public void receiveQueue(CustomHttpTrace httpTrace) {
 
-        repository.save(httpTrace);
+        // Persist only request with username
+        if(httpTrace.getUsername() != null && !httpTrace.getUsername().trim().isEmpty()) repository.save(httpTrace);
 
     }
 
