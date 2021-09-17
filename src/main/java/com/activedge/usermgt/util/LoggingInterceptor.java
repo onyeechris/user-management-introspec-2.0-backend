@@ -1,12 +1,14 @@
 package com.activedge.usermgt.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
+@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
@@ -26,6 +28,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
         {
             log.info(logMessage.toString());
         }
+
+        System.out.println("*************");
     }
 
 }
