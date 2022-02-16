@@ -98,7 +98,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.GET, "/audit/**").hasAnyRole("AUDITOR", "ADMIN")
 
-                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/test-ldap-search").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/yek_cne", "/auth/test-ldap-search").permitAll()
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();

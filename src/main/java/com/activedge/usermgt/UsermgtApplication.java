@@ -6,6 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jms.annotation.EnableJms;
 
+import java.util.UUID;
+
 @SpringBootApplication
 @EnableJms
 public class UsermgtApplication implements CommandLineRunner {
@@ -14,6 +16,7 @@ public class UsermgtApplication implements CommandLineRunner {
     String contextPath;
 
     public static void main(String[] args) {
+            System.setProperty("PASSWORD_ENCRYPTION_KEY", UUID.randomUUID().toString());
             SpringApplication application = new SpringApplication(UsermgtApplication.class);
             application.run(args);
     }
