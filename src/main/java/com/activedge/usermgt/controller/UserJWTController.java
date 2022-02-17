@@ -5,10 +5,8 @@ import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.activedge.usermgt.util.EncryptionUtils;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.*;
 
+import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
 import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
 /**
@@ -73,9 +72,12 @@ public class UserJWTController {
      * @return the ResponseEntity with status 200 (OK) and with body the modulesDTO, or with status 404 (Not Found)
      */
     @PostMapping
-    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Module", required = false) String module, HttpServletRequest req, BindingResult result) throws NotSupportedException {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Module", required = false) String module, HttpServletRequest req, BindingResult result) throws Exception {
         starttime = System.currentTimeMillis();
         String jwt;
+
+        loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
+        loginRequest.setPassword(EncryptionUtils.decrypt(loginRequest.getPassword(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
 
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
         if(errorMap != null) return errorMap;
