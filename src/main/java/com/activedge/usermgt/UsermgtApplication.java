@@ -8,6 +8,8 @@ import org.springframework.jms.annotation.EnableJms;
 
 import java.util.UUID;
 
+import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
+
 @SpringBootApplication
 @EnableJms
 public class UsermgtApplication implements CommandLineRunner {
@@ -16,7 +18,7 @@ public class UsermgtApplication implements CommandLineRunner {
     String contextPath;
 
     public static void main(String[] args) {
-            System.setProperty("PASSWORD_ENCRYPTION_KEY", UUID.randomUUID().toString());
+            System.setProperty(PASSWORD_ENCRYPTION_KEY, UUID.randomUUID().toString());
             SpringApplication application = new SpringApplication(UsermgtApplication.class);
             application.run(args);
     }
