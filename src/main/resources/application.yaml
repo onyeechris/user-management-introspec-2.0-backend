@@ -101,5 +101,9 @@ management:
 #      base-path: /admin-console-metrics
 
 springdoc:
-  api-docs:
-    path: /${introspec_sso_context_path}/introspec-cas
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
