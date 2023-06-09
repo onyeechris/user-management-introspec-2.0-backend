@@ -1,0 +1,139 @@
+package com.activedge.usermgt.service;
+
+import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.model.LdapUser;
+import com.activedge.usermgt.model.dto.NewStaffDTO;
+import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.enumeration.Type;
+import com.activedge.usermgt.repository.LdapRepository;
+import com.activedge.usermgt.service.adapter.StaffDTOAdapter;
+import dev.samstevens.totp.secret.SecretGenerator;
+import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Optional;
+
+@Slf4j
+@Service("ldap")
+public class LdapService implements StaffService {
+
+    @Autowired
+    private LdapRepository ldapRepository;
+    @Autowired
+    private SecretGenerator secretGenerator;
+    @Autowired
+    @Qualifier("db")
+    private StaffService staffService;
+
+    @Autowired
+    private StaffDTOAdapter staffDTOAdapter;
+
+    @Override
+    public StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
+        log.debug("Unimplemented method[save]");
+        return null;
+    }
+
+    @Override
+    public StaffDTO savePreference(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
+        log.info("Updating Staff Preference: {}", staffId);
+//        Staff staff = new Staff();
+//
+//        // self update
+//        Optional<LdapUser> os = ldapRepository.findById(staffId);
+//        if (os.isPresent()) {
+//            Staff s = os.get();
+//            s.setFirst_name(s.getFirst_name());
+//            s.setLast_name(s.getLast_name());
+//            s.setPhone(s.getPhone());
+//            s.setEmail(s.getEmail());
+//            s.setPassword(s.getPassword());
+//            s.setHireDate(s.getHireDate());
+//            s.setType(s.getType());
+//            s.setAuthorities(s.getAuthorities());
+//            s.setActivated(s.isActivated());
+//            if(is2fa){
+//                s.set2FAEnabled(true);
+//                s.setSecret(secretGenerator.generate());
+//            }
+//
+//            staff = s;
+//            log.info("Updating Staff Preference... {}", staff);
+//        } else {
+//            throw new javassist.NotFoundException("Id[" + staff.getId() + "] not found.");
+//        }
+//
+//        staff = staffRepository.save(staff);
+//
+//        return staffMapper.toDto(staff);
+        return null;
+    }
+
+    @Override
+    public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
+        log.debug("Unimplemented method[save]");
+       return null;
+    }
+
+    @Override
+    public Page<StaffDTO> findAll(Pageable pageable) {
+        return staffDTOAdapter.transform(ldapRepository.findAll());
+    }
+
+    @Override
+    public Optional<StaffDTO> findOne(String id) {
+        Optional<LdapUser> staff = ldapRepository.findByUsername(id);
+        return staffDTOAdapter.transform(staff);
+    }
+
+    @Override
+    public Optional<StaffDTO> search(final String searchId) {
+        Optional<LdapUser> newUser = ldapRepository.findByUsername(searchId);
+        Optional<StaffDTO> user = staffDTOAdapter.transform(newUser);
+        StaffDTO uzer = new StaffDTO();
+
+        if(user.isPresent()) {
+            try {
+                StaffDTO usr = user.get();
+                // check that this user was not previously imported before saving
+                Optional<StaffDTO> s1 = staffService.search(usr.getUsername());
+                if(s1.isPresent()) {
+                    uzer = s1.get();
+                } else {
+                    log.info("...saving imported staff");
+                    uzer = staffService.save(new NewStaffDTO(usr.getFirst_name(), usr.getLast_name(), usr.getUsername(), usr.getEmail(), Type.USER));
+                }
+            } catch (ActivityRequiredException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return Optional.of(uzer);
+    }
+
+    @Override
+    public void delete(String id) {
+        //ldapRepository.deleteById(id);
+    }
+
+    private String digestSHA(final String password) {
+        String base64;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA");
+            digest.update(password.getBytes());
+            base64 = Base64.getEncoder()
+                    .encodeToString(digest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        return "{SHA}" + base64;
+    }
+
+}

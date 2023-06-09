@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: usermgt-backend-service
+spec:
+  type: NodePort
+  selector:
+    component: usermgt-backend-deployment
+  ports:
+  - port: 8080
+    targetPort: 8080

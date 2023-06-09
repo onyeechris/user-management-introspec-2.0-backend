@@ -1,0 +1,2 @@
+.Copyright
+http://www.activedgetechnologies.com[ActivEdge Technologies]

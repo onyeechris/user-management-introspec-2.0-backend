@@ -1,0 +1,13 @@
+{
+    "triggerTemplate": {
+      "projectId": "celtic-fact-251818",
+      "repoName": "bitbucket_activeedge_user-management",
+      "tagName": ".*"
+    },
+    "description": "tagged release build",
+    "substitutions": {
+      "_CLOUDSDK_COMPUTE_ZONE": "europe-west1-d",
+      "_CLOUDSDK_CONTAINER_CLUSTER": "cluster-1"
+    },
+    "filename": "deployment/cloudbuild/prod.yaml"
+  }
