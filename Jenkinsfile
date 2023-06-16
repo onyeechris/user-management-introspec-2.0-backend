@@ -48,7 +48,7 @@ pipeline {
         }
         
 
-        stage('HOUSE KEEPING...') {
+        stage('HOUSE KEEPING...!') {
             steps {
                 sh "docker rmi $umsRegistry:$tagPrefix$BUILD_NUMBER"
             }
