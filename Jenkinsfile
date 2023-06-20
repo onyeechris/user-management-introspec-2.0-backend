@@ -24,7 +24,7 @@ pipeline {
     stage('Maven Build Application') {
       steps { 
         script {
-          sh 'mvn clean package'
+          sh 'mvn package'
         }
       }
     }
@@ -52,6 +52,12 @@ pipeline {
     stage('Cleanup github repo on Jenkins server') {
       steps{
         sh 'rm -rf ./*'
+      }
+    }
+    stage('Trigger ManifestUpdate') {
+      steps {
+        sh 'echo "======= Triggering updatemanifestjob ======="'
+        build job: 'umsIntrospecbendupdatemanifest', parameters: [string(name: 'DOCKERIMAGETAG', value: BUILD_NUMBER)]
       }
     }
   }
