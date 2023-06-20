@@ -1,57 +1,28 @@
-pipeline { 
-
-  environment {
-    registryCredential = 'AET-Docker-Credential' // Jenkins Global Credential ID
-    tagPrefix = 'dev-v1.0.'
-    umsRegistry = "activedgetechnologies/usermangement"
-    umsDockerImage = ''
-  }
-
-  agent any // use available executors
+pipeline {
+  agent any
   
-  tools {
-    maven 'Maven3' // Jenkins configured Maven
-    jdk 'Java8' // Jenkins configured JDK
-    dockerTool 'LocalDocker' // Jenkins configured Docker. Note: Docker Build Pipeline MUST be installed.
-  }
-
   stages {
-    stage('Pull Git Repository from CICD branch') {
+    stage("Clone application") {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'smartcloud', url: 'https://github.com/activedge-technologies/user-management-introspec-2.0-backend.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'francis_github', url: 'https://github.com/activedge-technologies/argocd.git']]])
       }
     }
-    stage('Maven Build Application') {
-      steps { 
+    stage('Update Payassist-backend Deployment file') {
+      steps {
         script {
-          sh 'mvn clean package'
-        }
-      }
-    }
-    stage('Docker Build API Image') {
-      steps { 
-        script {
-          umsDockerImage = docker.build(umsRegistry + ":$tagPrefix$BUILD_NUMBER", "-f ./deployment/Dockerfile .")
-        }
-      }
-    }
-    stage('Push API Image') {
-      steps { 
-        script { 
-          docker.withRegistry( '', registryCredential ) { // empty registry '' defaults to dockerhub
-            umsDockerImage.push()
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            withCredentials([usernamePassword(credentialsId: 'francis_github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+              sh "git config user.email francisnwachukwu100@gmail.com"
+              sh "git config user.name francis-nwachukwu"
+              sh "cat settlement-files/user-mgt-backend.yaml"
+              sh "sed -i 's+smartcloud2022/usermgtbackend:.*+activedgetechnologies/usermangement:v-dev-${DOCKERIMAGETAG}+g' settlement-files/user-mgt-backend.yaml"
+              sh "cat settlement-files/user-mgt-backend.yaml"
+              sh "git add ."
+              sh "git commit -m 'User management backend.yaml docker image update done by Jenkins Job: ${env.BUILD_NUMBER}'"
+              sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/activedge-technologies/argocd.git HEAD:main"
+            }
           }
-        } 
-      }
-    }
-    stage('HOUSE KEEPING...!') {
-      steps {
-        sh "docker rmi $umsRegistry:$tagPrefix$BUILD_NUMBER"
-      }
-    } 
-    stage('Cleanup github repo on Jenkins server') {
-      steps{
-        sh 'rm -rf ./*'
+        }
       }
     }
   }
