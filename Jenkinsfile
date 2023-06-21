@@ -2,8 +2,8 @@ pipeline {
 
   environment {
     registryCredential = 'AET-Docker-Credential' // Jenkins Global Credential ID
-    tagPrefix = 'dev-v1.0.'
-    umsRegistry = "activedgetechnologies/usermangement"
+    tagPrefix = 'dev-v'
+    umsRegistry = "activedgetechnologies/usermangement-2-0"
     umsDockerImage = ''
   }
 
