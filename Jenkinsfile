@@ -57,7 +57,7 @@ pipeline {
     stage('Trigger ManifestUpdate') {
       steps {
         sh 'echo "======= Triggering updatemanifestjob ======="'
-        build job: 'umsIntrospecbendupdatemanifest', parameters: [string(name: 'DOCKERIMAGETAG', value: BUILD_NUMBER)]
+        build job: 'User-management-introspec-2.0-backend-pipeline-k8supdate', parameters: [string(name: 'DOCKERIMAGETAG', value: BUILD_NUMBER)]
       }
     }
   }
