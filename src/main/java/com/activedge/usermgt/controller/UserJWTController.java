@@ -1,29 +1,18 @@
 package com.activedge.usermgt.controller;
 
-import com.activedge.usermgt.config.CurrentUser;
 import com.activedge.usermgt.controller.util.ApiResponse;
 import com.activedge.usermgt.controller.util.JwtAuthenticationResponse;
 import com.activedge.usermgt.controller.util.MfaResponse;
-import com.activedge.usermgt.controller.util.Validation;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
-import com.activedge.usermgt.model.dto.LocalUser;
-import com.activedge.usermgt.model.dto.StaffDTO;
-import com.activedge.usermgt.model.dto.ValidationCodeDTO;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
 import com.activedge.usermgt.service.StaffService;
 import com.activedge.usermgt.util.EncryptionUtils;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
-import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
-import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;
@@ -32,7 +21,6 @@ import dev.samstevens.totp.qr.QrGenerator;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -51,9 +39,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.jms.Queue;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -84,8 +70,8 @@ public class UserJWTController {
 
     @Autowired
     private Queue queue;
-    @Autowired
-    private GoogleAuthenticator gAuth;
+//    @Autowired
+//    private GoogleAuthenticator gAuth;
     private static final String TITLE = "Introspec-CAS";
 
     private static long starttime;
@@ -143,7 +129,7 @@ public class UserJWTController {
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             Optional<Staff> findStaff = staffRepository.findByUsername(loginRequest.username);
             Staff principal = findStaff.orElse(null);
-            boolean authenticated = !principal.getIs2FAEnabled();
+            boolean authenticated = !principal.get_2FAEnabled();
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated);
 
             // log successful login

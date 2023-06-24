@@ -16,6 +16,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "hireDate", target = "hire_date")
     @Mapping(source = "type", target = "user_type")
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "_2FAEnabled", target = "_2FAEnabled")
     StaffDTO toDto(Staff staff);
 
     Set<StaffDTO> toDtoSet(Set<Staff> staffs);
@@ -23,6 +24,7 @@ public interface StaffMapper extends EntityMapper<StaffDTO, Staff> {
     @Mapping(source = "hire_date", target = "hireDate")
     @Mapping(source = "user_type", target = "type")
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "_2FAEnabled", target = "_2FAEnabled")
     Staff toEntity(StaffDTO staffDTO);
 
     default Staff fromId(String id) {
