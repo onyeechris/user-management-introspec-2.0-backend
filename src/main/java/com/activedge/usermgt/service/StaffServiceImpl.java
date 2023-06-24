@@ -110,11 +110,11 @@ public class StaffServiceImpl implements StaffService {
             s.setType(s.getType());
             s.setAuthorities(s.getAuthorities());
             s.setActivated(s.isActivated());
-            if(staffDTO.getEnable2FA()){
-                s.setIs2FAEnabled(true);
+            if(staffDTO.get_2FAEnabled()){
+                s.set_2FAEnabled(true);
                 s.setSecret(secretGenerator.generate());
             }else{
-                s.setIs2FAEnabled(false);
+                s.set_2FAEnabled(false);
                 s.setSecret("");
             }
 
@@ -125,7 +125,7 @@ public class StaffServiceImpl implements StaffService {
         }
 
         staff = staffRepository.save(staff);
-
+        System.out.println("2FA enabled in service class "+staffMapper.toDto(staff).get_2FAEnabled());
         return staffMapper.toDto(staff);
     }
 
