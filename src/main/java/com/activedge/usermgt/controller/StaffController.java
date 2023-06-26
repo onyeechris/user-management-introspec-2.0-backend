@@ -137,7 +137,6 @@ public class StaffController {
                     .map(x -> x.getDefaultMessage())
                     .collect(Collectors.joining(",")));
         }
-
         StaffDTO result = staffService.savePreference(id, staffDTO);
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
