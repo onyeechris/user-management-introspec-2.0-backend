@@ -1,0 +1,29 @@
+pipeline {
+  agent any
+  
+  stages {
+    stage("Clone application") {
+      steps {
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'smartcloud', url: 'https://github.com/activedge-technologies/argocd.git']]])
+      }
+    }
+    stage('Update Keycloak service Deployment file') {
+      steps {
+        script {
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            withCredentials([usernamePassword(credentialsId: 'github-login', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+              sh "git config user.email smarta@activedgetechnologies.com"
+              sh "git config user.name smartcloud2023"
+              sh "cat settlement-files/user-mgt-backend.yaml"
+              sh "sed -i 's+activedgetechnologies/usermangement.*+activedgetechnologies/usermangement-2-0:dev-v${DOCKERIMAGETAG}+g' settlement-files/user-mgt-backend.yaml"
+              sh "cat settlement-files/user-mgt-backend.yaml"
+              sh "git add ."
+              sh "git commit -m 'settlement-files user-mgt-backend.yaml docker images updated done by Jenkins Job: ${env.BUILD_NUMBER}'"
+              sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/activedge-technologies/argocd.git HEAD:main"
+            }
+          }
+        }
+      }
+    }
+  }
+}
