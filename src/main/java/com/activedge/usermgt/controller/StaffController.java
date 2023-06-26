@@ -139,7 +139,6 @@ public class StaffController {
         }
 
         StaffDTO result = staffService.savePreference(id, staffDTO);
-        System.out.println("2FA status "+result.get_2FAEnabled());
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
                 .body(result);

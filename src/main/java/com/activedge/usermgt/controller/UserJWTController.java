@@ -12,7 +12,6 @@ import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
 import com.activedge.usermgt.service.StaffService;
 import com.activedge.usermgt.util.EncryptionUtils;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;
@@ -129,7 +128,7 @@ public class UserJWTController {
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
             Optional<Staff> findStaff = staffRepository.findByUsername(loginRequest.username);
             Staff principal = findStaff.orElse(null);
-            boolean authenticated = !principal.get_2FAEnabled();
+            boolean authenticated = !principal.getEnable2FA();
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated);
 
             // log successful login
