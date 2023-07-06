@@ -129,6 +129,24 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+    public StaffDTO enable2faForAllStaff(String staffId) throws ActivityRequiredException, NotFoundException {
+        Iterable<Staff> allStaff = staffRepository.findAll();
+        for(Staff staff:allStaff){
+                if (staff.getEnable2FA()) {
+                    staff.setEnable2FA(true);
+                    staff.setSecret(secretGenerator.generate());
+                } else {
+                    staff.setEnable2FA(false);
+                    staff.setSecret("");
+                }
+            staff = staffRepository.save(staff);
+            return staffMapper.toDto(staff);
+        }
+
+        return null;
+    }
+
+    @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
         log.info("Logging StaffDTO:{} by User:{}, Password:{}", staffDTO, staffDTO.getPassword());
 

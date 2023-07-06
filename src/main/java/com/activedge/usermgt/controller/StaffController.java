@@ -130,6 +130,7 @@ public class StaffController {
 
     @PutMapping(STAFFS_PREFERENCE)
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
+        System.out.println("let's update>>>>>");
         log.debug("REST request to update preference {} : {}", STAFFS_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {
             log.error("Error in updating user preference detected...\n{}", errors.getAllErrors());
@@ -138,6 +139,22 @@ public class StaffController {
                     .collect(Collectors.joining(",")));
         }
         StaffDTO result = staffService.savePreference(id, staffDTO);
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
+                .body(result);
+    }
+
+    @PutMapping("pref")
+    public ResponseEntity<StaffDTO> updateAllStaffPreference(@PathVariable String id, Errors errors) throws Exception {
+        System.out.println("update>>>>>");
+        log.debug("REST request to update preference {} : {}", STAFFS_PREFERENCE, id);
+        if (errors.hasErrors() || id == null) {
+            log.error("Error in updating user preference detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+        }
+        StaffDTO result = staffService.enable2faForAllStaff(id);
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
                 .body(result);

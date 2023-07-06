@@ -23,6 +23,7 @@ public interface StaffService {
      */
     StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
     StaffDTO savePreference(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
+    StaffDTO enable2faForAllStaff(String staffId) throws ActivityRequiredException, NotFoundException;
     /**
      * Save a new staff.
      *
