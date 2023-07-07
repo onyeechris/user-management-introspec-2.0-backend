@@ -78,6 +78,11 @@ public class LdapService implements StaffService {
     }
 
     @Override
+    public int enable2faForAllStaff(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
+        return 0;
+    }
+
+    @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
         log.debug("Unimplemented method[save]");
        return null;
