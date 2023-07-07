@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private static final String AUTHENTICATED = "authenticated";
+    private static final String ENROLLED = "enrolled";
     @Autowired
     private StaffRepository staffRepository;
 
@@ -40,7 +40,7 @@ public class JwtTokenProvider {
     private int jwtExpirationInMs;
     public static final long TEMP_TOKEN_VALIDITY_IN_MILLIS = 300000;
 
-    public String getJwtToken(Authentication authentication, String module, boolean authenticated) {
+    public String getJwtToken(Authentication authentication, String module, boolean authenticated, boolean enrolled) {
         Set<String> staffPermissions = new HashSet<>();
         String token = "";
 
@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                             }
                         }
 //                        System.out.println("ldap: >>" + staffPermissions);
-                        return generateToken(authentication, staffPermissions, staff.getAuthorities(),authenticated);
+                        return generateToken(authentication, staffPermissions, staff.getAuthorities(),authenticated,enrolled);
                     })
                     .orElse(null);
         } else {
@@ -79,14 +79,14 @@ public class JwtTokenProvider {
                         authority.setName(AuthoritiesConstants.ROLE_PRE_VERIFICATION_USER);
                         authorities.add(authority);
                         return generateToken(authentication, staffPermissions,
-                                !authenticated ? authorities : staff.getAuthorities(), authenticated);
+                                !authenticated ? authorities : staff.getAuthorities(), authenticated, enrolled);
                     }).orElse("null");
         }
 
         return token;
     }
 
-    private String generateToken(Authentication authentication, Set<String> staffPermissions, Set<Authority> staffAuthorities, boolean authenticated) {
+    private String generateToken(Authentication authentication, Set<String> staffPermissions, Set<Authority> staffAuthorities, boolean authenticated, boolean enrolled) {
         Date now = new Date(System.currentTimeMillis());
 
 //        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -99,6 +99,7 @@ public class JwtTokenProvider {
                 .claim("authorities", staffAuthorities.stream().map(Authority::getId).collect(Collectors.toList()))
                 .claim("permissions", staffPermissions)
                 .claim(AUTHENTICATED,authenticated)
+                .claim(ENROLLED, enrolled)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes())
@@ -155,7 +156,7 @@ public class JwtTokenProvider {
         return false;
     }
 
-    private String createNewUserToken(Authentication auth, Set<String> staffPermissions, boolean authenticated) {
+    private String createNewUserToken(Authentication auth, Set<String> staffPermissions, boolean authenticated, boolean enrolled) {
         Staff newUser = new Staff();
 
         String usr = auth.getPrincipal().toString();
@@ -186,7 +187,7 @@ public class JwtTokenProvider {
 
         log.debug("Created new staff - {}", staff);
 
-        return generateToken(auth, staffPermissions, staff.getAuthorities(),authenticated);
+        return generateToken(auth, staffPermissions, staff.getAuthorities(),authenticated,enrolled);
     }
 
 }

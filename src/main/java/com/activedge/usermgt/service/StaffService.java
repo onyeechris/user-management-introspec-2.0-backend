@@ -22,7 +22,25 @@ public interface StaffService {
      * @return the persisted entity
      */
     StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
+
+    /**
+     *
+     * @param staffId
+     * @param staffDTO
+     * @return the persisted entity
+     * @throws ActivityRequiredException
+     * @throws NotFoundException
+     */
     StaffDTO savePreference(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
+
+    /**
+     * @param staffId
+     * @param staffDTO
+     * @return the persisted entity
+     * @throws ActivityRequiredException
+     * @throws NotFoundException
+     */
+    int enable2faForAllStaff(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
     /**
      * Save a new staff.
      *
@@ -58,4 +76,5 @@ public interface StaffService {
      * @param id the id of the entity
      */
     void delete(String id);
+
 }

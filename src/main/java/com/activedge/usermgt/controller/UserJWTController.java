@@ -129,7 +129,8 @@ public class UserJWTController {
             Optional<Staff> findStaff = staffRepository.findByUsername(loginRequest.username);
             Staff principal = findStaff.orElse(null);
             boolean authenticated = !principal.getEnable2FA();
-            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated);
+            boolean enrolled = principal.getEnrol();
+            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated, enrolled);
 
             // log successful login
             audit(req, authentication);
@@ -145,19 +146,7 @@ public class UserJWTController {
         return System.getProperty("PASSWORD_ENCRYPTION_KEY");
     }
 
-//    @SneakyThrows
-//    @GetMapping(value = "/qr_reg/{username}", produces = "application/json")
-//    public void generate(@PathVariable String username, HttpServletResponse response) {
-//        final GoogleAuthenticatorKey key = gAuth.createCredentials(username);
-//        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-//        String otpAuthURL = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(TITLE, username, key);
-//        BitMatrix bitMatrix = qrCodeWriter.encode(otpAuthURL, BarcodeFormat.QR_CODE, 200, 200);
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
-//        outputStream.close();
-//    }
-
-    @PostMapping("/generateQRCode/{id}")
+    @GetMapping("/generateQRCode/{id}")
     public ResponseEntity<?> registerQR(@PathVariable String id) {
         try {
 
@@ -165,8 +154,7 @@ public class UserJWTController {
             Staff signUpRequest = staff.get();
             if (signUpRequest.is2FAEnabled()) {
                 QrData data = qrDataFactory.newBuilder().label(signUpRequest.getUsername()).secret(signUpRequest.getSecret()).issuer(TITLE).build();
-                // Generate the QR code image data as a base64 string which can
-                // be used in an <img> tag:
+                // Generate the QR code image data as a base64 string which can be used in an <img> tag:
                 String qrCodeImage = getDataUriForImage(qrGenerator.generate(data), qrGenerator.getImageMimeType());
                 String secret = signUpRequest.getSecret();
                 return ResponseEntity.ok().body(new MfaResponse(true, qrCodeImage, secret));
@@ -200,22 +188,12 @@ public class UserJWTController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         if(staffModuleService.matchModuleAndEmail(module, code.username)) {
-            jwt = tokenProvider.getJwtToken(authentication, module,true);
+            jwt = tokenProvider.getJwtToken(authentication, module,true, true);
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, true, user));
     }
-//    @GetMapping("/qrKey")
-//    public String generateKey(){
-//        final GoogleAuthenticatorKey gKey = gAuth.createCredentials();
-//        return gKey.getKey();
-//    }
-//
-//    @PostMapping("/validate/key")
-//    public Validation validateKey(@RequestBody ValidationCodeDTO body) {
-//        return new Validation(gAuth.authorizeUser(body.getUsername(), body.getCode()));
-//    }
 
     @PostMapping("/test-ldap")
     public Map<String, String> testLdap(@RequestBody LdapRequest request) throws Exception {

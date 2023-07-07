@@ -50,6 +50,7 @@ public class StaffController {
 
     static final String STAFFS = "staffs";
     static final String STAFFS_PREFERENCE = "preference/{id}";
+    static final String ENROLMENT_PREFERENCE = "enrol/{id}";
     private static final String STAFFS_DOWNLOAD = "download";
     private static final String STAFF_BY_ID = "{id}";
     private static final String STAFF_BY_USERNAME = "import/{username}";
@@ -128,9 +129,9 @@ public class StaffController {
             .body(result);
     }
 
-    @PutMapping(STAFFS_PREFERENCE)
+    @PutMapping(ENROLMENT_PREFERENCE)
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
-        log.debug("REST request to update preference {} : {}", STAFFS_PREFERENCE, id);
+        log.debug("REST request to update enrolment preference {} : {}", STAFFS_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {
             log.error("Error in updating user preference detected...\n{}", errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
@@ -141,6 +142,21 @@ public class StaffController {
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
                 .body(result);
+    }
+
+    @PutMapping(STAFFS_PREFERENCE)
+    public ResponseEntity<String> updateAllStaffPreference(@PathVariable String id,@RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
+        log.debug("REST request to update preference {} : {}", STAFFS_PREFERENCE, id);
+        if (errors.hasErrors() || id == null) {
+            log.error("Error in updating user preference detected...\n{}", errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+        }
+        Integer result = staffService.enable2faForAllStaff(id, staffDTO);
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
+                .body(String.format("%s staff preferences updated", result));
     }
 
     /**

@@ -83,6 +83,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @NotNull
     @Column(nullable = false)
     private Boolean enable2FA = false;
+    private Boolean enrol = false;
     private String secret;
 
     @ManyToMany
