@@ -104,6 +104,10 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.GET, "/audit/**").hasAnyRole("AUDITOR", "ADMIN")
 
+//                .antMatchers(HttpMethod.GET, "/mfa/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/mfa/**").hasRole("ADMIN")
+                .antMatchers("/enrol/**").hasAnyRole("PRE_VERIFICATION_USER","ADMIN", "USER", "DEV", "AUDITOR")
+
                 .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/yek_cne", "/auth/test-ldap-search").permitAll()
 
                 // any other requests must be authenticated

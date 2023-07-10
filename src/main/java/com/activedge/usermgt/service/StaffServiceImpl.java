@@ -19,9 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Service Implementation for managing Staff.
@@ -110,14 +108,13 @@ public class StaffServiceImpl implements StaffService {
             s.setType(s.getType());
             s.setAuthorities(s.getAuthorities());
             s.setActivated(s.isActivated());
-            if(staffDTO.get_2FAEnabled()){
-                s.set_2FAEnabled(true);
-                s.setSecret(secretGenerator.generate());
+            s.setEnable2FA(s.is2FAEnabled());
+            s.setSecret(s.getSecret());
+            if(staffDTO.getEnrol()){
+                s.setEnrol(true);
             }else{
-                s.set_2FAEnabled(false);
-                s.setSecret("");
+                s.setEnrol(false);
             }
-
             staff = s;
             log.info("Updating Staff Preference... {}", staff);
         } else {
@@ -125,8 +122,24 @@ public class StaffServiceImpl implements StaffService {
         }
 
         staff = staffRepository.save(staff);
-        System.out.println("2FA enabled in service class "+staffMapper.toDto(staff).get_2FAEnabled());
         return staffMapper.toDto(staff);
+    }
+    @Override
+    public int enable2faForAllStaff(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
+        Iterable<Staff> allStaff = staffRepository.findAll();
+        for(Staff staff:allStaff){
+            if (staffDTO.getEnable2FA()) {
+                staff.setEnable2FA(true);
+                staff.setSecret(secretGenerator.generate());
+                staff.setEnrol(false);
+            } else {
+                staff.setEnable2FA(false);
+                staff.setSecret("");
+                staff.setEnrol(false);
+            }
+            staffRepository.save(staff);
+        }
+        return ((Collection<Staff>)allStaff).size();
     }
 
     @Override

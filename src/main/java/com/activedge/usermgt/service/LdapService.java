@@ -45,36 +45,12 @@ public class LdapService implements StaffService {
     @Override
     public StaffDTO savePreference(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
         log.info("Updating Staff Preference: {}", staffId);
-//        Staff staff = new Staff();
-//
-//        // self update
-//        Optional<LdapUser> os = ldapRepository.findById(staffId);
-//        if (os.isPresent()) {
-//            Staff s = os.get();
-//            s.setFirst_name(s.getFirst_name());
-//            s.setLast_name(s.getLast_name());
-//            s.setPhone(s.getPhone());
-//            s.setEmail(s.getEmail());
-//            s.setPassword(s.getPassword());
-//            s.setHireDate(s.getHireDate());
-//            s.setType(s.getType());
-//            s.setAuthorities(s.getAuthorities());
-//            s.setActivated(s.isActivated());
-//            if(is2fa){
-//                s.set2FAEnabled(true);
-//                s.setSecret(secretGenerator.generate());
-//            }
-//
-//            staff = s;
-//            log.info("Updating Staff Preference... {}", staff);
-//        } else {
-//            throw new javassist.NotFoundException("Id[" + staff.getId() + "] not found.");
-//        }
-//
-//        staff = staffRepository.save(staff);
-//
-//        return staffMapper.toDto(staff);
         return null;
+    }
+
+    @Override
+    public int enable2faForAllStaff(String staffId, StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
+        return 0;
     }
 
     @Override

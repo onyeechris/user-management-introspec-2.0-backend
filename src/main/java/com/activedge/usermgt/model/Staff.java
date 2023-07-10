@@ -82,7 +82,8 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     Set<StaffModule> assignments;
     @NotNull
     @Column(nullable = false)
-    private Boolean _2FAEnabled = false;
+    private Boolean enable2FA = false;
+    private Boolean enrol = false;
     private String secret;
 
     @ManyToMany
@@ -108,7 +109,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     public Boolean isActivated() {
         return activated;
     }
-    public Boolean is2FAEnabled(){return _2FAEnabled;}
+    public Boolean is2FAEnabled(){return enable2FA;}
 
     @Override
     public boolean equals(Object o) {
