@@ -131,7 +131,7 @@ public class StaffController {
 
     @PutMapping(ENROLMENT_PREFERENCE)
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
-        log.debug("REST request to update enrolment preference {} : {}", STAFFS_PREFERENCE, id);
+        log.debug("REST request to update enrolment preference {} : {}", ENROLMENT_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {
             log.error("Error in updating user preference detected...\n{}", errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()
@@ -140,7 +140,7 @@ public class StaffController {
         }
         StaffDTO result = staffService.savePreference(id, staffDTO);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(STAFFS_PREFERENCE, id))
+                .headers(HeaderUtil.createEntityUpdateAlert(ENROLMENT_PREFERENCE, id))
                 .body(result);
     }
 

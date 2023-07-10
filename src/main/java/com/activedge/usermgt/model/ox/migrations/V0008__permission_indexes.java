@@ -175,14 +175,6 @@ public class V0008__permission_indexes implements Migration {
 
         db.getCollection("permissions").insert(BasicDBObjectBuilder
                 .start()
-                .add("_id", "can_enable_2fa")
-                .add("action", "can enable 2fa")
-                .add("description", "can enable 2fa for all users")
-                .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
-                .get());
-
-        db.getCollection("permissions").insert(BasicDBObjectBuilder
-                .start()
                 .add("_id", "can_view_configurations")
                 .add("action", "can view configurations")
                 .add("description", "can view Configurations")

@@ -130,6 +130,7 @@ public class UserJWTController {
             Staff principal = findStaff.orElse(null);
             boolean authenticated = !principal.getEnable2FA();
             boolean enrolled = principal.getEnrol();
+            System.out.println("login module>>> "+module);
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated, enrolled);
 
             // log successful login
@@ -166,7 +167,7 @@ public class UserJWTController {
             log.error("QR Generation Exception Occurred", e);
             return new ResponseEntity<>(new ApiResponse(false, "Unable to generate QR code!"), HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok().body(new ApiResponse(true, "User registered successfully"));
+        return ResponseEntity.ok().body(new ApiResponse(false, "2FA not enabled"));
     }
 
     @PostMapping("/verify")

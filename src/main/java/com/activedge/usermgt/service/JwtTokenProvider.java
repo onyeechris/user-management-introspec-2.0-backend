@@ -80,6 +80,7 @@ public class JwtTokenProvider {
                         authorities.add(authority);
                         return generateToken(authentication, staffPermissions,
                                 !authenticated ? authorities : staff.getAuthorities(), authenticated, enrolled);
+
                     }).orElse("null");
         }
 
