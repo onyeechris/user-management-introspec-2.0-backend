@@ -193,7 +193,7 @@ public class UserJWTController {
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, true, user));
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, true, user,null));
     }
 
     @PostMapping("/test-ldap")

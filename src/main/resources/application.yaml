@@ -107,3 +107,11 @@ springdoc:
     groups-order: DESC
     operationsSorter: method
     disable-swagger-default-url: true
+
+verify:
+  token:
+    uri: "${verify_token_uri:https://192.168.31.89:8466/enterprise-integration/e-mfa-app-auth/verifytoken}"
+
+client:
+  id: "${client_id:}"
+  secret: "${client_secret:}"

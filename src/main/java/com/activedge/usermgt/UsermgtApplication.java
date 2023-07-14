@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -35,5 +37,10 @@ public class UsermgtApplication implements CommandLineRunner {
             System.out.println("............................... Application Started ............................................ ");
             System.out.println("............................... Logs :: ${project.basedir}/logs ................................ ");
             System.out.println("............................... Documentation :: http://localhost:9100/" + contextPath + " ............ ");
+    }
+
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
     }
 }

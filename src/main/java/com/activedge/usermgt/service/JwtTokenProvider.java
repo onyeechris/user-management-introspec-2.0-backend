@@ -46,8 +46,10 @@ public class JwtTokenProvider {
 
         if(authentication.getPrincipal() instanceof LdapUserDetailsImpl) {
             // do LDAP
-            LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(userPrincipal.getUsername())
+//            LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
+            String username = authentication.getName();
+//            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(userPrincipal.getUsername())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(username)
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
@@ -62,8 +64,11 @@ public class JwtTokenProvider {
                     .orElse(null);
         } else {
             // do JDBC
-            User user = (User) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(user.getUsername())
+//            User user = (User) authentication.getPrincipal();
+            String username = authentication.getName();
+
+//            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(user.getUsername())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(username)
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
