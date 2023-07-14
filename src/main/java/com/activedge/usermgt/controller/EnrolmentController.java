@@ -144,13 +144,21 @@ public class EnrolmentController {
         Optional<Staff> staff = staffRepository.findByUsername(auth.getName());
         Staff user = staff.get();
         HttpEntity<TokenRequest> tokenEntity = new HttpEntity<>(tokenRequest,getHeaders());
-//        ValidationResponse verify = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class).getBody();
+        ValidationResponse verify = null;
+        /**
+         * commented out until client-id and client-secret is available
+         */
+        try {
+            verify = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class).getBody();
+        }catch (Exception ex){
+            log.error("Error connecting to MFA App",ex.getCause());
+        }
         if(staffModuleService.matchModuleAndEmail(module, auth.getName())) {
             jwt = tokenProvider.getJwtToken(auth, module,true, true);
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
-        return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,null));
+        return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,verify));
     }
     private HttpHeaders getHeaders(){
         HttpHeaders headers = new HttpHeaders();
