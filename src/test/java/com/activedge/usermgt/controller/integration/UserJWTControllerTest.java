@@ -55,7 +55,7 @@ class UserJWTControllerTest extends MockMvcBase {
 
         when(this.staffModuleService.matchModuleAndEmail(anyString(), anyString())).thenReturn(true);
 
-        when(this.jwtTokenProvider.getJwtToken(authentication, module,false, false)).thenReturn(jwt);
+        when(this.jwtTokenProvider.getJwtToken(authentication, module,false, false, "", true)).thenReturn(jwt);
 
         when(this.authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
 

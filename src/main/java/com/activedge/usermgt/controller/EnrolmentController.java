@@ -15,8 +15,6 @@ import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,21 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
-import java.security.Principal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -107,6 +100,7 @@ public class EnrolmentController {
         String jwt;
         Optional<Staff> staff = staffRepository.findByUsername(code.getUsername());
         Staff user = staff.get();
+        String userId = user!=null ? user.getId() : "";
         String cd = code.getCode();
         if (!verifier.isValidCode(user.getSecret(), cd)) {
             return new ResponseEntity<>(new ApiResponse(false, "Invalid Code!"), HttpStatus.BAD_REQUEST);
@@ -119,14 +113,14 @@ public class EnrolmentController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         if(staffModuleService.matchModuleAndEmail(module, code.username)) {
-            jwt = tokenProvider.getJwtToken(authentication, module,true, true);
+            jwt = tokenProvider.getJwtToken(authentication, module,true, user.getEnrol(), userId, user.isDefault());
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, true, user));
     }
 
-    @PutMapping()
+    @PutMapping(ENROLMENT_PREFERENCE)
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update enrolment preference {} : {}", ENROLMENT_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {

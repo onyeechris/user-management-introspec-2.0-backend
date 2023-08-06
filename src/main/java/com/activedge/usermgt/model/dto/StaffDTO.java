@@ -52,6 +52,7 @@ public class StaffDTO implements Serializable {
 
     private Boolean activated;
     private Boolean enable2FA;
+    private Boolean default2FA;
     private Boolean enrol;
     private String secret;
 
@@ -76,6 +77,7 @@ public class StaffDTO implements Serializable {
                 ", hire_date=" + hire_date +
                 ", activated=" + activated +
                 ", enable2FA=" + enable2FA +
+                ", default2FA=" + default2FA +
                 ", enrol=" + enrol +
                 '}';
     }
