@@ -1,3 +1,4 @@
+# This Repo was Integrated into Slack for continuous monitoring.
 ##	IntroSpec User Management Development Repository
 
  # IntroSpec Single Sign On Service.

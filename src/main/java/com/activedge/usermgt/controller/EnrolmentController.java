@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +35,10 @@ import javax.transaction.NotSupportedException;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
+
+import javax.transaction.NotSupportedException;
+import javax.validation.ValidationException;
+import javax.validation.constraints.NotEmpty;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -119,6 +125,7 @@ public class EnrolmentController {
         String jwt;
         Optional<Staff> staff = staffRepository.findByUsername(code.getUsername());
         Staff user = staff.get();
+        String userId = user!=null ? user.getId() : "";
         String cd = code.getCode();
         if (!verifier.isValidCode(user.getSecret(), cd)) {
             return new ResponseEntity<>(new ApiResponse(false, "Invalid Code!"), HttpStatus.BAD_REQUEST);
@@ -131,7 +138,7 @@ public class EnrolmentController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         if(staffModuleService.matchModuleAndEmail(module, code.username)) {
-            jwt = tokenProvider.getJwtToken(authentication, module,true, true);
+            jwt = tokenProvider.getJwtToken(authentication, module,true, user.getEnrol(), userId, user.isDefault());
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
@@ -146,7 +153,7 @@ public class EnrolmentController {
         HttpEntity<TokenRequest> tokenEntity = new HttpEntity<>(tokenRequest,getHeaders());
 //        ValidationResponse verify = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class).getBody();
         if(staffModuleService.matchModuleAndEmail(module, auth.getName())) {
-            jwt = tokenProvider.getJwtToken(auth, module,true, true);
+            jwt = tokenProvider.getJwtToken(auth, module,true, true,user!=null ? user.getId() : "", user!=null ? user.isDefault() : false);
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
@@ -160,7 +167,7 @@ public class EnrolmentController {
         return headers;
     }
 
-    @PutMapping()
+    @PutMapping(ENROLMENT_PREFERENCE)
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update enrolment preference {} : {}", ENROLMENT_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {

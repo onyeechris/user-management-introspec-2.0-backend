@@ -83,6 +83,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @NotNull
     @Column(nullable = false)
     private Boolean enable2FA = false;
+    private Boolean default2FA = false;
     private Boolean enrol = false;
     private String secret;
 
@@ -110,6 +111,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         return activated;
     }
     public Boolean is2FAEnabled(){return enable2FA;}
+    public Boolean isDefault(){return default2FA;}
 
     @Override
     public boolean equals(Object o) {
