@@ -24,6 +24,8 @@ public class JwtTokenProvider {
 
     private static final String AUTHENTICATED = "authenticated";
     private static final String ENROLLED = "enrolled";
+    private static final String STAFF_ID = "staffId";
+    private static final String DEFAULT_TYPE = "default_type";
     @Autowired
     private StaffRepository staffRepository;
 
@@ -40,14 +42,16 @@ public class JwtTokenProvider {
     private int jwtExpirationInMs;
     public static final long TEMP_TOKEN_VALIDITY_IN_MILLIS = 300000;
 
-    public String getJwtToken(Authentication authentication, String module, boolean authenticated, boolean enrolled) {
+    public String getJwtToken(Authentication authentication, String module, boolean authenticated, boolean enrolled, String staffId, Boolean isDefault) {
         Set<String> staffPermissions = new HashSet<>();
         String token = "";
 
         if(authentication.getPrincipal() instanceof LdapUserDetailsImpl) {
             // do LDAP
-            LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(userPrincipal.getUsername())
+//            LdapUserDetailsImpl userPrincipal = (LdapUserDetailsImpl) authentication.getPrincipal();
+            String username = authentication.getName();
+//            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(userPrincipal.getUsername())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(username)
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
@@ -57,13 +61,16 @@ public class JwtTokenProvider {
                             }
                         }
 //                        System.out.println("ldap: >>" + staffPermissions);
-                        return generateToken(authentication, staffPermissions, staff.getAuthorities(),authenticated,enrolled);
+                        return generateToken(authentication, staffPermissions, staff.getAuthorities(),authenticated,enrolled, staffId, isDefault);
                     })
                     .orElse(null);
         } else {
             // do JDBC
-            User user = (User) authentication.getPrincipal();
-            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(user.getUsername())
+//            User user = (User) authentication.getPrincipal();
+            String username = authentication.getName();
+
+//            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(user.getUsername())
+            token = staffRepository.findOneWithAuthoritiesByUsernameIgnoreCase(username)
                     .map(staff -> {
                         // --- Fetch all groups this staff belongs to and populate its permission
                         List<Group> groups = groupRepository.findAllByModule_IdAndStaffsContains(module.toUpperCase(), staff);
@@ -79,7 +86,7 @@ public class JwtTokenProvider {
                         authority.setName(AuthoritiesConstants.ROLE_PRE_VERIFICATION_USER);
                         authorities.add(authority);
                         return generateToken(authentication, staffPermissions,
-                                !authenticated ? authorities : staff.getAuthorities(), authenticated, enrolled);
+                                !authenticated ? authorities : staff.getAuthorities(), authenticated, enrolled, staffId, isDefault);
 
                     }).orElse("null");
         }
@@ -87,7 +94,8 @@ public class JwtTokenProvider {
         return token;
     }
 
-    private String generateToken(Authentication authentication, Set<String> staffPermissions, Set<Authority> staffAuthorities, boolean authenticated, boolean enrolled) {
+    private String generateToken(Authentication authentication, Set<String> staffPermissions, Set<Authority> staffAuthorities, boolean authenticated,
+                                 boolean enrolled, String staffId, Boolean isDefault) {
         Date now = new Date(System.currentTimeMillis());
 
 //        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -101,6 +109,8 @@ public class JwtTokenProvider {
                 .claim("permissions", staffPermissions)
                 .claim(AUTHENTICATED,authenticated)
                 .claim(ENROLLED, enrolled)
+                .claim(DEFAULT_TYPE, isDefault)
+                .claim(STAFF_ID, staffId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret.getBytes())
@@ -188,7 +198,7 @@ public class JwtTokenProvider {
 
         log.debug("Created new staff - {}", staff);
 
-        return generateToken(auth, staffPermissions, staff.getAuthorities(),authenticated,enrolled);
+        return generateToken(auth, staffPermissions, staff.getAuthorities(),authenticated,enrolled, "", true);
     }
 
 }

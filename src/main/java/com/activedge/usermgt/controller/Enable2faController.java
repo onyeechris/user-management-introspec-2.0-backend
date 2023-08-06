@@ -10,18 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 
 @RestController
 @RequestMapping(Enable2faController.MFA)
