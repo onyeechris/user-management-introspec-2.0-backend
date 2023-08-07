@@ -134,10 +134,16 @@ public class StaffServiceImpl implements StaffService {
                 staff.setSecret(secretGenerator.generate());
                 staff.setEnrol(false);
                 staff.setDefault2FA(true);
-            } else {
+            }else if(staffDTO.getEnable2FA() && !staffDTO.getDefault2FA()){
                 staff.setEnable2FA(true);
                 staff.setSecret("");
+                staff.setEnrol(false);
                 staff.setDefault2FA(false);
+            }else {
+                staff.setEnable2FA(false);
+                staff.setSecret("");
+                staff.setDefault2FA(false);
+                staff.setEnrol(false);
             }
             staffRepository.save(staff);
         }
