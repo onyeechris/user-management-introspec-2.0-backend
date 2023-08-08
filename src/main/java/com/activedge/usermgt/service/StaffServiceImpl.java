@@ -9,6 +9,7 @@ import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.StaffRepository;
 import dev.samstevens.totp.secret.SecretGenerator;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,7 @@ public class StaffServiceImpl implements StaffService {
             s.setEnable2FA(s.is2FAEnabled());
             s.setSecret(s.getSecret());
             s.setDefault2FA(s.getDefault2FA());
-            if(staffDTO.getEnrol()){
+            if(StringUtils.isNotBlank(staffDTO.getEnroll()) && Boolean.parseBoolean(staffDTO.getEnroll())){
                 s.setEnrol(true);
             }else{
                 s.setEnrol(false);
