@@ -56,17 +56,17 @@ public class CustomConfigController {
                 .body(config);
     }
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestHeader(value = "Module", required = false) String module, Errors errors) {
-        if (errors.hasErrors()) {
-            log.error("Error in fetching customConfig detected...\n{}", errors.getAllErrors());
-            throw new ValidationException(errors.getAllErrors().stream()
-                    .map(x -> x.getDefaultMessage())
-                    .collect(Collectors.joining(", ")));
-        }
+    public ResponseEntity<?> findAll(@RequestHeader(value = "Module", required = false) String module) {
         List<CustomConfig> config = service.findConfig();
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityCreationAlert("customConfig", config.toString()))
                 .body(config);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteConfig(@PathVariable String id) {
+        log.debug("REST request to delete {} : {}", "config", id);
+        service.deleteConfig(id);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("config", id.toString())).build();
     }
 
 

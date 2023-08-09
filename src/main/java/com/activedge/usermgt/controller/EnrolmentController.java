@@ -154,12 +154,14 @@ public class EnrolmentController {
         Staff user = staff.get();
         HttpEntity<TokenRequest> tokenEntity = new HttpEntity<>(tokenRequest,getHeaders());
         ValidationResponse verify = null;
+        ResponseEntity<ValidationResponse> exchange = null;
         List<CustomConfig> config = configService.findConfig();
         if(config!=null){
             config.stream().forEach(a-> uri=a.getUrl());
         }
         try{
-            verify = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class).getBody();
+            exchange = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class);
+            verify = exchange.getBody();
         }catch (Exception ex){
             log.error("error establishing connection "+ex.getLocalizedMessage());
         }
@@ -168,7 +170,11 @@ public class EnrolmentController {
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
-        return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,verify));
+        if(exchange != null && exchange.getStatusCode().is2xxSuccessful())
+            return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,verify));
+
+        return ResponseEntity.ok().body(new JwtAuthenticationResponse(null,false,user,verify));
+
     }
     private HttpHeaders getHeaders(){
         HttpHeaders headers = new HttpHeaders();
