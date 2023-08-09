@@ -1,9 +1,11 @@
 package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.*;
+import com.activedge.usermgt.model.CustomConfig;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.StaffRepository;
+import com.activedge.usermgt.service.CustomConfigService;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.StaffModuleService;
 import com.activedge.usermgt.service.StaffService;
@@ -36,9 +38,7 @@ import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 
-import javax.transaction.NotSupportedException;
-import javax.validation.ValidationException;
-import javax.validation.constraints.NotEmpty;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -73,11 +73,13 @@ public class EnrolmentController {
     private StaffModuleService staffModuleService;
     @Autowired
     private RestTemplate restTemplate;
-    @Value("${verify.token.uri}")
+    @Autowired
+    private CustomConfigService configService;
+//    @Value("${verify.token.uri}")
     private String uri;
-    @Value("${client.id}")
+//    @Value("${client.id}")
     private String clientId;
-    @Value("${client.secret}")
+//    @Value("${client.secret}")
     private String clientSecret;
     public EnrolmentController(StaffModuleService staffModuleService, AuthenticationManager authenticationManager){
         this.staffModuleService = staffModuleService;
@@ -151,23 +153,46 @@ public class EnrolmentController {
         Optional<Staff> staff = staffRepository.findByUsername(auth.getName());
         Staff user = staff.get();
         HttpEntity<TokenRequest> tokenEntity = new HttpEntity<>(tokenRequest,getHeaders());
-//        ValidationResponse verify = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class).getBody();
+        ValidationResponse verify = null;
+        ResponseEntity<ValidationResponse> exchange = null;
+        List<CustomConfig> config = configService.findConfig();
+        if(config!=null){
+            config.stream().forEach(a-> uri=a.getUrl());
+        }
+        try{
+            exchange = restTemplate.exchange(uri, HttpMethod.POST, tokenEntity, ValidationResponse.class);
+            verify = exchange.getBody();
+        }catch (Exception ex){
+            log.error("error establishing connection "+ex.getLocalizedMessage());
+        }
         if(staffModuleService.matchModuleAndEmail(module, auth.getName())) {
             jwt = tokenProvider.getJwtToken(auth, module,true, true,user!=null ? user.getId() : "", user!=null ? user.isDefault() : false);
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
-        return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,null));
+        if(exchange != null && exchange.getStatusCode().is2xxSuccessful())
+            return ResponseEntity.ok().body(new JwtAuthenticationResponse(jwt,true,user,verify));
+
+        return ResponseEntity.ok().body(new JwtAuthenticationResponse(null,false,user,verify));
+
     }
     private HttpHeaders getHeaders(){
         HttpHeaders headers = new HttpHeaders();
+        List<CustomConfig> config = configService.findConfig();
+        if(config != null){
+            for(CustomConfig data:config){
+                clientId = data.getClientId();
+                clientSecret = data.getClientSecret();
+            }
+        }
+
         headers.add("x-client-id",clientId);
         headers.add("x-client-secret",clientSecret);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         return headers;
     }
 
-    @PutMapping(ENROLMENT_PREFERENCE)
+    @PutMapping("/{id}")
     public ResponseEntity<StaffDTO> updateStaffPreference(@PathVariable String id, @RequestBody StaffDTO staffDTO, Errors errors) throws Exception {
         log.debug("REST request to update enrolment preference {} : {}", ENROLMENT_PREFERENCE, id);
         if (errors.hasErrors() || id == null) {
