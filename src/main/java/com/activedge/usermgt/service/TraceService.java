@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service Interface for managing CustomHttpTrace.
@@ -14,7 +15,7 @@ import java.util.List;
 public interface TraceService {
 
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
-    List<CustomHttpTrace> searchAuditLogsByUsernameAndDate(String username, Date date);
+    Optional<CustomHttpTrace> searchAuditLogsByUsernameAndDate(String username, Date date);
     Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable);
 
 }

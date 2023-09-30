@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing CustomHttpTrace.
@@ -101,10 +102,10 @@ public class AuditController {
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
     @GetMapping("/audit-logs/username-date")
-    public ResponseEntity<List<CustomHttpTrace>> searchAuditLogsByUsernameAndDate(@RequestParam String username,
-                                                                                  @RequestParam Date date){
-        List<CustomHttpTrace> auditLogs = traceService.searchAuditLogsByUsernameAndDate(username, date);
-        return new ResponseEntity<>(auditLogs, HttpStatus.OK);
+    public ResponseEntity<CustomHttpTrace> searchAuditLogsByUsernameAndDate(@RequestParam String username,
+                                                                            @RequestParam Date date){
+        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameAndDate(username, date);
+        return auditLog.map(log -> new ResponseEntity<>(log, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
 }

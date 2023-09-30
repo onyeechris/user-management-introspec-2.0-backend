@@ -9,12 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public interface TraceRepository extends PagingAndSortingRepository<CustomHttpTrace, String> {
 
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
-    List<CustomHttpTrace> findByUsernameAndTimestampGreaterThanEqualOrderByTimestampDesc(String username, Date date);
+    Stream<CustomHttpTrace> findByUsernameAndTimestampGreaterThanEqualOrderByTimestampDesc(String username, Date date);
     Page<CustomHttpTrace> findAllByTimestampBetween(Date from, Date to, Pageable pageable);
 
 }

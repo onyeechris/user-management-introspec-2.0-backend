@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Service Implementation for managing Trace.
@@ -43,10 +45,9 @@ public class TraceServiceImpl implements TraceService {
     }
 
     @Override
-    public List<CustomHttpTrace> searchAuditLogsByUsernameAndDate(String username, Date date) {
-        List<CustomHttpTrace> auditLogs =
+    public Optional<CustomHttpTrace> searchAuditLogsByUsernameAndDate(String username, Date date) {
+        Stream<CustomHttpTrace> auditLogs =
                 traceRepository.findByUsernameAndTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
-        auditLogs.sort(Comparator.comparing(CustomHttpTrace::getTimestamp).reversed());
-        return auditLogs;
+        return auditLogs.findFirst();
     }
 }
