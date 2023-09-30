@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -238,19 +239,14 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and with body the staffDTO, or with status 404 (Not Found)
      */
     @GetMapping(STAFF_BY_USERNAME)
-    public ResponseEntity<StaffDTO> importStaff(@PathVariable String username) throws Exception {
+    public ResponseEntity<List<StaffDTO>> importStaff(@PathVariable String username) throws Exception {
         log.debug("REST request to import {} : {}", STAFFS, username);
-
         StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
-
-        Optional<StaffDTO> staffDTO = service.search(username);
-
-        if (!staffDTO.isPresent()) {
+        List<StaffDTO> staffDTOs = service.search(username);
+        if (staffDTOs.isEmpty()) {
             throw new ValidationException("No "+ STAFFS +" was found for username " + username);
         }
-
-        return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
-
+        return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
     }
 
     /**

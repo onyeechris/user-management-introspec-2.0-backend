@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing Staff.
@@ -205,9 +206,11 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Optional<StaffDTO> search(String searchId) {
-        return staffRepository.findByUsername(searchId)
-                .map(staffMapper::toDto);
+    public List<StaffDTO> search(String searchId) {
+        return staffRepository.findByUsernameContaining(searchId)
+                .stream()
+                .map(staffMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -71,27 +73,14 @@ public class LdapService implements StaffService {
     }
 
     @Override
-    public Optional<StaffDTO> search(final String searchId) {
-        Optional<LdapUser> newUser = ldapRepository.findByUsername(searchId);
-        Optional<StaffDTO> user = staffDTOAdapter.transform(newUser);
-        StaffDTO uzer = new StaffDTO();
-
-        if(user.isPresent()) {
-            try {
-                StaffDTO usr = user.get();
-                // check that this user was not previously imported before saving
-                Optional<StaffDTO> s1 = staffService.search(usr.getUsername());
-                if(s1.isPresent()) {
-                    uzer = s1.get();
-                } else {
-                    log.info("...saving imported staff");
-                    uzer = staffService.save(new NewStaffDTO(usr.getFirst_name(), usr.getLast_name(), usr.getUsername(), usr.getEmail(), Type.USER));
-                }
-            } catch (ActivityRequiredException e) {
-                log.error(e.getMessage());
-            }
+    public List<StaffDTO> search(final String searchId) {
+        List<LdapUser> users = ldapRepository.findByUsernameContaining(searchId);
+        List<StaffDTO> staffList = new ArrayList<>();
+        for (LdapUser user : users) {
+            Optional<StaffDTO> staff = staffDTOAdapter.transform(Optional.of(user));
+            staff.ifPresent(staffList::add);
         }
-        return Optional.of(uzer);
+        return staffList;
     }
 
     @Override

@@ -8,6 +8,7 @@ import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -67,7 +68,7 @@ public interface StaffService {
     Optional<StaffDTO> findOne(String id);
 
 
-    Optional<StaffDTO> search(String searchId);
+    List<StaffDTO> search(String searchId);
 
 
     /**
