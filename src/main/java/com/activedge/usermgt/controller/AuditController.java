@@ -2,6 +2,7 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.service.TraceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * REST controller for managing CustomHttpTrace.
@@ -97,6 +99,12 @@ public class AuditController {
     public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByStatus(@PathVariable Integer status, Pageable pageable) {
         log.debug("REST request to get a page of CustomHttpTrace for status: {}", status);
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
+    }
+    @GetMapping("/audit-logs/username-date")
+    public ResponseEntity<List<CustomHttpTrace>> searchAuditLogsByUsernameAndDate(@RequestParam String username,
+                                                                                  @RequestParam Date date){
+        List<CustomHttpTrace> auditLogs = traceService.searchAuditLogsByUsernameAndDate(username, date);
+        return new ResponseEntity<>(auditLogs, HttpStatus.OK);
     }
 
 }
