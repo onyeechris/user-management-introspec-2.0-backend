@@ -45,9 +45,13 @@ public class TraceServiceImpl implements TraceService {
     }
 
     @Override
-    public Optional<CustomHttpTrace> searchAuditLogsByUsernameAndDate(String username, Date date) {
+    public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, Date date) {
+        if (username == null && date == null) {
+            throw new IllegalArgumentException("Username or date must be provided");
+        }
         Stream<CustomHttpTrace> auditLogs =
-                traceRepository.findByUsernameAndTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
+                traceRepository.findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
         return auditLogs.findFirst();
     }
+
 }

@@ -102,9 +102,12 @@ public class AuditController {
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
     @GetMapping("/audit-logs/username-date")
-    public ResponseEntity<CustomHttpTrace> searchAuditLogsByUsernameAndDate(@RequestParam String username,
-                                                                            @RequestParam Date date){
-        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameAndDate(username, date);
+    public ResponseEntity<?> searchAuditLogsByUsernameOrDate(@RequestParam Optional<String> username,
+                                                             @RequestParam Optional<Date> date){
+        if (!username.isPresent() && !date.isPresent()) {
+            return new ResponseEntity<>("Username or date must be provided", HttpStatus.BAD_REQUEST);
+        }
+        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(username.orElse(null), date.orElse(null));
         return auditLog.map(log -> new ResponseEntity<>(log, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

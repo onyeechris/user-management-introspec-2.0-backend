@@ -14,9 +14,7 @@ import java.util.stream.Stream;
 
 @Repository
 public interface TraceRepository extends PagingAndSortingRepository<CustomHttpTrace, String> {
-
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
-    Stream<CustomHttpTrace> findByUsernameAndTimestampGreaterThanEqualOrderByTimestampDesc(String username, Date date);
+    Stream<CustomHttpTrace> findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(String username, Date date);
     Page<CustomHttpTrace> findAllByTimestampBetween(Date from, Date to, Pageable pageable);
-
 }
