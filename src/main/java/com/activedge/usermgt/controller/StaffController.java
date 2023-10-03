@@ -96,6 +96,7 @@ public class StaffController {
 
         staffDTO.setId(null);
         StaffDTO result = staffService.save(staffDTO);
+        result.setId(null);
 
         return ResponseEntity.created(new URI("/api/"+ STAFFS +"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(STAFFS, result.getId().toString()))

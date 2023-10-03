@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
@@ -295,8 +296,12 @@ public class UserJWTController {
          * Login password on database or AD
          */
         @NotBlank(message = "Password cannot be blank")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
+                message = "Password must contain at least one uppercase and lowercase letter," +
+                        "one special character,one digit and be 8 characters or longer.")
         private String password;
 //        private boolean is2FaEnabled;
+
     }
 
     @Getter
