@@ -43,9 +43,9 @@ public class TraceServiceImpl implements TraceService {
         log.debug("Request to get all Trace by status");
         return traceRepository.findAllByStatus(status, pageable);
     }
-
     @Override
     public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, Date date) {
+        log.debug("Request to search username or date");
         if (username == null && date == null) {
             throw new IllegalArgumentException("Username or date must be provided");
         }
@@ -53,5 +53,4 @@ public class TraceServiceImpl implements TraceService {
                 traceRepository.findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
         return auditLogs.findFirst();
     }
-
 }

@@ -56,7 +56,6 @@ public class AuditController {
             @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_PAGE_SIZE)
             @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) {
-
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAll(from, to, pageable)), HttpStatus.OK);
     }
 
@@ -101,13 +100,14 @@ public class AuditController {
         log.debug("REST request to get a page of CustomHttpTrace for status: {}", status);
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
-    @GetMapping("/audit-logs/username-date")
+    @GetMapping("/username-date")
     public ResponseEntity<?> searchAuditLogsByUsernameOrDate(@RequestParam Optional<String> username,
                                                              @RequestParam Optional<Date> date){
         if (!username.isPresent() && !date.isPresent()) {
             return new ResponseEntity<>("Username or date must be provided", HttpStatus.BAD_REQUEST);
         }
-        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(username.orElse(null), date.orElse(null));
+        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(username.orElse(null),
+                date.orElse(null));
         return auditLog.map(log -> new ResponseEntity<>(log, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
