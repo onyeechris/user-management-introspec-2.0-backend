@@ -98,7 +98,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @DBRef()
     private Set<Authority> authorities = new HashSet<>();
 
-    @ManyToMany(mappedBy = "staffs")
+    @ManyToMany(mappedBy = "staffs", cascade = CascadeType.REMOVE)
     @DBRef
     private Set<Group> groups = new HashSet<>();
 

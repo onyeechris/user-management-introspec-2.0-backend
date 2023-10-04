@@ -188,8 +188,6 @@ public class StaffServiceImpl implements StaffService {
         return staffRepository.findAll(pageable)
             .map(staffMapper::toDto);
     }
-
-
     /**
      * Get one staff by id.
      *

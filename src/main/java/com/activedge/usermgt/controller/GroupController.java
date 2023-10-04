@@ -131,7 +131,6 @@ public class GroupController extends BaseEntity {
         Page<GroupDTO> page;
 
         log.debug("Module is: {}", module);
-
         if (eagerload) {
             page = groupService.findAllWithEagerRelationships(pageable);
         } else {

@@ -13,7 +13,6 @@ import java.util.Date;
 public interface TraceService {
 
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
-
     Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable);
 
 }
