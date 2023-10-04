@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -43,14 +45,28 @@ public class TraceServiceImpl implements TraceService {
         log.debug("Request to get all Trace by status");
         return traceRepository.findAllByStatus(status, pageable);
     }
+
     @Override
-    public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, Date date) {
+    public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String dateStr) {
         log.debug("Request to search username or date");
-        if (username == null && date == null) {
-            throw new IllegalArgumentException("Username or date must be provided");
-        }
+        Date date = parseDate(dateStr); // Call the parseDate method
         Stream<CustomHttpTrace> auditLogs =
                 traceRepository.findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
+
         return auditLogs.findFirst();
     }
+    // Add a method to parse dateStr into Date
+    private Date parseDate(String dateStr) {
+        if (dateStr != null && !dateStr.isEmpty()) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                return dateFormat.parse(dateStr);
+            } catch (ParseException e) {
+                // Handle parsing error, if necessary
+            }
+        }
+        return null;
+    }
 }
+
+

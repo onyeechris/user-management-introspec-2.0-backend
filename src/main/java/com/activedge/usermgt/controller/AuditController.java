@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -101,13 +102,15 @@ public class AuditController {
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
     @GetMapping("/username-date")
-    public ResponseEntity<?> searchAuditLogsByUsernameOrDate(@RequestParam Optional<String> username,
-                                                             @RequestParam Optional<Date> date){
-        if (!username.isPresent() && !date.isPresent()) {
+    public ResponseEntity<?> searchAuditLogsByUsernameOrDate(
+            @RequestParam Optional<String> username,
+            @RequestParam Optional<String> dateStr) {
+        if (!username.isPresent() && !dateStr.isPresent()) {
             return new ResponseEntity<>("Username or date must be provided", HttpStatus.BAD_REQUEST);
         }
-        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(username.orElse(null),
-                date.orElse(null));
+        Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(
+                username.orElse(null),
+                dateStr.orElse(null));
         return auditLog.map(log -> new ResponseEntity<>(log, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
