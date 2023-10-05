@@ -55,14 +55,12 @@ public class TraceServiceImpl implements TraceService {
 
         return auditLogs.findFirst();
     }
-    // Add a method to parse dateStr into Date
     private Date parseDate(String dateStr) {
         if (dateStr != null && !dateStr.isEmpty()) {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 return dateFormat.parse(dateStr);
             } catch (ParseException e) {
-                // Handle parsing error, if necessary
             }
         }
         return null;
