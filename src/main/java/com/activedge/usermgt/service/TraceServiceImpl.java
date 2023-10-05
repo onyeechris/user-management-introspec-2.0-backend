@@ -39,5 +39,4 @@ public class TraceServiceImpl implements TraceService {
         log.debug("Request to get all Trace by status");
         return traceRepository.findAllByStatus(status, pageable);
     }
-
 }
