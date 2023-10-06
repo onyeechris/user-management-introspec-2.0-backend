@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.CustomHttpTrace;
+import com.activedge.usermgt.model.dto.CustomHttpTraceDTO;
 import com.activedge.usermgt.service.TraceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +54,8 @@ public class AuditController {
      */
     @GetMapping
     public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByDateRange(
-            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_PAGE_SIZE)
             @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) {
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAll(from, to, pageable)), HttpStatus.OK);
@@ -68,8 +69,8 @@ public class AuditController {
      */
     @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
     public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByDateRangeExcel(
-            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
             @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) throws IOException {
 
@@ -92,7 +93,7 @@ public class AuditController {
     /**
      * GET all Http trace logs by status.
      *
-     * @param status the http trace status to retrieve
+     * @param status   the http trace status to retrieve
      * @param pageable optional pagination configuration
      * @return the ResponseEntity of http traces
      */
@@ -111,7 +112,13 @@ public class AuditController {
         Optional<CustomHttpTrace> auditLog = traceService.searchAuditLogsByUsernameOrDate(
                 username.orElse(null),
                 dateStr.orElse(null));
-        return auditLog.map(log -> new ResponseEntity<>(log, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return auditLog.map(log -> {
+            CustomHttpTraceDTO logDto = new CustomHttpTraceDTO();
+            logDto.setTimestamp(log.getTimestamp());logDto.setSeverity(log.getSeverity());logDto.setUsername(log.getUsername());
+            logDto.setStatus(log.getStatus());logDto.setSourceIp(log.getSourceIp());
+            logDto.setPath(log.getPath());logDto.setQueryParams(log.getQueryParams());
+            logDto.setMethod(log.getMethod());logDto.setTimeTaken(log.getTimeTaken());logDto.setPayload(log.getPayload());
+            return new ResponseEntity<>(logDto, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
