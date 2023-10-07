@@ -296,9 +296,6 @@ public class UserJWTController {
          * Login password on database or AD
          */
         @NotBlank(message = "Password cannot be blank")
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-                message = "Password must contain at least one uppercase and lowercase letter," +
-                        "one special character,one digit and be 8 characters or longer.")
         private String password;
 //        private boolean is2FaEnabled;
 
