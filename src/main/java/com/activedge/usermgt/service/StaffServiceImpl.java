@@ -2,10 +2,13 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Authority;
+import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.mapper.StaffMapper;
+import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import dev.samstevens.totp.secret.SecretGenerator;
 import javassist.NotFoundException;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import javassist.NotFoundException;
 
 /**
  * Service Implementation for managing Staff.
@@ -33,6 +37,8 @@ public class StaffServiceImpl implements StaffService {
 
     @Autowired
     private StaffRepository staffRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -164,6 +170,7 @@ public class StaffServiceImpl implements StaffService {
         authority.setName("ROLE_" + staff.getType());
         authorities.add(authority);
 
+        staff.setGroups(assignGroupsForUser(staff));
         staff.setAuthorities(authorities);
         staff.setPassword(encoder.encode(staff.getPassword()));
         staff.setActivated(true);
@@ -173,6 +180,45 @@ public class StaffServiceImpl implements StaffService {
         staff = staffRepository.save(staff);
 
         return staffMapper.toDto(staff);
+    }
+
+    private Set<Group> assignGroupsForUser(Staff staff) {
+        Set<Group> groups = new HashSet<>();
+        Group userGroup = null;
+        switch (staff.getType()) {
+            case ADMIN:
+                userGroup  = groupRepository.findByName("Group Admins")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+
+            case USER:
+                userGroup  = groupRepository.findByName("Group Users")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+
+            case AUDITOR:
+                userGroup  = groupRepository.findByName("Auditors")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+            default:
+                userGroup  = groupRepository.findByName("INTROSPEC-DEFAULT")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+        }
+
+        return groups;
     }
 
     /**

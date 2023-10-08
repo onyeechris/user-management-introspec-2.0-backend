@@ -40,4 +40,5 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
 
     List<Group> findAllByModule_IdAndStaffsContains(String module, Staff staff);
 
+    Optional<Group>  findByName(String groupName);
 }
