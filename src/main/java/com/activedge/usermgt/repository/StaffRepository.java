@@ -11,18 +11,12 @@ import java.util.Optional;
 @Repository
 public interface StaffRepository extends PagingAndSortingRepository<Staff, String> {
     Optional<Staff> findOneByEmailIgnoreCase(String email);
-
     @EntityGraph(attributePaths = {"authorities"})
     Optional<Staff> findOneWithAuthoritiesById(String id);
-
     @EntityGraph(attributePaths = {"authorities", "groups"})
     Optional<Staff> findOneWithAuthoritiesByEmail(String email);
-
     @EntityGraph(attributePaths = {"authorities", "groups"})
     Optional<Staff> findOneWithAuthoritiesByUsernameIgnoreCase(String username);
-
     Optional<Staff> findByEmail(String email);
-
     Optional<Staff> findByUsername(String username);
-
 }

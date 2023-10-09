@@ -120,7 +120,6 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
         Staff that = (Staff) o;
         return Objects.equals(id, that.id);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(id);

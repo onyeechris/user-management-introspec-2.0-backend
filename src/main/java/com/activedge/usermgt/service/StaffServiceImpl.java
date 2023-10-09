@@ -154,24 +154,18 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
         log.info("Logging StaffDTO:{} by User:{}, Password:{}", staffDTO, staffDTO.getPassword());
-
         Staff staff = staffMapper.toEntity(staffDTO);
         staff.setPassword(staffDTO.getPassword());
-
         Set<Authority> authorities = new HashSet<>();
         Authority authority = new Authority();
         authority.setId("ROLE_" + staff.getType());
         authority.setName("ROLE_" + staff.getType());
         authorities.add(authority);
-
         staff.setAuthorities(authorities);
         staff.setPassword(encoder.encode(staff.getPassword()));
         staff.setActivated(true);
-
         log.info("Saving Staff...{} Authorities: {}", staff, staff.getAuthorities());
-
         staff = staffRepository.save(staff);
-
         return staffMapper.toDto(staff);
     }
 
@@ -219,7 +213,6 @@ public class StaffServiceImpl implements StaffService {
         log.debug("Request to get Staff : {}", id);
         return staffRepository.findOneWithAuthoritiesById(id);
     }
-
     /**
      * Delete the staff by id.
      *
@@ -230,5 +223,4 @@ public class StaffServiceImpl implements StaffService {
         log.debug("Request to delete Staff : {}", id);
         staffRepository.deleteById(id);
     }
-
 }
