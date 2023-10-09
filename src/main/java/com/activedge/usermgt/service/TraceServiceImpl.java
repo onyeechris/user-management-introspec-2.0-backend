@@ -46,18 +46,18 @@ public class TraceServiceImpl implements TraceService {
         return traceRepository.findAllByStatus(status, pageable);
     }
     @Override
-    public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String dateStr) {
+    public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String date) {
         log.debug("Request to search username or date");
-        Date date = parseDate(dateStr); // Call the parseDate method
+        Date dateStr = parseDate(date); // Call the parseDate method
         Stream<CustomHttpTrace> auditLogs =
-                traceRepository.findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(username, date);
+                traceRepository.findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(username, dateStr);
         return auditLogs.findFirst();
     }
-    private Date parseDate(String dateStr) {
-        if (dateStr != null && !dateStr.isEmpty()) {
+    private Date parseDate(String date) {
+        if (date != null && !date.isEmpty()) {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                return dateFormat.parse(dateStr);
+                return dateFormat.parse(date);
             } catch (ParseException e) {
             }
         }

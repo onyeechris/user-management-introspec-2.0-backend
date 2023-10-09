@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface TraceService {
 
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
-    Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String dateStr);
+    Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String date);
     Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable);
 
 }
