@@ -2,10 +2,12 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Authority;
+import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.mapper.StaffMapper;
+import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import dev.samstevens.totp.secret.SecretGenerator;
 import javassist.NotFoundException;
@@ -36,6 +38,8 @@ public class StaffServiceImpl implements StaffService {
 
     @Autowired
     private BCryptPasswordEncoder encoder;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Autowired
     private StaffMapper staffMapper;
@@ -221,6 +225,16 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(String id) {
         log.debug("Request to delete Staff : {}", id);
+        Optional <Staff> staff = staffRepository.findById(id);
+        if (staff.isPresent()){
+            List<Group> groups =  groupRepository.findAllByStaffsContaining(staff.get());
+            for (Group group:  groups){
+                Set<Staff> staffSet = group.getStaffs();
+                staffSet.remove(staff.get());
+                group.setStaffs(staffSet);
+            }
+            groupRepository.saveAll(groups);
+        }
         staffRepository.deleteById(id);
     }
 }

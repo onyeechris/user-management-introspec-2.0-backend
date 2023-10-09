@@ -265,5 +265,4 @@ public class StaffController {
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(STAFFS, id.toString())).build();
     }
-
 }
