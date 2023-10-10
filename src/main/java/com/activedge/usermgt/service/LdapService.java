@@ -98,7 +98,6 @@ public class LdapService implements StaffService {
     public void delete(String id) {
         //ldapRepository.deleteById(id);
     }
-
     private String digestSHA(final String password) {
         String base64;
         try {

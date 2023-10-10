@@ -3,6 +3,8 @@ package com.activedge.usermgt.model;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.event.StaffEntityListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

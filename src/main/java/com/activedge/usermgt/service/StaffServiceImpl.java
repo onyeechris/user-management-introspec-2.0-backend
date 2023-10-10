@@ -6,6 +6,8 @@ import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.enumeration.Type;
+import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.StaffRepository;
@@ -23,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import javassist.NotFoundException;
 
 /**
  * Service Implementation for managing Staff.
@@ -35,14 +40,16 @@ public class StaffServiceImpl implements StaffService {
 
     @Autowired
     private StaffRepository staffRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder encoder;
     @Autowired
     private GroupRepository groupRepository;
 
     @Autowired
+    private BCryptPasswordEncoder encoder;
+
+    @Autowired
     private StaffMapper staffMapper;
+    @Autowired
+    private  GroupMapper groupMapper;
     @Autowired
     private SecretGenerator secretGenerator;
 
@@ -165,12 +172,62 @@ public class StaffServiceImpl implements StaffService {
         authority.setId("ROLE_" + staff.getType());
         authority.setName("ROLE_" + staff.getType());
         authorities.add(authority);
+
+
         staff.setAuthorities(authorities);
         staff.setPassword(encoder.encode(staff.getPassword()));
         staff.setActivated(true);
         log.info("Saving Staff...{} Authorities: {}", staff, staff.getAuthorities());
         staff = staffRepository.save(staff);
+
+       assignGroupsForUser(staff);
+
         return staffMapper.toDto(staff);
+    }
+
+    private Set<Group> assignGroupsForUser(Staff staff) {
+        Set<Group> groups = new HashSet<>();
+        Group userGroup = null;
+        switch (staff.getType()) {
+            case ADMIN:
+                userGroup  = groupRepository.findByName("Group Admins")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+
+            case USER:
+                userGroup  = groupRepository.findByName("Group Users")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+
+            case AUDITOR:
+                userGroup  = groupRepository.findByName("Auditors")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+            default:
+                userGroup  = groupRepository.findByName("INTROSPEC-DEFAULT")
+                        .orElse(null);
+                if (userGroup != null) {
+                    groups.add(userGroup);
+                }
+                break;
+        }
+
+        for ( Group group: groups){
+            Set <Staff> staffSet = group.getStaffs();
+            staffSet.add(staff);
+            group.setStaffs(staffSet);
+        }
+        groupRepository.saveAll(groups);
+        return groups;
     }
 
     /**
@@ -196,9 +253,19 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(readOnly = true)
     public Optional<StaffDTO> findOne(String id) {
         log.debug("Request to get Staff : {}", id);
-        return staffRepository.findById(id)
-            .map(staffMapper::toDto);
+
+        Optional<Staff> staffOptional = staffRepository.findById(id);
+        if (staffOptional.isPresent()) {
+            Staff staff = staffOptional.get();
+            Set<Group> groups = new HashSet<>(groupRepository.findAllByStaffsContaining(staff));
+            staff.setGroups(groups);
+            StaffDTO staffDTO = staffMapper.toDto(staff);
+            return Optional.of(staffDTO);
+        } else {
+            return Optional.empty();
+        }
     }
+
 
     @Override
     public Optional<StaffDTO> search(String searchId) {
