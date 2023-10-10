@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface GroupRepository extends PagingAndSortingRepository<Group, GroupPK> {
@@ -41,4 +42,6 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
     List<Group> findAllByModule_IdAndStaffsContains(String module, Staff staff);
 
     Optional<Group>  findByName(String groupName);
+
+    List<Group> findAllByStaffsContaining( Staff staff);
 }
