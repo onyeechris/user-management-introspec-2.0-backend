@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import java.util.UUID;
@@ -23,6 +24,9 @@ public class NewStaffDTO extends StaffDTO {
     @NotNull(message = "Staff password is required.")
     @JsonProperty( value = "password", access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
+            message = "Password must contain at least one uppercase and lowercase letter," +
+                    "one special character,one digit and be 8 characters or longer.")
     private String password;
 
     public String getPassword() {
@@ -34,7 +38,10 @@ public class NewStaffDTO extends StaffDTO {
     }
 
     // LdapUser Creation Constructor
-    public NewStaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 3, message = "Username length too short.") String username, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type type) {
+    public NewStaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name,
+                       String last_name, @Size(min = 3, message = "Username length too short.")
+                       String username, @NotNull(message = "Staff email address is required.")
+                       @Email(message = "Please enter a correct email address") String email, Type type) {
         super(first_name, last_name, username, email, type);
         this.password = UUID.randomUUID().toString();
     }
