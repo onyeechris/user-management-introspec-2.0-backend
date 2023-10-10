@@ -2,6 +2,7 @@ package com.activedge.usermgt.model;
 
 
 import com.activedge.usermgt.model.event.GroupEntityListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;

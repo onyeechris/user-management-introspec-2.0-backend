@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
@@ -297,6 +298,7 @@ public class UserJWTController {
         @NotBlank(message = "Password cannot be blank")
         private String password;
 //        private boolean is2FaEnabled;
+
     }
 
     @Getter

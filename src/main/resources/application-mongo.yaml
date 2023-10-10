@@ -6,4 +6,5 @@ spring:
       repositories:
         enabled: false
     mongodb:
-      uri: ${introspec_sso_mongo_uri:mongodb://localhost:27017/usermgt}
+#      uri: ${introspec_sso_mongo_uri:mongodb://localhost:27017/usermgt}
+      uri: ${introspec_sso_mongo_uri:mongodb+srv://doadmin:CH30N75q4l928Bid@mongodb-cluster-a6d7af7e.mongo.ondigitalocean.com/usermgt?tls=true&authSource=admin&replicaSet=mongodb-cluster}
