@@ -104,8 +104,8 @@ public class AuditController {
     }
     @GetMapping("/username-date")
     public ResponseEntity<?> searchAuditLogsByUsernameOrDate(
-            @RequestParam Optional<String> username,
-            @RequestParam Optional<String> dateStr) {
+            @RequestParam(name = "username") Optional<String> username,
+            @RequestParam(name = "date") Optional<String> dateStr) {
         if (!username.isPresent() && !dateStr.isPresent()) {
             return new ResponseEntity<>("Username or date must be provided", HttpStatus.BAD_REQUEST);
         }
