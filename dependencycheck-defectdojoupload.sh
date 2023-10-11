@@ -10,7 +10,7 @@ data=$(date +"%Y-%m-%d")
 # product_type='Payassyst-Backend'
 
 curl -X 'POST' \
-  'https://vms.aetdevops.com/api/v2/import-scan/' \
+  'http://46.101.91.72:8080/api/v2/import-scan/' \
   -H 'accept: application/json' \
   -H 'Content-Type: multipart/form-data' \
   -H 'X-CSRFTOKEN: CnKXFc26hVaRqoPSsiWg6K9B60zA3UkrkZnHETAT5y9mh5E5OAMTVZBE7QMssX4J' \
