@@ -18,47 +18,70 @@ pipeline {
   stages {
     stage('Pull Git Repository from CICD branch') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'francis_github', url: 'https://github.com/activedge-technologies/user-management-introspec-2.0-backend.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/SecOps']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'francis_github', url: 'https://github.com/activedge-technologies/user-management-introspec-2.0-backend.git']]])
       }
     }
-    stage('Maven Build Application') {
-      steps { 
-        script {
-          sh 'mvn package'
-        }
-      }
-    }
-    stage('Docker Build API Image') {
-      steps { 
-        script {
-          umsDockerImage = docker.build(umsRegistry + ":$tagPrefix$BUILD_NUMBER", "-f ./deployment/Dockerfile .")
-        }
-      }
-    }
-    stage('Push API Image') {
-      steps { 
-        script { 
-          docker.withRegistry( '', registryCredential ) { // empty registry '' defaults to dockerhub
-            umsDockerImage.push()
-          }
-        } 
-      }
-    }
-    stage('HOUSE KEEPING...!') {
+
+
+    stage('Dependency Vulnerability Scan') {
       steps {
-        sh "docker rmi $umsRegistry:$tagPrefix$BUILD_NUMBER"
+        sh "mvn dependency-check:check"
+        //sh "xvfb-run -a -s '-screen 0 1024x768x24' wkhtmltopdf --print-media-type target/dependency-check-report.html target/dependency-check-report.pdf"
+        sh "cp ./target/dependency-check-report.xml ./"
+        sh "ls -la"
       }
-    } 
-    stage('Cleanup github repo on Jenkins server') {
-      steps{
-        sh 'rm -rf ./*'
-      }
+      // post {
+      //   always {
+      //     dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+      //   }
+      // }
     }
-    stage('Trigger ManifestUpdate') {
+    stage('Uploading Dependency Check Report To Defectdojo VMS') {
       steps {
-        sh 'echo "======= Triggering updatemanifestjob ======="'
-        build job: 'User-management-introspec-2.0-backend-pipeline-k8supdate', parameters: [string(name: 'DOCKERIMAGETAG', value: BUILD_NUMBER)]
+        sh "chmod +x dependencycheck-defectdojoupload.sh"
+        sh "./dependencycheck-defectdojoupload.sh"
+        sh "ls -la target"
+        
       }
     }
+    // stage('Maven Build Application') {
+    //   steps { 
+    //     script {
+    //       sh 'mvn package'
+    //     }
+    //   }
+    // }
+    // stage('Docker Build API Image') {
+    //   steps { 
+    //     script {
+    //       umsDockerImage = docker.build(umsRegistry + ":$tagPrefix$BUILD_NUMBER", "-f ./deployment/Dockerfile .")
+    //     }
+    //   }
+    // }
+    // stage('Push API Image') {
+    //   steps { 
+    //     script { 
+    //       docker.withRegistry( '', registryCredential ) { // empty registry '' defaults to dockerhub
+    //         umsDockerImage.push()
+    //       }
+    //     } 
+    //   }
+    // }
+    // stage('HOUSE KEEPING...!') {
+    //   steps {
+    //     sh "docker rmi $umsRegistry:$tagPrefix$BUILD_NUMBER"
+    //   }
+    // } 
+    // stage('Cleanup github repo on Jenkins server') {
+    //   steps{
+    //     sh 'rm -rf ./*'
+    //   }
+    // }
+    // stage('Trigger ManifestUpdate') {
+    //   steps {
+    //     sh 'echo "======= Triggering updatemanifestjob ======="'
+    //     build job: 'User-management-introspec-2.0-backend-pipeline-k8supdate', parameters: [string(name: 'DOCKERIMAGETAG', value: BUILD_NUMBER)]
+    //   }
+    // }
   }
 }
