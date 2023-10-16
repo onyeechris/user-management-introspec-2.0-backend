@@ -1,5 +1,6 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
@@ -194,7 +195,7 @@ public class StaffServiceImpl implements StaffService {
         Group userGroup = null;
         switch (staff.getType()) {
             case ADMIN:
-                userGroup  = groupRepository.findByName("Group Admins")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_ADMIN)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
@@ -202,7 +203,7 @@ public class StaffServiceImpl implements StaffService {
                 break;
 
             case USER:
-                userGroup  = groupRepository.findByName("Group Users")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_USERS)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
@@ -210,14 +211,14 @@ public class StaffServiceImpl implements StaffService {
                 break;
 
             case AUDITOR:
-                userGroup  = groupRepository.findByName("Auditors")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_AUDITORS)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
                 }
                 break;
             default:
-                userGroup  = groupRepository.findByName("INTROSPEC-DEFAULT")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_INTROSPEC)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
