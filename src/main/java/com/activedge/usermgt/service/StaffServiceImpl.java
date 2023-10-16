@@ -274,9 +274,17 @@ public class StaffServiceImpl implements StaffService {
 
 
     @Override
-    public Optional<StaffDTO> search(String searchId) {
-        return staffRepository.findByUsername(searchId)
+    public Optional<StaffDTO> findByUsername(String username) {
+        return staffRepository.findByUsername(username)
                 .map(staffMapper::toDto);
+    }
+
+    @Override
+    public List<StaffDTO> wildcardSearch(String username) {
+        return staffRepository.findByUsernameContaining(username)
+                .stream()
+                .map(staffMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
