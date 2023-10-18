@@ -25,7 +25,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StaffDTO implements Serializable {
 
-    @JsonIgnore
+
     private String id;
 
     @NotNull(message = "Staff firstname is required")
