@@ -308,6 +308,16 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(String id) {
         log.debug("Request to delete Staff : {}", id);
+        Optional<Staff> staff = staffRepository.findById(id);
+        if(staff.isPresent()){
+            List<Group> groups = groupRepository.findAllByStaffsContaining(staff.get());
+            for(Group group : groups){
+                Set<Staff> staffSet = group.getStaffs();
+                staffSet.remove(staff.get());
+                group.setStaffs(staffSet);
+            }
+            groupRepository.saveAll(groups);
+        }
         staffRepository.deleteById(id);
     }
 
