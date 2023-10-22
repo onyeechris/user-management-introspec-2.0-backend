@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,13 +48,15 @@ import java.util.stream.Collectors;
 public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
-
     static final String STAFFS = "staffs";
     static final String STAFFS_PREFERENCE = "preference/{id}";
     static final String ENROLMENT_PREFERENCE = "enrol/{id}";
     private static final String STAFFS_DOWNLOAD = "download";
     private static final String STAFF_BY_ID = "{id}";
     private static final String STAFF_BY_USERNAME = "import/{username}";
+    private static final String STAFF_BY_STAFF_ID = "import/staff/{id}";
+    private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
+
     static final String FILENAME = "UserList";
 
     @Autowired
@@ -244,17 +247,23 @@ public class StaffController {
 
         StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
 
-        Optional<StaffDTO> staffDTO = service.search(username);
+        Optional<StaffDTO> staffDTO = service.findByUsername(username);
 
         if (!staffDTO.isPresent()) {
             throw new ValidationException("No "+ STAFFS +" was found for username " + username);
         }
-
         return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
-
     }
-
-
+    @GetMapping(SEARCH_STAFF_BY_USERNAME_WILDCARD)
+    public ResponseEntity<List<StaffDTO>> searchStaff(@PathVariable String username) {
+        log.debug("REST request to search for staff by username: {}", username);
+        StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
+        List<StaffDTO> staffDTOs = service.wildcardSearch(username);
+        if (staffDTOs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if no staff is found
+        }
+        return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
+    }
 
     /**
      * DELETE  /staff/:id : delete the "id" staff.

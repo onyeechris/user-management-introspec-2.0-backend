@@ -1,5 +1,6 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
@@ -194,7 +195,7 @@ public class StaffServiceImpl implements StaffService {
         Group userGroup = null;
         switch (staff.getType()) {
             case ADMIN:
-                userGroup  = groupRepository.findByName("Group Admins")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_ADMIN)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
@@ -202,7 +203,7 @@ public class StaffServiceImpl implements StaffService {
                 break;
 
             case USER:
-                userGroup  = groupRepository.findByName("Group Users")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_USERS)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
@@ -210,14 +211,14 @@ public class StaffServiceImpl implements StaffService {
                 break;
 
             case AUDITOR:
-                userGroup  = groupRepository.findByName("Auditors")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_AUDITORS)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
                 }
                 break;
             default:
-                userGroup  = groupRepository.findByName("INTROSPEC-DEFAULT")
+                userGroup  = groupRepository.findByName(Constants.FIND_BY_NAME_INTROSPEC)
                         .orElse(null);
                 if (userGroup != null) {
                     groups.add(userGroup);
@@ -274,9 +275,17 @@ public class StaffServiceImpl implements StaffService {
 
 
     @Override
-    public Optional<StaffDTO> search(String searchId) {
-        return staffRepository.findByUsername(searchId)
+    public Optional<StaffDTO> findByUsername(String username) {
+        return staffRepository.findByUsername(username)
                 .map(staffMapper::toDto);
+    }
+
+    @Override
+    public List<StaffDTO> wildcardSearch(String username) {
+        return staffRepository.findByUsernameContaining(username)
+                .stream()
+                .map(staffMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -299,6 +308,16 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void delete(String id) {
         log.debug("Request to delete Staff : {}", id);
+        Optional<Staff> staff = staffRepository.findById(id);
+        if(staff.isPresent()){
+            List<Group> groups = groupRepository.findAllByStaffsContaining(staff.get());
+            for(Group group : groups){
+                Set<Staff> staffSet = group.getStaffs();
+                staffSet.remove(staff.get());
+                group.setStaffs(staffSet);
+            }
+            groupRepository.saveAll(groups);
+        }
         staffRepository.deleteById(id);
     }
 

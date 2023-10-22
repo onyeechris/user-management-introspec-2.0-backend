@@ -8,6 +8,7 @@ import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,10 +66,8 @@ public interface StaffService {
      * @return the entity
      */
     Optional<StaffDTO> findOne(String id);
-
-
-    Optional<StaffDTO> search(String searchId);
-
+    Optional<StaffDTO> findByUsername(String username);
+    List<StaffDTO> wildcardSearch(String username);
 
     /**
      * Delete the "id" staff.
