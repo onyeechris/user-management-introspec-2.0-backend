@@ -76,4 +76,5 @@ public interface StaffService {
      */
     void delete(String id);
 
+    String forgotPassword(String email);
 }

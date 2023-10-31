@@ -119,6 +119,11 @@ public class LdapService implements StaffService {
         //ldapRepository.deleteById(id);
     }
 
+    @Override
+    public String forgotPassword(String email) {
+        return "Please check your email to set new password";
+    }
+
     private String digestSHA(final String password) {
         String base64;
         try {

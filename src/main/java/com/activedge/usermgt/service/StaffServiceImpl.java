@@ -1,13 +1,13 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.config.Constants;
+import com.activedge.usermgt.controller.util.EmailUtil;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
-import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javassist.NotFoundException;
+import javax.mail.MessagingException;
 
 /**
  * Service Implementation for managing Staff.
@@ -38,6 +38,9 @@ import javassist.NotFoundException;
 public class StaffServiceImpl implements StaffService {
 
     private final Logger log = LoggerFactory.getLogger(StaffServiceImpl.class);
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     @Autowired
     private StaffRepository staffRepository;
@@ -319,6 +322,20 @@ public class StaffServiceImpl implements StaffService {
             groupRepository.saveAll(groups);
         }
         staffRepository.deleteById(id);
+    }
+
+    @Override
+    public String forgotPassword(String email) {
+        Staff staff =staffRepository.findByEmail(email)
+                .orElseThrow(
+                        ()-> new RuntimeException("Staff not found with this email: "+email)
+                );
+        try {
+            emailUtil.sendSetPassword(email);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to set password please try again"+e);
+        }
+        return "Please check your email to set new password";
     }
 
 }
