@@ -22,28 +22,48 @@ pipeline {
       }
     }
 
+    stage('Sonar Analysis'){
+            environment {
+                scannerHome = tool 'sonar4.7'
+            }
 
-    stage('Dependency Vulnerability Scan') {
-      steps {
-        sh "mvn dependency-check:check"
-        //sh "xvfb-run -a -s '-screen 0 1024x768x24' wkhtmltopdf --print-media-type target/dependency-check-report.html target/dependency-check-report.pdf"
-        sh "cp ./target/dependency-check-report.xml ./"
-        sh "ls -la"
-      }
-      // post {
-      //   always {
-      //     dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-      //   }
-      // }
-    }
-    stage('Uploading Dependency Check Report To Defectdojo VMS') {
-      steps {
-        sh "chmod +x dependencycheck-defectdojoupload.sh"
-        sh "./dependencycheck-defectdojoupload.sh"
-        sh "ls -la target"
+            steps {
+                withSonarQubeEnv('sonar'){
+                    sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=user-management-introspec-2.0 \
+                   -Dsonar.projectName=user-management-introspec-2.0 \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.java.binaries=src/test/java/com/activedge/usermgt/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+                }
+
+            }
+        }
+
+
+    // stage('Dependency Vulnerability Scan') {
+    //   steps {
+    //     sh "mvn dependency-check:check"
+    //     //sh "xvfb-run -a -s '-screen 0 1024x768x24' wkhtmltopdf --print-media-type target/dependency-check-report.html target/dependency-check-report.pdf"
+    //     sh "cp ./target/dependency-check-report.xml ./"
+    //     sh "ls -la"
+    //   }
+    //   // post {
+    //   //   always {
+    //   //     dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+    //   //   }
+    //   // }
+    // }
+    // stage('Uploading Dependency Check Report To Defectdojo VMS') {
+    //   steps {
+    //     sh "chmod +x dependencycheck-defectdojoupload.sh"
+    //     sh "./dependencycheck-defectdojoupload.sh"
+    //     sh "ls -la target"
         
-      }
-    }
+    //   }
+    // }
     // stage('Maven Build Application') {
     //   steps { 
     //     script {
