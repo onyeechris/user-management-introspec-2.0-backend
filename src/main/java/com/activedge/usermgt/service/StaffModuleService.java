@@ -1,6 +1,7 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,9 @@ public interface StaffModuleService {
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
     boolean matchModuleAndEmail(String module, String email);
+
+    Page<StaffModuleDTO> searchStaffByModuleAndCriteria(
+            String module, String email, Pageable pageable);
 
 
     /**
