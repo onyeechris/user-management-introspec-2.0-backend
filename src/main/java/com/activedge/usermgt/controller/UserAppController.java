@@ -137,6 +137,12 @@ public class UserAppController {
         return new ResponseEntity<>(staffModuleDTO.get(), HttpStatus.OK);
     }
 
+    /**
+     * GET  search/staffModules/:  search staffModules by email
+     *
+     * @param email the email of the staffModuleDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the staffModuleDTO, or with status 404 (Not Found)
+     */
     @GetMapping(SEARCH_AUTHORIZED_STAFF)
     public ResponseEntity<ResponseWrapper> searchAuthorizedStaff(
             @RequestHeader(value = "Module", required = true) String module,
