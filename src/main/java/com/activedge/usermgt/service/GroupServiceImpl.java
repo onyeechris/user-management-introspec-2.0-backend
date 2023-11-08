@@ -192,6 +192,18 @@ public class GroupServiceImpl implements GroupService {
             .map(groupMapper::toDto);
     }
 
+    /**
+     * Get groups by name.
+     *
+     * @param name the name of the entity
+     * @return the entity
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable) {
+        return groupRepository.findByName(name, module, pageable).map(groupMapper::toDto);
+    }
+
     @Transactional(readOnly = true)
     public Optional<Group> findById(GroupPK id) {
         return groupRepository.findOneWithEagerRelationships(id);

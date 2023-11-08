@@ -143,27 +143,27 @@ public class GroupController extends BaseEntity {
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
     }
 
+
     /**
      * GET  /groups : search groups by name.
      *
      * @param pageable the pagination information
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many)
-     * @return the ResponseEntity with status 200 (OK) and the list of groups in body
+     * @param name the name of the groupsDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and the group name and information in body
      */
-    @GetMapping("/search-by-name")
+    @GetMapping("/" + ENTITY_NAME + "/search-by-name")
     public ResponseEntity<ResponseWrapper> searchGroupsByName(
             @RequestHeader(value = "Module", required = true) String module,
             @RequestParam(value = "name") String name,
-            Pageable pageable,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            Pageable pageable) {
+        Page<GroupDTO> groups = groupService.searchGroupsByName(name, module, pageable);
 
-        Page<GroupDTO> page = groupService.searchGroupsByNameAndModule(name, module, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(groups, String.format("/api/groups/search-by-name?name=%s", name));
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, String.format("/api/groups/search-by-name?name=%s", name));
-
-        return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseWrapper(groups), headers, HttpStatus.OK);
     }
+
+
 
 
     /**

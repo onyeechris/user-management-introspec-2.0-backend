@@ -2,11 +2,13 @@ package com.activedge.usermgt.service;
 
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -48,10 +50,22 @@ public interface GroupService {
      */
     Optional<GroupDTO> findOne(GroupPK id);
 
+
     /**
      * Delete the "id" groups.
      *
      * @param id the id of the entity
      */
     void delete(GroupPK id);
+
+    /**
+     * Get the "name" groups.
+     *
+     * @param name the name of the entity
+     * @return the entity
+     */
+    Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable);
+
+
+
 }
