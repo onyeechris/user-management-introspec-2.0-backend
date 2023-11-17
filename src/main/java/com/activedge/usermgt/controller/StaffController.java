@@ -265,6 +265,19 @@ public class StaffController {
         return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPasswordByAdmin(
+            @RequestParam String username,
+            @RequestParam String newPassword) {
+        // Perform authentication and authorization checks for admin privileges here
+
+        // Reset the user's password
+        staffService.resetPasswordByAdmin(username, newPassword);
+
+        return ResponseEntity.ok("Password reset successfully");
+    }
+
+
     /**
      * DELETE  /staff/:id : delete the "id" staff.
      *

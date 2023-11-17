@@ -235,6 +235,24 @@ public class StaffServiceImpl implements StaffService {
         return groups;
     }
 
+    @Override
+    public void resetPasswordByAdmin(String username, String newPassword) throws NotFoundException {
+
+        Optional<Staff> staff = staffRepository.findByUsername(username);
+
+        if (staff == null) {
+
+            throw new NotFoundException("User not found with username: " + username);
+
+            }
+        // Update the user's password
+        staff.setPassword(newPassword);
+
+        // Save the updated user entity
+        staffRepository.save(staff);
+    }
+
+
     /**
      * Get all the staff.
      *

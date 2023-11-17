@@ -76,4 +76,6 @@ public interface StaffService {
      */
     void delete(String id);
 
+    void resetPasswordByAdmin(String username, String newPassword) throws NotFoundException;
+
 }
