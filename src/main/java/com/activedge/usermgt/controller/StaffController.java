@@ -10,6 +10,7 @@ import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,7 +269,7 @@ public class StaffController {
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPasswordByAdmin(
             @RequestParam String username,
-            @RequestParam String newPassword) {
+            @RequestParam String newPassword) throws NotFoundException {
         // Perform authentication and authorization checks for admin privileges here
 
         // Reset the user's password
