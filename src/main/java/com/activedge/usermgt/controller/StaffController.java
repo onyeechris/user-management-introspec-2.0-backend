@@ -4,6 +4,7 @@ import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.ResetPasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
@@ -57,6 +58,8 @@ public class StaffController {
     private static final String STAFF_BY_USERNAME = "import/{username}";
     private static final String STAFF_BY_STAFF_ID = "import/staff/{id}";
     private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
+    private static final String RESET_PASSWORD_BY_ADMIN = "/reset-password";
+
 
     static final String FILENAME = "UserList";
 
@@ -266,18 +269,18 @@ public class StaffController {
         return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping(RESET_PASSWORD_BY_ADMIN)
     public ResponseEntity<String> resetPasswordByAdmin(
-            @RequestParam String adminUsername,
-            @RequestParam String username,
-            @RequestParam String newPassword) throws NotFoundException {
+            @RequestBody ResetPasswordRequest request) throws NotFoundException {
 
         // Reset the user's password
-        staffService.resetPasswordByAdmin(username, adminUsername, newPassword);
+        staffService.resetPasswordByAdmin(request.getUsername(), request.getAdminUsername(), request.getNewPassword());
 
         return ResponseEntity.ok("Password reset successfully");
 
 }
+
+
 
 
 
