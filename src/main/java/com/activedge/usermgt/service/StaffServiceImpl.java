@@ -252,7 +252,9 @@ public class StaffServiceImpl implements StaffService {
                     Staff user = userToReset.get();
 
                     // Update the user's password
-                    user.setPassword(newPassword);
+                    user.setPassword(encoder.encode(newPassword));
+
+
 
                     // Save the updated user entity
                     staffRepository.save(user);
