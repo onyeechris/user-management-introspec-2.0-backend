@@ -281,10 +281,6 @@ public class StaffController {
 }
 
 
-
-
-
-
     /**
      * DELETE  /staff/:id : delete the "id" staff.
      *
