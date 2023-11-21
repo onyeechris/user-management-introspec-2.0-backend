@@ -2,6 +2,7 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
@@ -236,29 +237,39 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public void resetPasswordByAdmin(String username, String newPassword) throws NotFoundException {
+    public void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException {
 
-        Optional<Staff> staffOptional = staffRepository.findByUsername(username);
+        Optional<Staff> adminUser = staffRepository.findByUsername(adminUsername);
 
-        if (staffOptional.isPresent()) {
-            Staff staff = staffOptional.get();
+        if (adminUser.isPresent()) {
+            Staff admin = adminUser.get();
 
-            // Update the user's password
-            staff.setPassword(newPassword);
+            // Check if the admin user has Admin rights
+            if (admin.getType() == Type.ADMIN) {
+                Optional<Staff> userToReset = staffRepository.findByUsername(username);
 
-            // Save the updated user entity
-            staffRepository.save(staff);
+                if (userToReset.isPresent()) {
+                    Staff user = userToReset.get();
 
+                    // Update the user's password
+                    user.setPassword(newPassword);
+
+                    // Save the updated user entity
+                    staffRepository.save(user);
+
+                } else {
+
+                    throw new NotFoundException("User not found with username: " + username);
+                }
+            } else {
+                throw new UnauthorizedException("Only Admin users are allowed to reset passwords.");
+            }
         } else {
-
-            throw new NotFoundException("User not found with username: " + username);
-
+            throw new NotFoundException("Admin user not found with username: " + adminUsername);
         }
     }
-
-
-
-
+    
+    
     /**
      * Get all the staff.
      *

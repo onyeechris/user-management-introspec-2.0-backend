@@ -2,6 +2,7 @@ package com.activedge.usermgt.service;
 
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import javassist.NotFoundException;
@@ -76,6 +77,6 @@ public interface StaffService {
      */
     void delete(String id);
 
-    void resetPasswordByAdmin(String username, String newPassword) throws NotFoundException;
+    void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException;
 
 }

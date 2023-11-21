@@ -268,15 +268,18 @@ public class StaffController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPasswordByAdmin(
+            @RequestParam String adminUsername,
             @RequestParam String username,
             @RequestParam String newPassword) throws NotFoundException {
-        // Perform authentication and authorization checks for admin privileges here
 
         // Reset the user's password
-        staffService.resetPasswordByAdmin(username, newPassword);
+        staffService.resetPasswordByAdmin(username, adminUsername, newPassword);
 
         return ResponseEntity.ok("Password reset successfully");
-    }
+
+}
+
+
 
 
     /**
