@@ -4,6 +4,9 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 import org.apache.camel.builder.RouteBuilder;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @Component
 public class LicenseRouteBuilder extends RouteBuilder{
 
@@ -14,7 +17,7 @@ public class LicenseRouteBuilder extends RouteBuilder{
                 .when(header("CamelFileNameOnly").startsWith("Bank GPG"))
                 .process(this::decryptLicenseFile)
                 .when(header("CamelFileNameOnly").startsWith("KEY-Bank"))
-                .process(this::decryptKeyFile)
+                .process(this::readEncryptionKey)
                 .otherwise()
                 .log("Unknown file type: ${header.CamelFileNameOnly}")
                 .end();
@@ -23,11 +26,11 @@ public class LicenseRouteBuilder extends RouteBuilder{
     private void decryptLicenseFile(Exchange exchange) throws Exception {
         // Extract necessary data from the exchange
         byte[] encryptedData = exchange.getIn().getBody(byte[].class);
-        // Assuming the key is hardcoded for simplicity; replace with secure key management
-        byte[] keyBytes = "YourLicenseDecryptionKey".getBytes();
 
-        // Perform license decryption logic...
-        byte[] decryptedData = yourDecryptionMethod(encryptedData, keyBytes);
+        // Retrieve the encryption key from the exchange properties
+        String encryptionKey = exchange.getProperty("encryptionKey", String.class);
+
+        byte[] decryptedData = DecryptionUtility.decryptLicense(encryptedData, encryptionKey);
 
         // Example: Print a message after decryption
         System.out.println("License file decrypted successfully.");
@@ -36,30 +39,18 @@ public class LicenseRouteBuilder extends RouteBuilder{
         exchange.getIn().setBody(decryptedData);
     }
 
-    private void decryptKeyFile(Exchange exchange) throws Exception {
-        // Extract necessary data from the exchange
-        byte[] encryptedData = exchange.getIn().getBody(byte[].class);
-        // Assuming the key is hardcoded for simplicity; replace with secure key management
-        byte[] keyBytes = "YourKeyDecryptionKey".getBytes();
+    private void readEncryptionKey(Exchange exchange) throws Exception {
+        // Read the contents of the KEY-Bank file
+        String keyFilePath = exchange.getIn().getHeader(Exchange.FILE_PATH, String.class);
 
-        // Perform key decryption logic...
-        byte[] decryptedData = yourDecryptionMethod(encryptedData, keyBytes);
+        String encryptionKey = new String(Files.readAllBytes(Paths.get(keyFilePath)));
 
-        // Example: Print a message after decryption
-        System.out.println("Key file decrypted successfully.");
+        // Store the encryption key in exchange properties for later use
+        exchange.setProperty("encryptionKey", encryptionKey);
 
-        // Set the decrypted data as the new body of the exchange
-        exchange.getIn().setBody(decryptedData);
-    }
-
-    // Replace this with your actual decryption method
-    private byte[] yourDecryptionMethod(byte[] encryptedData, byte[] keyBytes) {
-        // Implement your decryption logic using the provided key
-        // For example, you can use a cryptographic library like Bouncy Castle or Java's javax.crypto
-        // This is a simplified example, and you should replace it with your actual decryption code
-        // ...
-
-        return decryptedData;
+        // Example: Print a message after reading the key
+        System.out.println("Encryption key read successfully.");
     }
 }
+
 
