@@ -1,10 +1,8 @@
 package com.activedge.usermgt.license;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.file.StandardOpenOption;
-import java.security.Key;
+
 import java.util.Base64;
 import javax.crypto.spec.IvParameterSpec;
 
