@@ -12,16 +12,19 @@ public class LicenseRouteBuilder extends RouteBuilder{
 
     @Override
     public void configure() throws Exception {
-        from("file:/home/adedamolababatunde/Documents/personal files/license?delete=true")
+       // from("file:/home/adedamolababatunde/Documents/personal files/license?delete=true")
+        from("{{routes.license.fileset}}")
                 .choice()
                 .when(header("CamelFileNameOnly").startsWith("Bank GPG"))
                 .process(this::decryptLicenseFile)
+                .to("{{routes.license.download.location}}")
                 .when(header("CamelFileNameOnly").startsWith("KEY-Bank"))
                 .process(this::readEncryptionKey)
                 .otherwise()
                 .log("Unknown file type: ${header.CamelFileNameOnly}")
                 .end();
     }
+
 
     private void decryptLicenseFile(Exchange exchange) throws Exception {
         // Extract necessary data from the exchange
@@ -34,6 +37,7 @@ public class LicenseRouteBuilder extends RouteBuilder{
 
         // Example: Print a message after decryption
         System.out.println("License file decrypted successfully.");
+        log.info("License file decrypted successfully.");
 
         // Set the decrypted data as the new body of the exchange
         exchange.getIn().setBody(decryptedData);
@@ -50,6 +54,7 @@ public class LicenseRouteBuilder extends RouteBuilder{
 
         // Example: Print a message after reading the key
         System.out.println("Encryption key read successfully.");
+        log.info("Encryption key read successfully.");
     }
 }
 

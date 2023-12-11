@@ -115,3 +115,18 @@ verify:
 client:
   id: "${client_id:}"
   secret: "${client_secret:}"
+
+
+#camel routes configs
+file:
+  location: ${license_pickup_location:file:/home/adedamolababatunde/Documents/personal-files/license}
+
+routes:
+  parameters: ${license_sftp_parameters:moveFailed=failed&readLock=changed}
+  accepted-filters: RAW(.*.txt|.*.doc|.*.pdf.*)
+  license:
+    download:
+      location: ${file.location}/downloads?${routes.parameters}
+    error:
+      location: ${file.location}/failed?${routes.parameters}
+    fileset: ${file.location}/${license_file_root:file}?${routes.parameters}&include={{routes.accepted-filters}}

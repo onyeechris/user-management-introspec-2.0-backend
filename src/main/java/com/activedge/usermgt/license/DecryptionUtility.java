@@ -39,12 +39,14 @@ public class DecryptionUtility {
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                 cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
 
-                // Decrypt the content
+
+                // Decrypt the content.
                 return cipher.doFinal(encryptedContent);
             } catch (Exception e) {
                 e.printStackTrace();
                 // Handle decryption failure
-                return null;
+                throw new RuntimeException("Failed to decrypt license file", e);
+                }
+
             }
         }
-    }
