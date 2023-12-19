@@ -121,7 +121,13 @@ public class LdapService implements StaffService {
 
     @Override
     public String forgotPassword(String email) {
-        return "Please check your email to set new password";
+
+        return "check email";
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        return "login with new password";
     }
 
     private String digestSHA(final String password) {

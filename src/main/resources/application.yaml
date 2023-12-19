@@ -116,4 +116,5 @@ client:
   id: "${client_id:}"
   secret: "${client_secret:}"
 
-
+introspec:
+  auth_backend_url: http://localhost:9100/auth-service/staffs

@@ -36,6 +36,8 @@ import javax.mail.MessagingException;
 @Transactional
 @Service("db")
 public class StaffServiceImpl implements StaffService {
+    private static final String RESET_EMAIL_SENT_MESSAGE = "Please check your email to set a new password";
+    private static final String RESET_EMAIL="New password set successfully login with new password";
 
     private final Logger log = LoggerFactory.getLogger(StaffServiceImpl.class);
 
@@ -335,7 +337,18 @@ public class StaffServiceImpl implements StaffService {
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to set password please try again"+e);
         }
-        return "Please check your email to set new password";
+        return RESET_EMAIL_SENT_MESSAGE;
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        Staff staff =staffRepository.findByEmail(email)
+                .orElseThrow(
+                        ()-> new RuntimeException("Staff not found with this email: "+email)
+                );
+        staff.setPassword(newPassword);
+        staffRepository.save(staff);
+        return RESET_EMAIL;
     }
 
 }

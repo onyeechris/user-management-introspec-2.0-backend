@@ -1,0 +1,14 @@
+#email properties
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: delighty83@gmail.com
+    password: iczgmyggqttmxtte
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
