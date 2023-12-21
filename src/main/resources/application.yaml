@@ -117,9 +117,12 @@ client:
   secret: "${client_secret:}"
 
 
+
 #camel routes configs
 file:
   location: ${license_pickup_location:file:/home/adedamolababatunde/Documents/personal-files/license}
+  destination: ${license_pickup_location:file:/home/adedamolababatunde/Documents/personal-files/license/file}
+
 
 routes:
   parameters: ${license_sftp_parameters:moveFailed=failed&readLock=changed}
@@ -130,3 +133,5 @@ routes:
     error:
       location: ${file.location}/failed?${routes.parameters}
     fileset: ${file.location}/${license_file_root:file}?${routes.parameters}&include={{routes.accepted-filters}}
+
+
