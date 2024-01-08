@@ -44,8 +44,12 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private Environment env;
+
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
+
+    @Autowired
+    private CustomSessionInformationExpiredStrategy sessionInformationExpiredStrategy;
     private static final String[] AUTH_WHITE_LIST = {
             "/v3/api-docs/**",
             "/swagger-ui/**",
@@ -59,12 +63,18 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter();
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and().csrf().disable()
                 // use stateless session; session won't be used to store user's state.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .maximumSessions(1) //Sets the maximum number of session to 1
+                .expiredSessionStrategy(sessionInformationExpiredStrategy)
+                .maxSessionsPreventsLogin(false)
+                .and()
                 .and()
                 // handle an authorized attempts
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
