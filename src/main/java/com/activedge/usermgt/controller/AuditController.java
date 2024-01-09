@@ -8,6 +8,7 @@ import com.activedge.usermgt.service.TraceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -41,7 +42,7 @@ public class AuditController {
     static final String AUDIT_CONTROLLER_DOWNLOAD = "download";
     private static final String THREE_DAYS_AGO = "#{new java.util.Date((new java.util.Date()).getTime()-3*24*60*60*1000)}";
     private static final String NOW = "#{new java.util.Date()}";
-    private static final int DEFAULT_PAGE_SIZE = 25;
+    private static final int DEFAULT_PAGE_SIZE = 100;
     private static final int DEFAULT_DOWNLOAD_PAGE_SIZE = 10000;
 
     private final TraceService traceService;
@@ -98,10 +99,20 @@ public class AuditController {
      * @return the ResponseEntity of http traces
      */
     @GetMapping("/{status}")
-    public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByStatus(@PathVariable Integer status, Pageable pageable) {
+    public ResponseEntity<ResponseWrapper> getAllCustomHttpTracesByStatus(@PathVariable Integer status, @PageableDefault(size = DEFAULT_PAGE_SIZE) Pageable pageable) {
         log.debug("REST request to get a page of CustomHttpTrace for status: {}", status);
+
+        // Set up sorting by "timestamp" in descending order for LIFO.
+        pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "timestamp")
+        );
+
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAllByStatus(status, pageable)), HttpStatus.OK);
     }
+
+
     @GetMapping("/username-date")
     public ResponseEntity<?> searchAuditLogsByUsernameOrDate(
             @RequestParam(name = "username") Optional<String> username,
