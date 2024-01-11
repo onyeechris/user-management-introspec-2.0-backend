@@ -346,7 +346,8 @@ public class StaffServiceImpl implements StaffService {
                 .orElseThrow(
                         ()-> new RuntimeException("Staff not found with this email: "+email)
                 );
-        staff.setPassword(newPassword);
+        String hashedPassword = encoder.encode(newPassword);
+        staff.setPassword(hashedPassword);
         staffRepository.save(staff);
         return RESET_EMAIL;
     }
