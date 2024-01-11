@@ -12,6 +12,6 @@ public class CustomSessionInformationExpiredStrategy implements SessionInformati
 
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
-        event.getResponse().sendRedirect("/login"); // put the login url
+        event.getResponse().sendRedirect("http://localhost:3019/#/login");
     }
 }

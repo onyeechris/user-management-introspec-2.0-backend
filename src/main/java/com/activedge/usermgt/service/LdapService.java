@@ -1,6 +1,7 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UserLimitExceededException;
 import com.activedge.usermgt.model.LdapUser;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
@@ -12,6 +13,7 @@ import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,15 @@ public class LdapService implements StaffService {
     @Autowired
     private StaffDTOAdapter staffDTOAdapter;
 
+    @Value("${app.user-limit}")
+    private int userLimit;
+
+    @Override
+    public boolean isUserLimitReached() {
+        long UserCount = ldapRepository.count();
+        return UserCount >= userLimit;
+    }
+
     @Override
     public StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
         log.debug("Unimplemented method[save]");
@@ -55,8 +66,12 @@ public class LdapService implements StaffService {
         return 0;
     }
 
+    //implement user limit
     @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
+        if (isUserLimitReached()) {
+            throw new UserLimitExceededException("User limit reached, therefore cannot create more users.Check license documentation for more info");
+        }
         log.debug("Unimplemented method[save]");
        return null;
     }

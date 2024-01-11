@@ -2,12 +2,12 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UserLimitExceededException;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
-import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import javassist.NotFoundException;
 
 /**
  * Service Implementation for managing Staff.
@@ -53,6 +52,15 @@ public class StaffServiceImpl implements StaffService {
     private  GroupMapper groupMapper;
     @Autowired
     private SecretGenerator secretGenerator;
+
+    @Value("${app.user-limit}")
+    private int userLimit;
+
+    @Override
+    public boolean isUserLimitReached() {
+        long UserCount = staffRepository.count();
+        return UserCount >= userLimit;
+    }
 
     /**
      * Save a staff.
@@ -165,6 +173,10 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
+        if (isUserLimitReached()) {
+            throw new UserLimitExceededException(" User limit reached, therefore cannot create more users. " +
+                    "Check license documentation for more info");
+        }
         log.info("Logging StaffDTO:{} by User:{}, Password:{}", staffDTO, staffDTO.getPassword());
 
         Staff staff = staffMapper.toEntity(staffDTO);

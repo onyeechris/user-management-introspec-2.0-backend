@@ -16,6 +16,8 @@ import java.util.Optional;
  */
 public interface StaffService {
 
+    boolean isUserLimitReached();
+
     /**
      * Save a staff.
      *
