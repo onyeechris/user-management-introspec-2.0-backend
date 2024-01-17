@@ -389,12 +389,15 @@ public class StaffServiceImpl implements StaffService {
                     entity.setEmail(value);
                     break;
                 case "column4":
-                    entity.setPhone(value);
+                    entity.setUsername(value);
                     break;
                 case "column5":
-                    entity.setHireDate(LocalDate.parse(value));
+                    entity.setPhone(value);
                     break;
                 case "column6":
+                    entity.setHireDate(LocalDate.parse(value));
+                    break;
+                case "column7":
                     entity.setType(Type.valueOf(value));
                     break;
             }
