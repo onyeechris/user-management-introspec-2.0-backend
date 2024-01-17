@@ -7,6 +7,7 @@ import com.activedge.usermgt.model.dto.StaffDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -79,4 +80,7 @@ public interface StaffService {
     String forgotPassword(String email);
 
     String resetPassword(String email, String newPassword);
+    void processCSV(MultipartFile file);
+
+
 }

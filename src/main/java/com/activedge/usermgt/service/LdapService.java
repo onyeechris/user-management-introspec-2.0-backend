@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -128,6 +129,11 @@ public class LdapService implements StaffService {
     @Override
     public String resetPassword(String email, String newPassword) {
         return "login with new password";
+    }
+
+    @Override
+    public void processCSV(MultipartFile file) {
+
     }
 
     private String digestSHA(final String password) {

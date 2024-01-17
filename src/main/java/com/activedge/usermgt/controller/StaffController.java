@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -58,6 +59,8 @@ public class StaffController {
     private static final String STAFF_BY_USERNAME = "import/{username}";
     private static final String STAFF_BY_STAFF_ID = "import/staff/{id}";
     private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
+    private static final String FILE_UPLOADED="File uploaded successfully!";
+    private static final String FILE_ERROR="Error uploading file: ";
 
     static final String FILENAME = "UserList";
 
@@ -310,5 +313,16 @@ public class StaffController {
         responseHeaders.setContentLength(bytes.length);
         return ResponseEntity.ok().headers(responseHeaders).body(bytes);
     }
+    @PostMapping("/CSV-upload")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            staffService.processCSV(file);
+            return ResponseEntity.ok(FILE_UPLOADED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
+        }
+    }
+
 
     }
