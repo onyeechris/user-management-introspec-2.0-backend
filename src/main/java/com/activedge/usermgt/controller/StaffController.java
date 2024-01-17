@@ -293,18 +293,17 @@ public class StaffController {
     }
     @PostMapping("/download-Columns")
     public ResponseEntity<byte[]> downloadCSV(@RequestBody List<List<String>> columns) {
-        // Create CSV content from received columns
         StringBuilder csvContent = new StringBuilder();
 
-        // Assuming all columns have the same length (rows)
+
         int numRows = columns.get(0).size();
 
         for (int i = 0; i < numRows; i++) {
             for (List<String> column : columns) {
                 csvContent.append(column.get(i)).append(",");
             }
-            csvContent.deleteCharAt(csvContent.length() - 1); // Remove the last comma
-            csvContent.append("\n"); // New line for each row
+            csvContent.deleteCharAt(csvContent.length() - 1);
+            csvContent.append("\n");
         }
         byte[] bytes = csvContent.toString().getBytes();
         HttpHeaders responseHeaders = new HttpHeaders();
