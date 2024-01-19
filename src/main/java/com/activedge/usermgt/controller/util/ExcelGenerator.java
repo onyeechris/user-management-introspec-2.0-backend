@@ -2,6 +2,8 @@ package com.activedge.usermgt.controller.util;
 
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Page;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -66,9 +69,23 @@ public class ExcelGenerator {
     }
 
     public static ByteArrayInputStream generateUserList(Page<StaffDTO> users) throws IOException {
-        String[] COLUMNs = {"S/N", "Username", "Name", "Email", "Affiliate", "Role", "Maker", "Maker_Date", "Lock_Status", "Last_Login"};
-
-        return null;
+        String[] COLUMNs = {"S/N", "Firstname", "Lastname", "PhoneNumber", "Email", "Username", "Role", "Last_Login"};
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
+            for (StaffDTO user : users) {
+                csvPrinter.printRecord(
+                        user.getId(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
+                        user.getPhone(),
+                        user.getEmail(),
+                        user.getUsername(),
+                        user.getUser_type(),
+                        user.getHire_date()
+                );
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        }
     }
-
 }

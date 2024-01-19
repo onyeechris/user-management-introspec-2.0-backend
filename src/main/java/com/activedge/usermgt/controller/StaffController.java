@@ -155,7 +155,7 @@ public class StaffController {
      * @return the ResponseEntity with status 200 (OK) and the list of staff in body
      */
     @GetMapping(STAFFS_DOWNLOAD)
-    public ResponseEntity<InputStreamResource> downloadAllStaff(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws IOException {
+    public ResponseEntity<InputStreamResource> downloadAllStaffCSV(@RequestHeader(value = "Module", required = true) String mdl, Pageable pageable) throws IOException {
         ByteArrayInputStream in = null;
 
         Optional<Module> module = this.moduleRepository.findById(mdl);
@@ -164,10 +164,10 @@ public class StaffController {
         String currentDateTime = dateFormatter.format(new Date());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/octet-stream");
-        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
-
-        if(!module.isPresent()) {
+        headers.add("Content-Type", "text/csv");
+        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".csv");
+        if (!module.isPresent()) {
+            // Handle the case where the module is not present
         } else {
             in = ExcelGenerator.generateUserList(staffService.findAll(pageable));
         }
