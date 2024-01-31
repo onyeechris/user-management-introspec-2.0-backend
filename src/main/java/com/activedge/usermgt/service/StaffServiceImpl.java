@@ -357,7 +357,6 @@ public class StaffServiceImpl implements StaffService {
         return RESET_EMAIL;
     }
 
-    @Transactional
     public void processCSV(MultipartFile file) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String headerLine = reader.readLine();
@@ -372,7 +371,6 @@ public class StaffServiceImpl implements StaffService {
             e.printStackTrace();
         }
     }
-
 
     private Staff CSVData(String[] headers, String[] data) {
         Staff entity = new Staff();
@@ -397,9 +395,12 @@ public class StaffServiceImpl implements StaffService {
                     entity.setPhone(value);
                     break;
                 case "column6":
-                    entity.setHireDate(LocalDate.parse(value));
+                    entity.setPhone(value);
                     break;
                 case "column7":
+                    entity.setHireDate(LocalDate.parse(value));
+                    break;
+                case "column8":
                     entity.setType(Type.valueOf(value));
                     break;
             }
