@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -24,5 +25,7 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Strin
     Optional<Staff> findByEmail(String email);
 
     Optional<Staff> findByUsername(String username);
+    List<Staff> findByUsernameContaining(String email);
+
 
 }

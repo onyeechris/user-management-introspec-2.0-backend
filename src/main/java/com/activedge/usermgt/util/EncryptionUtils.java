@@ -12,8 +12,13 @@ import java.util.Base64;
 
 public abstract class EncryptionUtils {
     public static String decrypt(String rawText, String secret) throws Exception {
+        System.out.println("Received rawText: " + rawText);
         String cipherText = URLDecoder.decode(rawText, "UTF-8").replaceAll(" ", "+");
+        System.out.println("Decoded cipherText: " + cipherText);
+
         byte[] cipherData = Base64.getDecoder().decode(cipherText);
+        System.out.println("Decoded byte array: " + Arrays.toString(cipherData));
+
         byte[] saltData = Arrays.copyOfRange(cipherData, 8, 16);
 
         MessageDigest md5 = MessageDigest.getInstance("MD5");

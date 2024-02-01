@@ -18,6 +18,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -76,32 +77,44 @@ public class UserJWTController {
         starttime = System.currentTimeMillis();
         String jwt;
 
+        // Log received credentials
+        System.out.println("Received username: " + loginRequest.getUsername());
+        System.out.println("Received password: " + loginRequest.getPassword());
+
+        // Decrypt the username and password
         loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
         loginRequest.setPassword(EncryptionUtils.decrypt(loginRequest.getPassword(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
 
+        // Log decrypted credentials
+        System.out.println("Decrypted username: " + loginRequest.getUsername());
+        System.out.println("Decrypted password: " + loginRequest.getPassword());
+
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
-        if(errorMap != null) return errorMap;
+        if (errorMap != null) return errorMap;
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+        try {
+            // Attempt authentication
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // check if user belongs to the specified App before generating token
-        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
-            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
-
-            // log successful login
+            // Log successful login
             audit(req, authentication);
-        } else {
-            throw new NotSupportedException("User account not supported in the specified App: " + module);
-        }
 
-        return ResponseEntity.ok(new JWTResponse(true, jwt));
+            // Continue with the rest of the code
+            jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
+            return ResponseEntity.ok(new JWTResponse(true, jwt));
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            // Log additional details about the authentication failure
+            System.out.println("Authentication failure details: " + e.getMessage());
+            throw e;
+        }
     }
 
     @PostMapping("/yek_cne")

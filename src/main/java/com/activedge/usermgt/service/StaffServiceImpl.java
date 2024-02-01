@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing Staff.
@@ -146,6 +148,14 @@ public class StaffServiceImpl implements StaffService {
     public Optional<StaffDTO> search(String searchId) {
         return staffRepository.findByUsername(searchId)
                 .map(staffMapper::toDto);
+    }
+
+    @Override
+    public List<StaffDTO> wildcardSearch(String username) {
+        return staffRepository.findByUsernameContaining(username)
+                .stream()
+                .map(staffMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

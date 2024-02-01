@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,8 @@ public class StaffController {
     private static final String STAFFS_DOWNLOAD = "download";
     private static final String STAFF_BY_ID = "{id}";
     private static final String STAFF_BY_USERNAME = "import/{username}";
+    private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
+
     static final String FILENAME = "UserList";
 
     @Autowired
@@ -217,6 +220,16 @@ public class StaffController {
 
         return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
 
+    }
+    @GetMapping(SEARCH_STAFF_BY_USERNAME_WILDCARD)
+    public ResponseEntity<List<StaffDTO>> searchStaff(@PathVariable String username) {
+        log.debug("REST request to search for staff by username: {}", username);
+        StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
+        List<StaffDTO> staffDTOs = service.wildcardSearch(username);
+        if (staffDTOs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
     }
 
     /**

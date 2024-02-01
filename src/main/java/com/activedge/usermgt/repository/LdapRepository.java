@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.naming.Name;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -16,5 +17,7 @@ public interface LdapRepository extends CrudRepository<LdapUser, Name> {
     Optional<LdapUser> findByUsername(String userid);
 
     Page<LdapUser> findByUsernameLikeIgnoreCase(Pageable pageable, String username);
+    List<LdapUser> findByUsernameContaining(String userid);
+
 
 }
