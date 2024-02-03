@@ -1,5 +1,10 @@
 package com.activedge.usermgt;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +17,8 @@ import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
 
 @SpringBootApplication
 @EnableJms
+@OpenAPIDefinition(info = @Info(title = "Introspec SSO", version = "1.0", description = "Central Authentication System with single-sign-on"))
+@SecurityScheme(name = "introspec-sso", scheme = "bearer", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class UsermgtApplication implements CommandLineRunner {
 
     @Value("${spring.application.name}")

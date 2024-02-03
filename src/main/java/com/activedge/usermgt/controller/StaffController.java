@@ -9,6 +9,7 @@ import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(StaffController.STAFFS)
+@SecurityRequirement(name = "introspec-sso")
 public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);

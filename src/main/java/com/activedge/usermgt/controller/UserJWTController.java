@@ -6,6 +6,7 @@ import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
 import com.activedge.usermgt.util.EncryptionUtils;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 @Slf4j
 @RestController
 @RequestMapping("/auth")
+@SecurityRequirement(name = "introspec-sso")
 public class UserJWTController {
 
     @Autowired

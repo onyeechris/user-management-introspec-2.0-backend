@@ -87,6 +87,14 @@ ldap:
   ou: ${introspec_sso_ldap_ou:ou=staffs}
   filter: ${introspec_sso_ldap_filter:sAMAccountName}
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+
 management:
 #  This will trigger security on
 #  server:

@@ -52,7 +52,13 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationFilter jwtAuthFilter() {
         return new JwtAuthenticationFilter();
     }
-
+    private static final String[] AUTH_WHITE_LIST = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/introspec-cas/**",
+            "/v2/api-docs/**",
+            "/swagger-resources/**"
+    };
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -78,6 +84,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js"
                 ).permitAll()
+                .antMatchers(AUTH_WHITE_LIST).permitAll()
 //                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/", "/index.html", "/static/**", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
 
