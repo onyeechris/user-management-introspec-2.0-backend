@@ -15,5 +15,7 @@ public interface TraceService {
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
 
     Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable);
+    Page<CustomHttpTrace> findAllByStatusAndDateRange(Integer status, Date from, Date to, Pageable pageable);
+
 
 }

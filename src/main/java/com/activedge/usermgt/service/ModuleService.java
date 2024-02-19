@@ -3,10 +3,13 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.dto.ModuleDTO;
+import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,7 +32,8 @@ public interface ModuleService {
      * @return the list of entities
      */
     Page<ModuleDTO> findAll(Pageable pageable);
-    
+
+
     /**
      * Get the "id" modules.
      *

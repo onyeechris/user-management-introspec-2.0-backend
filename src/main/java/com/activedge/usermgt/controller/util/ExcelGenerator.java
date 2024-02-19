@@ -66,22 +66,21 @@ public class ExcelGenerator {
 //            return new ByteArrayInputStream(out.toByteArray());
 //        }
 //    }
-    public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> auditLogs) throws IOException {
-        String[] COLUMNs = {"Reference", "Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-            CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
+public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> auditLogs) throws IOException {
+    String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+         CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
 
-            for (CustomHttpTrace auditLog : auditLogs) {
-                csvPrinter.printRecord(
-                        auditLog.getId(),
-                        getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
-                        auditLog.getUsername(),
-                        dateFormat.format(auditLog.getTimestamp().getTime()),
-                        auditLog.getSourceIp(),
-                        auditLog.getQueryParams(),
-                        auditLog.getPath(),
-                        auditLog.getPayload(),
-                        auditLog.getSeverity().name()
+        for (CustomHttpTrace auditLog : auditLogs) {
+            csvPrinter.printRecord(
+                    getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
+                    auditLog.getUsername(),
+                    dateFormat.format(auditLog.getTimestamp().getTime()),
+                    auditLog.getSourceIp(),
+                    auditLog.getQueryParams(),
+                    auditLog.getPath(),
+                    auditLog.getPayload(),
+                    auditLog.getSeverity().name()
             );
         }
         csvPrinter.flush();
@@ -94,12 +93,11 @@ public class ExcelGenerator {
 
 
     public static ByteArrayInputStream generateUserList(Page<StaffDTO> users) throws IOException {
-        String[] COLUMNs = {"S/N", "Firstname", "Lastname", "PhoneNumber", "Email", "Username", "Role", "Last_Login"};
+        String[] COLUMNs = {"Firstname", "Lastname", "PhoneNumber", "Email", "Username", "Role", "Last_Login"};
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
             for (StaffDTO user : users) {
                 csvPrinter.printRecord(
-                        user.getId(),
                         user.getFirst_name(),
                         user.getLast_name(),
                         user.getPhone(),

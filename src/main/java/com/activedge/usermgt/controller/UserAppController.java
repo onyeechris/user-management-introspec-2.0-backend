@@ -2,11 +2,18 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.StaffModuleService;
+import com.activedge.usermgt.service.StaffService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +25,8 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,15 +39,21 @@ import java.util.stream.Collectors;
 public class UserAppController {
 
     private final Logger log = LoggerFactory.getLogger(UserAppController.class);
+    private final Environment env;
+
+    private final ApplicationContext appCtx;
 
     private static final String ENTITY_NAME = "userapps";
 
     private final StaffModuleService staffModuleService;
     private final ModuleRepository moduleRepository;
 
-    public UserAppController(StaffModuleService staffModuleService, ModuleRepository moduleRepository) {
+    public UserAppController(StaffModuleService staffModuleService, ModuleRepository moduleRepository,Environment env,
+                             ApplicationContext appCtx) {
         this.staffModuleService = staffModuleService;
         this.moduleRepository = moduleRepository;
+        this.env = env;
+        this.appCtx = appCtx;
     }
 
     /**
@@ -105,14 +120,28 @@ public class UserAppController {
      * @return the ResponseEntity with status 200 (OK) and the list of staffModules in body
      */
     @SuppressWarnings("OptionalGetWithoutIsPresent")
+
     @GetMapping("/"+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaffModules(
-            @RequestHeader(value = "Module", required = true) String module,
+            @RequestHeader(value = "Module", required = true) String mdl,
             @RequestHeader(value = "Authorization", required = true) String authUser,
+            @RequestParam(value = "username", required = false) String username,
             Pageable pageable) {
 
-        return new ResponseEntity<>(new ResponseWrapper(staffModuleService.findAllByModule(module, pageable)), HttpStatus.OK);
+        log.debug("REST request to get staff with Module: {}", mdl);
+
+        Page<StaffModuleDTO> page;
+
+        if (username != null) {
+            List<StaffModuleDTO> staffModuleDTOs = staffModuleService.wildcardSearchModule(username);
+            page = new PageImpl<>(staffModuleDTOs, pageable, staffModuleDTOs.size());
+        } else {
+            page = staffModuleService.findAll(pageable);
+        }
+
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
+
 
     /**
      * GET  /staffModules/:id : get the "id" staffModule.

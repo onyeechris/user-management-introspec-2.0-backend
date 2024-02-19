@@ -35,9 +35,14 @@ public class TraceServiceImpl implements TraceService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<CustomHttpTrace> findAllByStatusAndDateRange(Integer status, Date from, Date to, Pageable pageable) {
+        return traceRepository.findAllByStatusAndTimestampBetween(status, from, to, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable) {
         log.debug("Request to get all Trace by status");
         return traceRepository.findAllByStatus(status, pageable);
     }
-
 }

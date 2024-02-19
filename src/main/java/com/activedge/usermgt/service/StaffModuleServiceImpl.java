@@ -11,8 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing StaffModule.
@@ -71,6 +73,14 @@ public class StaffModuleServiceImpl implements StaffModuleService {
             String usn = x.getStaff().getUsername() == null ? "" : x.getStaff().getUsername();
             return eml.equalsIgnoreCase(email) || usn.equalsIgnoreCase(email);
         });
+    }
+
+    @Override
+    public List<StaffModuleDTO> wildcardSearchModule(String username) {
+        return staffModuleRepository.findByStaffUsernameContainingIgnoreCase(username)
+                .stream()
+                .map(staffModuleMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

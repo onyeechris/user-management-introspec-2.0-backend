@@ -64,12 +64,14 @@ public class AuditController {
      * @return the ResponseEntity of http traces
      */
     @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
-    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByDateRangeExcel(
-            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByStatusExcel(
+            @RequestParam(name = "status", required = false) Integer status,
             @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
-            @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) throws IOException {
-        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(traceService.findAll(from, to, pageable));
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
+            }) Pageable pageable) throws IOException {
+
+        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(traceService.findAllByStatus(status, pageable));
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
         String currentDateTime = dateFormatter.format(new Date());
 
@@ -81,7 +83,6 @@ public class AuditController {
                 .ok()
                 .headers(headers)
                 .body(new InputStreamResource(in));
-
     }
 
     /**
