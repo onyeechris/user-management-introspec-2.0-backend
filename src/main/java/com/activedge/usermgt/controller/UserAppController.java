@@ -123,20 +123,20 @@ public class UserAppController {
 
     @GetMapping("/"+ENTITY_NAME)
     public ResponseEntity<ResponseWrapper> getAllStaffModules(
-            @RequestHeader(value = "Module", required = true) String mdl,
+            @RequestHeader(value = "Module", required = true) String module,
             @RequestHeader(value = "Authorization", required = true) String authUser,
             @RequestParam(value = "username", required = false) String username,
             Pageable pageable) {
 
-        log.debug("REST request to get staff with Module: {}", mdl);
+        log.debug("REST request to get staff with Module: {}", module);
 
         Page<StaffModuleDTO> page;
 
         if (username != null) {
-            List<StaffModuleDTO> staffModuleDTOs = staffModuleService.wildcardSearchModule(username);
+            List<StaffModuleDTO> staffModuleDTOs = staffModuleService.wildcardSearchModule(module, username, pageable);
             page = new PageImpl<>(staffModuleDTOs, pageable, staffModuleDTOs.size());
         } else {
-            page = staffModuleService.findAll(pageable);
+            page = staffModuleService.findAllByModule(module,pageable);
         }
 
         return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);

@@ -1,9 +1,12 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.exception.ExceptionParser;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.model.mapper.StaffModuleMapper;
 import com.activedge.usermgt.repository.StaffModuleRepository;
+import com.activedge.usermgt.repository.StaffRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,10 +31,12 @@ public class StaffModuleServiceImpl implements StaffModuleService {
     private final StaffModuleRepository staffModuleRepository;
 
     private final StaffModuleMapper staffModuleMapper;
+    private final StaffRepository staffRepository;
 
-    public StaffModuleServiceImpl(StaffModuleRepository staffModuleRepository, StaffModuleMapper staffModuleMapper) {
+    public StaffModuleServiceImpl(StaffModuleRepository staffModuleRepository, StaffModuleMapper staffModuleMapper, StaffRepository staffRepository) {
         this.staffModuleRepository = staffModuleRepository;
         this.staffModuleMapper = staffModuleMapper;
+        this.staffRepository = staffRepository;
     }
 
     /**
@@ -76,11 +81,17 @@ public class StaffModuleServiceImpl implements StaffModuleService {
     }
 
     @Override
-    public List<StaffModuleDTO> wildcardSearchModule(String username) {
-        return staffModuleRepository.findByStaffUsernameContainingIgnoreCase(username)
-                .stream()
+    public List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable) {
+        List<StaffModule> staffModules = staffModuleRepository.findAllByModule_IdAndStaff(module, findStaffByUsername(username), pageable);
+        log.info("find all by username {}", findStaffByUsername(username));
+        log.info("staff module {}", staffModules);
+        return staffModules.stream()
                 .map(staffModuleMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    private Staff findStaffByUsername(String username){
+        return staffRepository.findByUsername(username).orElse(null);
     }
 
     /**

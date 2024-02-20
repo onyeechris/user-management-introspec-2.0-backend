@@ -38,7 +38,7 @@ public interface StaffModuleService {
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
     boolean matchModuleAndEmail(String module, String email);
-    List<StaffModuleDTO> wildcardSearchModule(String username);
+    List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable);
 
 
 

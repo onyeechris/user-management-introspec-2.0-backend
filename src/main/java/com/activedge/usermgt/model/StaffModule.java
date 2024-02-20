@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter @Setter
@@ -32,7 +33,6 @@ public class StaffModule {
     @JsonBackReference
     @DBRef
     Staff staff;
-
     LocalDateTime assignAt;
 
     int grade;

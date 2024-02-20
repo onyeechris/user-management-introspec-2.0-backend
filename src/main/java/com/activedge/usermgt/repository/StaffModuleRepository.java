@@ -19,9 +19,9 @@ public interface StaffModuleRepository extends PagingAndSortingRepository<StaffM
     Page<StaffModule> findAllByModule_Id(Pageable pageable, String module);
 
     // Associations can only be pointed to directly or via their id property!
-    StaffModule findByModule_IdAndStaff_Email(String module, String email);
+    List<StaffModule> findByModule_IdAndStaff_Username(String module, String username);
+    List<StaffModule> findAllByModule_IdAndStaff(String module, Staff staff, Pageable pageable);
 
     Set<StaffModule> findByModule_Id(String module);
-    @Query("SELECT sm FROM StaffModule sm WHERE sm.staff.id IN (SELECT s.id FROM Staff s WHERE s.username LIKE %:username%)")
-    List<StaffModule> findByStaffUsernameContainingIgnoreCase(@Param("username")String username);
+
 }
