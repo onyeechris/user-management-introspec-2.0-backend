@@ -76,9 +76,9 @@ public class AuditControllerTest extends MockMvcBase {
     @Test
     void downloadAllTracelogTest() throws Exception {
 
-        when(this.traceService.findAll(any(Date.class), any(Date.class), any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(this.traceService.findAllByStatusAndDateRange(anyInt(), any(Date.class), any(Date.class), any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
 
-        MvcResult result = this.mockMvc.perform(get("/audit/download?page=1&size=15&from=2020-12-31&to=2021-12-31")
+        MvcResult result = this.mockMvc.perform(get("/audit/download?status=0&page=1&size=15&from=2020-12-31&to=2021-12-31")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM))
                 .andExpect(status().isOk())
                 .andReturn();
