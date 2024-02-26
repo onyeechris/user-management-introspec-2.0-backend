@@ -1,7 +1,9 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.LdapUser;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.enumeration.Type;
@@ -95,6 +97,12 @@ public class LdapService implements StaffService {
         }
         return Optional.of(uzer);
     }
+
+    @Override
+    public void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException {
+
+    }
+
 
     @Override
     public List<StaffDTO> wildcardSearch(String username) {
