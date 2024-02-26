@@ -7,6 +7,7 @@ import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.StaffModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,9 @@ public class UserAppController {
     private final Logger log = LoggerFactory.getLogger(UserAppController.class);
 
     private static final String ENTITY_NAME = "userapps";
+
+    private static final String SEARCH_AUTHORIZED_STAFF = "/search/userapps";
+
 
     private final StaffModuleService staffModuleService;
     private final ModuleRepository moduleRepository;
@@ -130,6 +135,24 @@ public class UserAppController {
         }
 
         return new ResponseEntity<>(staffModuleDTO.get(), HttpStatus.OK);
+    }
+
+    /**
+     * GET  search/staffModules/:  search staffModules by email
+     *
+     * @param email the email of the staffModuleDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the staffModuleDTO, or with status 404 (Not Found)
+     */
+    @GetMapping(SEARCH_AUTHORIZED_STAFF)
+    public ResponseEntity<ResponseWrapper> searchAuthorizedStaff(
+            @RequestHeader(value = "Module", required = true) String module,
+            @RequestHeader(value = "Authorization", required = true) String authUser,
+            @RequestParam(required = true) String email,
+            Pageable pageable) {
+
+        Page<StaffModuleDTO> searchResults = staffModuleService.searchStaffByModuleAndCriteria(module, email, pageable);
+
+        return new ResponseEntity<>(new ResponseWrapper(searchResults), HttpStatus.OK);
     }
 
     /**

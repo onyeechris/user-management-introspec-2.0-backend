@@ -3,13 +3,11 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
-import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.model.mapper.StaffModuleMapper;
 import com.activedge.usermgt.repository.StaffModuleRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,12 +100,36 @@ public class StaffModuleServiceImpl implements StaffModuleService {
         });
     }
 
-    /**
-     * Get all the staffModules.
-     *
-     * @param pageable the pagination information
-     * @return the list of entities
-     */
+    public Page<StaffModuleDTO> searchStaffByModuleAndCriteria(
+            String module, String email, Pageable pageable) {
+        // Search for a Staff based on email
+        Optional<Staff> staffOptional = staffRepository.findByEmail(email);
+
+        if (staffOptional.isPresent()) {
+            // A Staff object was found, now query the StaffModule repository
+            Staff staff = staffOptional.get();
+
+            Page<StaffModule> staffModules = staffModuleRepository.findByStaff(
+                    staff, pageable);
+
+            // Map the StaffModule entities to DTOs
+            Page<StaffModuleDTO> staffModuleDTOs = staffModules.map(staffModuleMapper::toDto);
+
+            return staffModuleDTOs;
+
+        } else {
+            return Page.empty();
+        }
+    }
+
+
+
+/**
+ * Get all the staffModules.
+ *
+ * @param pageable the pagination information
+ * @return the list of entities
+ */
     @Override
     @Transactional(readOnly = true)
     public Page<StaffModuleDTO> findAll(Pageable pageable) {
