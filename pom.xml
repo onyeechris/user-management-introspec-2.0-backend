@@ -29,6 +29,7 @@
 		<project.path>${project.build.directory}</project.path>
 		<asciidoctor-plugin.version>1.5.8</asciidoctor-plugin.version>
 		<snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
+		<camel.version>3.11.0</camel.version>
 	</properties>
 
 	<dependencies>
@@ -229,6 +230,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel.version}</version>
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>io.springfox</groupId>-->
