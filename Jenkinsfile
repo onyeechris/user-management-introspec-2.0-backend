@@ -18,7 +18,7 @@ pipeline {
   stages {
     stage('Pull Git Repository from CICD branch') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'francis_github', url: 'https://github.com/activedge-technologies/user-management-introspec-2.0-backend.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'smartcloud', url: 'https://github.com/activedge-technologies/user-management-introspec-2.0-backend.git']]])
       }
     }
     stage('Maven Build Application') {
