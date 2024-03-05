@@ -14,22 +14,27 @@ public class LicenseRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("file:/path/to/listen")
+        from("file:{{file.location}}")
                 .routeId("fileRoute")
                 .log("File received: ${headers.CamelFileName}")
-                .unmarshal().json(JsonLibrary.Gson, Map.class) // Use Gson for JSON parsing
+                .convertBodyTo(String.class) // Ensure the body is a String
                 .process(exchange -> {
-                    // Access the parsed JSON data
-                    Map<String, Object> jsonData = exchange.getIn().getBody(Map.class);
+                    String jsonString = exchange.getIn().getBody(String.class);
+
+                    // Use the JsonParser class to parse the JSON
+                    License license = JsonParser.parseJson(jsonString);
 
                     // Access individual fields
-                    String type = (String) jsonData.get("type");
-                    String numberOfUsers = (String) jsonData.get("no_of_users");
-                    Integer hardware = (Integer) jsonData.get("hardware");
+                    String type = license.getType();
+                    String numberOfUsers = license.getNo_of_users();
+                    Integer hardware = license.getHardware();
 
-                    // Your encryption logic here
+                    // Move the logic to save data to MongoDB into the JsonParser class
+                    JsonParser.saveDataToMongoDB(license);
 
-                    // Set the encrypted data back to the body
-                });
+                    // Process license information using the LicenseProcessor class
+                    LicenseProcessor.processLicense(license);
+                })
+                .log("Data saved to MongoDB and license processed"); // Log a message after processing
 }
 }
