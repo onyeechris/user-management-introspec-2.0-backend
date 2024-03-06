@@ -9,7 +9,18 @@ spring:
 #    broker-url: tcp://localhost:61616
 #    user: admin
 #    password: admin
-
+  #email
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: delighty83@gmail.com
+    password: iczgmyggqttmxtte
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
       name: ${introspec_sso_context_path:auth-service}
 
@@ -115,3 +126,6 @@ verify:
 client:
   id: "${client_id:}"
   secret: "${client_secret:}"
+
+  introspec:
+    auth_backend_url: http://localhost:9100/auth-service/staffs

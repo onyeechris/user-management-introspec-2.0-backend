@@ -40,6 +40,10 @@ public class LdapService implements StaffService {
     @Autowired
     private StaffDTOAdapter staffDTOAdapter;
 
+    private static final String RESET_EMAIL_SENT_MESSAGE = "Please check your email to set a new password";
+    private static final String RESET_EMAIL="New password set successfully login with new password";
+
+
     @Override
     public StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
         log.debug("Unimplemented method[save]");
@@ -101,6 +105,16 @@ public class LdapService implements StaffService {
     @Override
     public void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException {
 
+    }
+
+    @Override
+    public String forgotPassword(String email) {
+        return RESET_EMAIL_SENT_MESSAGE;
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        return RESET_EMAIL;
     }
 
 
