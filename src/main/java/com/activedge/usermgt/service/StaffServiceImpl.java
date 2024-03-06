@@ -26,10 +26,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javassist.NotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Implementation for managing Staff.
@@ -270,8 +276,71 @@ public class StaffServiceImpl implements StaffService {
             throw new NotFoundException("Admin user not found with username: " + adminUsername);
         }
     }
-    
-    
+
+    @Override
+    @Transactional
+    public void processCSV(MultipartFile file) {
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+                String headerLine = reader.readLine();
+                System.out.println("Header Line: " + headerLine);
+                String[] headers = headerLine.split(";");
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] data = line.split(";");
+                    Staff entity = CSVData(headers, data);
+                    staffRepository.save(entity);
+                    System.out.println("Entity saved successfully");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        private Staff CSVData(String[] headers, String[] data) {
+            Staff entity = new Staff();
+
+            for (int i = 0; i < headers.length; i++) {
+                String header = headers[i];
+               // String value = data[i];
+                String value = data[i].trim();
+                System.out.println("Header: " + header + ", Value: '" + value + "'");
+                switch (header) {
+                    case "column1":
+                        entity.setFirst_name(value);
+                        break;
+                    case "column2":
+                        entity.setLast_name(value);
+                        break;
+                    case "column3":
+                        entity.setEmail(value);
+                        break;
+                    case "column4":
+                        entity.setUsername(value);
+                        break;
+                    case "column5":
+                        entity.setPhone(value);
+                        break;
+                    case "column6":
+                        if (!value.isEmpty()) {
+                            try {
+                                entity.setHireDate(LocalDate.parse(value));
+                            } catch (DateTimeParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                    case "column7":
+                        entity.setType(Type.valueOf(value));
+                        break;
+                }
+            }
+
+            return entity;
+        }
+
+
     /**
      * Get all the staff.
      *

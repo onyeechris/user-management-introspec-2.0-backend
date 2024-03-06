@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -100,6 +101,11 @@ public class LdapService implements StaffService {
 
     @Override
     public void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException {
+
+    }
+
+    @Override
+    public void processCSV(MultipartFile file) {
 
     }
 
