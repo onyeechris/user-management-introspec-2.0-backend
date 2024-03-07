@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.RegEx;
 import javax.validation.constraints.Pattern;
+//import javax.validation.constraints.Pattern;
 
 @Document
 @Getter
