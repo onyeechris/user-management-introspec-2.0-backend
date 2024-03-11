@@ -1,10 +1,12 @@
 package com.activedge.usermgt.license;
 
+import com.activedge.usermgt.repository.LicenseRepository;
 import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,16 +19,9 @@ public class LicenseRouteBuilder extends RouteBuilder {
     @Value("${file.location}")
     private String fileLocation;
 
-//    @Override
-//    public void configure() throws Exception {
-//        from("file:" + fileLocation)
-////        from("file:/home/adedamolababatunde/Documents/personal-files/license/file/downloads")
-//                .log("Processing file: ${headers.CamelFileName}")
-//                // Your processing logic goes here
-//                .log("File processed successfully!")
-//                .end();
-//    }
-//}
+    @Autowired
+    private LicenseRepository licenseRepository;
+
 
     @Override
     public void configure() throws Exception {
@@ -40,6 +35,7 @@ public class LicenseRouteBuilder extends RouteBuilder {
                         .unmarshal().json(JsonLibrary.Gson, Map.class) // Use Gson for JSON parsing
                         .log("File content after unmarshal: ${body}")
                         .process(exchange -> {
+                            License license = exchange.getIn().getBody(License.class);
                             // Access the parsed JSON data
                             Message message = exchange.getMessage();  // Use getMessage() instead of getIn()
                             Map<String, Object> jsonData = message.getBody(Map.class);
