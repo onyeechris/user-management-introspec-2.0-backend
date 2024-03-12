@@ -103,6 +103,16 @@ public class LdapService implements StaffService {
 
     }
 
+    @Override
+    public String forgotPassword(String email) {
+        return null;
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        return null;
+    }
+
 
     @Override
     public List<StaffDTO> wildcardSearch(String username) {

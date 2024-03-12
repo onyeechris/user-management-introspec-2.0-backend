@@ -294,4 +294,15 @@ public class StaffController {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(STAFFS, id.toString())).build();
     }
 
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email,@RequestHeader String newPassword){
+        return new ResponseEntity<>(staffService.resetPassword(email,newPassword),HttpStatus.OK);
+
+    }
+
 }
