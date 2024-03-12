@@ -313,7 +313,7 @@ public class StaffController {
         byte[] bytes = csvContent.toString().getBytes();
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.parseMediaType("text/csv"));
-        responseHeaders.setContentDispositionFormData("attachment", "Introspec.csv");
+        responseHeaders.setContentDispositionFormData("attachment", "Users.csv");
         responseHeaders.setContentLength(bytes.length);
         return ResponseEntity.ok().headers(responseHeaders).body(bytes);
     }
