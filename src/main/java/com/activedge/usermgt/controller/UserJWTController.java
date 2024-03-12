@@ -101,7 +101,7 @@ public class UserJWTController {
         starttime = System.currentTimeMillis();
         String jwt;
 
-        loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
+        loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)).toLowerCase());
         loginRequest.setPassword(EncryptionUtils.decrypt(loginRequest.getPassword(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
 
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
