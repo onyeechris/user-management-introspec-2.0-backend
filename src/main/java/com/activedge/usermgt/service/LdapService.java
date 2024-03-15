@@ -2,12 +2,16 @@ package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.exception.UnauthorizedException;
+import com.activedge.usermgt.exception.UserLimitExceededException;
+import com.activedge.usermgt.license.EncryptionService;
 import com.activedge.usermgt.model.LdapUser;
+import com.activedge.usermgt.license.License;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.repository.LdapRepository;
+import com.activedge.usermgt.repository.LicenseRepository;
 import com.activedge.usermgt.service.adapter.StaffDTOAdapter;
 import dev.samstevens.totp.secret.SecretGenerator;
 import javassist.NotFoundException;
@@ -36,6 +40,10 @@ public class LdapService implements StaffService {
     @Autowired
     @Qualifier("db")
     private StaffService staffService;
+    @Autowired
+    private LicenseRepository licenseRepository;
+    @Autowired
+    private EncryptionService encryptionService;
 
     @Autowired
     private StaffDTOAdapter staffDTOAdapter;
@@ -43,6 +51,39 @@ public class LdapService implements StaffService {
     @Override
     public StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException {
         log.debug("Unimplemented method[save]");
+        // Retrieve the license information
+        log.debug("Retrieving license information...");
+        Optional<License> licenseOptional = licenseRepository.findNoOfUsers();
+        License license = licenseOptional.orElseThrow(() -> new NotFoundException("License not found."));
+        log.debug("License retrieved successfully: {}", license);
+
+        // Decrypt the number of users allowed from the license
+        log.debug("Decrypting number of users from license...");
+        String encryptedNoOfUsers = license.getNo_of_users();
+        String decryptedNoOfUsers;
+        try {
+            decryptedNoOfUsers = encryptionService.decrypt(encryptedNoOfUsers);
+        } catch (Exception e) {
+            log.error("Error decrypting no_of_users", e);
+            throw new RuntimeException("Error decrypting no_of_users", e);
+        }
+        log.debug("Number of users decrypted successfully: {}", decryptedNoOfUsers);
+
+        // Convert the decrypted value to an integer
+        log.debug("Parsing decrypted number of users to integer...");
+        int maxUsers = Integer.parseInt(decryptedNoOfUsers);
+        log.debug("Maximum users allowed: {}", maxUsers);
+
+        // Count the current number of users in the LDAP (assuming LDAP specific method to count users)
+        log.debug("Counting current number of users in the LDAP...");
+        long currentUsersCountInLdap = ldapRepository.count();
+        log.debug("Current number of users in the LDAP: {}", currentUsersCountInLdap);
+
+        // Check if the user limit is exceeded
+        if (currentUsersCountInLdap >= maxUsers) {
+            log.warn("User limit exceeded in LDAP. Cannot create new user.");
+            throw new UserLimitExceededException("User limit exceeded in LDAP. Cannot create new user.");
+        }
         return null;
     }
 

@@ -4,6 +4,7 @@ import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.exception.UserLimitExceededException;
+import com.activedge.usermgt.license.EncryptionService;
 import com.activedge.usermgt.license.License;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
@@ -61,6 +62,9 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private LicenseRepository licenseRepository;
 
+    @Autowired
+    private EncryptionService encryptionService;
+
     /**
      * Save a staff.
      *
@@ -75,16 +79,28 @@ public class StaffServiceImpl implements StaffService {
         //implement user limit here
         // Retrieve the no_of_users value from the license information
         Optional<License> licenseOptional = licenseRepository.findNoOfUsers();
-        String noOfUsers = licenseOptional.map(License::getNo_of_users).orElseThrow(() -> new NotFoundException("No number of users found in the license."));
+        License license = licenseOptional.orElseThrow(() -> new NotFoundException("License not found."));
 
-        // Parse the number of users allowed from the license
-        int maxUsers = Integer.parseInt(noOfUsers);
+        // Decrypt the number of users allowed from the license
+        String encryptedNoOfUsers = license.getNo_of_users();
+        String decryptedNoOfUsers;
+        try {
+            decryptedNoOfUsers = encryptionService.decrypt(encryptedNoOfUsers);
+            log.info("Decrypted no_of_users: {}", decryptedNoOfUsers);
+        } catch (Exception e) {
+            throw new RuntimeException("Error decrypting no_of_users", e);
+        }
+
+        // Convert the decrypted value to an integer
+        int maxUsers = Integer.parseInt(decryptedNoOfUsers);
 
         // Count the current number of users in the database
         long currentUsersCount = staffRepository.count();
+        log.info("Current users count: {}", currentUsersCount);
 
         // Check if the user limit is exceeded
         if (currentUsersCount >= maxUsers) {
+            log.warn("User limit exceeded. Cannot create new user.");
             throw new UserLimitExceededException("User limit exceeded. Cannot create new user.");
         }
         // self update
