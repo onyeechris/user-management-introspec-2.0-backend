@@ -3,6 +3,8 @@ package com.activedge.usermgt.service;
 import com.activedge.usermgt.config.Constants;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.exception.UnauthorizedException;
+import com.activedge.usermgt.exception.UserLimitExceededException;
+import com.activedge.usermgt.license.License;
 import com.activedge.usermgt.model.Authority;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
@@ -12,6 +14,7 @@ import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
+import com.activedge.usermgt.repository.LicenseRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import dev.samstevens.totp.secret.SecretGenerator;
 import javassist.NotFoundException;
@@ -55,6 +58,9 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private SecretGenerator secretGenerator;
 
+    @Autowired
+    private LicenseRepository licenseRepository;
+
     /**
      * Save a staff.
      *
@@ -66,6 +72,21 @@ public class StaffServiceImpl implements StaffService {
         log.info("Updating Staff: {}", staffDTO);
         Staff staff = staffMapper.toEntity(staffDTO);
 
+        //implement user limit here
+        // Retrieve the no_of_users value from the license information
+        Optional<License> licenseOptional = licenseRepository.findNoOfUsers();
+        String noOfUsers = licenseOptional.map(License::getNo_of_users).orElseThrow(() -> new NotFoundException("No number of users found in the license."));
+
+        // Parse the number of users allowed from the license
+        int maxUsers = Integer.parseInt(noOfUsers);
+
+        // Count the current number of users in the database
+        long currentUsersCount = staffRepository.count();
+
+        // Check if the user limit is exceeded
+        if (currentUsersCount >= maxUsers) {
+            throw new UserLimitExceededException("User limit exceeded. Cannot create new user.");
+        }
         // self update
         Optional<Staff> os = this.findById(staff.getId());
         if(os.isPresent()) {
