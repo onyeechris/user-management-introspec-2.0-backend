@@ -73,7 +73,7 @@ public class AuditController {
                     @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
             }) Pageable pageable) throws IOException {
 
-        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(status == null ? traceService.findAll(from, to, pageable) : traceService.findAllByStatusAndDateRange(status,from, to, pageable));
+        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(status == null? traceService.findAll(from, to, pageable) : traceService.findAllByStatusAndDateRange(status,from, to, pageable));
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
         String currentDateTime = dateFormatter.format(new Date());
