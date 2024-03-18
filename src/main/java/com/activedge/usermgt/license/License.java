@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 
 @Document(collection = "license")
@@ -28,13 +29,13 @@ public class License {
     private String unit_charge;
 
     @Column(name = "expiry")
-    private String expiry;
+    private LocalDate expiry;
 
     @Column(name = "total_price")
     private String total_price;
 
     @Column(name = "grace")
-    private String grace;
+    private int grace;
 
     @Column(name = "status")
     private String status;
@@ -47,5 +48,10 @@ public class License {
 
     @Column(name = "updated_at")
     private String updated_at;
+
+    public boolean isExpired() {
+        LocalDate expiryWithGrace = expiry.plusDays(grace);
+        return LocalDate.now().isAfter(expiryWithGrace);
+    }
 
 }
