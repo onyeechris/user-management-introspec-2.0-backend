@@ -1,5 +1,7 @@
 package com.activedge.usermgt.license;
 
+import java.time.LocalDate;
+
 public class LicenseProcessor {
     public static void processLicense(License license) {
         String licenseId = license.getId();

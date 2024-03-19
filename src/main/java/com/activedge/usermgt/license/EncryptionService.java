@@ -49,4 +49,5 @@ public class EncryptionService {
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
+
 }

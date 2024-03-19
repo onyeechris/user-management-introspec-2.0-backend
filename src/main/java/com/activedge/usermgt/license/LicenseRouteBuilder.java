@@ -25,8 +25,6 @@ public class LicenseRouteBuilder extends RouteBuilder {
 
     @Autowired
     private LicenseRepository licenseRepository;
-
-
     @Override
     public void configure() throws Exception {
         from("file:" + fileLocation)
