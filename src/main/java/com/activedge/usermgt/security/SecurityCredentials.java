@@ -68,7 +68,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 // use stateless session; session won't be used to store user's state.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .maximumSessions(1)  // Set maximumSessions to 1
-                .expiredUrl("http://localhost:3019/")
+                .expiredUrl("http://localhost:3030/")
                 .maxSessionsPreventsLogin(true)  // Prevents new logins when the maximum sessions are reached
                 .sessionRegistry(sessionRegistry())
                 .and()
