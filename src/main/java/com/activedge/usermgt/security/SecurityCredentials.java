@@ -69,7 +69,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)
-                .expiredUrl("/logout")
+                .expiredUrl("http://localhost:3030")
                 .sessionRegistry(sessionRegistry()).and()
                 .and()
                 // handle an authorized attempts

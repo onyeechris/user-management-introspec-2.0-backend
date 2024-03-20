@@ -9,6 +9,7 @@ import com.activedge.usermgt.service.MapValidationErrorService;
 import com.activedge.usermgt.service.StaffModuleService;
 import com.activedge.usermgt.service.StaffService;
 import com.activedge.usermgt.util.EncryptionUtils;
+import com.activedge.usermgt.util.SessionCountLogger;
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
@@ -81,8 +82,9 @@ public class UserJWTController {
     @Autowired
     private StaffRepository staffRepository;
     private AuthenticationManager authenticationManager;
-
     private StaffModuleService staffModuleService;
+    @Autowired
+    private SessionCountLogger sessionCountLogger;
 
     public UserJWTController(JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager, StaffModuleService staffModuleService) {
         this.tokenProvider = tokenProvider;
@@ -115,6 +117,9 @@ public class UserJWTController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Call the logSessionCount method from SessionCountLogger
+        sessionCountLogger.logSessionCount();
 
         // check if user belongs to the specified App before generating token
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
