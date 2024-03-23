@@ -40,7 +40,7 @@ public interface StaffService {
      */
     Page<StaffDTO> findAll(Pageable pageable);
 
-
+    Page<StaffDTO> findAllStaff(Pageable pageable, String mdl);
     /**
      * Get the "id" staff.
      *

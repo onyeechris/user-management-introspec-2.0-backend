@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.service.TraceService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -29,6 +30,7 @@ import java.util.Date;
 @RestController
 @RequestMapping(AuditController.AUDIT_CONTROLLER)
 @RequiredArgsConstructor
+@SecurityRequirement(name = "introspec-sso")
 public class AuditController {
 
     static final String AUDIT_CONTROLLER = "audit";

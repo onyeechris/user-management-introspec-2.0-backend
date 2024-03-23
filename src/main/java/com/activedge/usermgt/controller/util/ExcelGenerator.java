@@ -93,17 +93,17 @@ public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> au
 
 
     public static ByteArrayInputStream generateUserList(Page<StaffDTO> users) throws IOException {
-        String[] COLUMNs = {"Firstname", "Lastname", "PhoneNumber", "Email", "Username", "Role", "Last_Login"};
+        String[] COLUMNs = {"Firstname", "Lastname", "Email", "Username", "Role", "Group", "Last_Login"};
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
             for (StaffDTO user : users) {
                 csvPrinter.printRecord(
                         user.getFirst_name(),
                         user.getLast_name(),
-                        user.getPhone(),
                         user.getEmail(),
                         user.getUsername(),
                         user.getUser_type(),
+                        user.getGroupNames().toString().replace("/[\\[\\]']+/g",""),
                         user.getHire_date()
                 );
             }

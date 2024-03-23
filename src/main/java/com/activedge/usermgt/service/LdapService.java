@@ -54,6 +54,11 @@ public class LdapService implements StaffService {
     }
 
     @Override
+    public Page<StaffDTO> findAllStaff(Pageable pageable, String mdl) {
+        return null;
+    }
+
+    @Override
     public Optional<StaffDTO> findOne(String id) {
         Optional<LdapUser> staff = ldapRepository.findByUsername(id);
         return staffDTOAdapter.transform(staff);
