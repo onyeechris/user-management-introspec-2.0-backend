@@ -149,6 +149,25 @@ public class StaffServiceImpl implements StaffService {
         return new PageImpl<>(staffDTOList, pageable, staffDTOList.size());
     }
 
+    @Override
+    public List<StaffDTO> findAllStaff(String mdl) {
+        log.debug("Request to get all Staff");
+
+        List<StaffDTO> staffDTOList = new ArrayList<>();
+
+        staffRepository.findAll().forEach(staff -> {
+            // For each staff member, fetch their group names
+            Set<String> groupNames = new HashSet<>();
+            groupRepository.findAllByModule_IdAndStaffsContains(mdl,staff).forEach(group -> groupNames.add(group.getName()));
+            StaffDTO staffDTO = staffMapper.toDto(staff);
+            staffDTO.setGroupNames(groupNames);
+
+            staffDTOList.add(staffDTO);
+        });
+
+        return staffDTOList;
+    }
+
     /**
      * Get one staff by id.
      *

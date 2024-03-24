@@ -176,7 +176,7 @@ public class StaffController {
         if (!module.isPresent()) {
             // Handle the case where the module is not present
         } else {
-            in = ExcelGenerator.generateUserList(staffService.findAllStaff(pageable, mdl));
+            in = ExcelGenerator.generateUserList(staffService.findAllStaff(mdl));
         }
 
         return ResponseEntity
