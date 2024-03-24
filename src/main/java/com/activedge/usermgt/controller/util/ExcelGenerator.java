@@ -3,9 +3,12 @@ package com.activedge.usermgt.controller.util;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.dto.StaffDTO;
 
+import io.vavr.Function1;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,23 +69,32 @@ public class ExcelGenerator {
 //            return new ByteArrayInputStream(out.toByteArray());
 //        }
 //    }
-public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> auditLogs) throws IOException {
+public static ByteArrayInputStream generateAuditLogsCSV(Function1<Pageable, Page<CustomHttpTrace>> partialFunction) throws IOException {
     String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
     try (ByteArrayOutputStream out = new ByteArrayOutputStream();
          CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
 
-        for (CustomHttpTrace auditLog : auditLogs) {
-            csvPrinter.printRecord(
-                    getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
-                    auditLog.getUsername(),
-                    dateFormat.format(auditLog.getTimestamp().getTime()),
-                    auditLog.getSourceIp(),
-                    auditLog.getQueryParams(),
-                    auditLog.getPath(),
-                    auditLog.getPayload(),
-                    auditLog.getSeverity().name()
-            );
-        }
+        Pageable pageable = PageRequest.of(0,1000);
+        Page<CustomHttpTrace> pagedLogs = null;
+        do {
+            pagedLogs = partialFunction.apply(pageable);
+            List<CustomHttpTrace> logs = pagedLogs.getContent();
+            System.out.println("logs size "+logs.size());
+            for (CustomHttpTrace auditLog : logs) {
+                csvPrinter.printRecord(
+                        getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
+                        auditLog.getUsername(),
+                        dateFormat.format(auditLog.getTimestamp().getTime()),
+                        auditLog.getSourceIp(),
+                        auditLog.getQueryParams(),
+                        auditLog.getPath(),
+                        auditLog.getPayload(),
+                        auditLog.getSeverity().name()
+                );
+            }
+            pageable = pagedLogs.nextPageable();
+        }while (pagedLogs.hasNext());
+
         csvPrinter.flush();
         return new ByteArrayInputStream(out.toByteArray());
     }

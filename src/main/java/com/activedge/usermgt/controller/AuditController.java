@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.service.TraceService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -29,6 +30,7 @@ import java.util.Date;
 @RestController
 @RequestMapping(AuditController.AUDIT_CONTROLLER)
 @RequiredArgsConstructor
+@SecurityRequirement(name = "introspec-sso")
 public class AuditController {
 
     static final String AUDIT_CONTROLLER = "audit";
@@ -73,14 +75,14 @@ public class AuditController {
                     @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
             }) Pageable pageable) throws IOException {
 
-        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(status == null? traceService.findAll(from, to, pageable) : traceService.findAllByStatusAndDateRange(status,from, to, pageable));
-
+//        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(status == null? traceService.findAll(from, to, pageable) : traceService.findAllByStatusAndDateRange(status,from, to, pageable));
+        ByteArrayInputStream in = traceService.getAudit(status, from, to);
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
         String currentDateTime = dateFormatter.format(new Date());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/octet-stream");
-        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
+        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".csv");
 
         return ResponseEntity
                 .ok()
