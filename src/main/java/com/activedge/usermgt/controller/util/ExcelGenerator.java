@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExcelGenerator {
-
+    static String groups;
     public static List<String> WRITE_METHODS = Arrays.asList("POST", "PUT", "DELETE");
 
     static DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
@@ -103,19 +103,19 @@ public static ByteArrayInputStream generateAuditLogsCSV(Function1<Pageable, Page
         return WRITE_METHODS.contains(method) ? "Write Operation" : "Read Operation";
     }
 
-
-    public static ByteArrayInputStream generateUserList(Page<StaffDTO> users) throws IOException {
-        String[] COLUMNs = {"Firstname", "Lastname", "PhoneNumber", "Email", "Username", "Role", "Last_Login"};
+    public static ByteArrayInputStream generateUserList(List<StaffDTO> users) throws IOException {
+        String[] COLUMNs = {"Firstname", "Lastname", "Email", "Username", "Role", "Group", "Last_Login"};
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
+
             for (StaffDTO user : users) {
                 csvPrinter.printRecord(
                         user.getFirst_name(),
                         user.getLast_name(),
-                        user.getPhone(),
                         user.getEmail(),
                         user.getUsername(),
                         user.getUser_type(),
+                        groups = String.join(",", user.getGroupNames()),
                         user.getHire_date()
                 );
             }

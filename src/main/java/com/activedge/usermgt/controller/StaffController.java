@@ -150,9 +150,8 @@ public class StaffController {
         if(!module.isPresent()) {
 //            page = staffService.findAllBy(module, pageable);
         } else {
-            page = staffService.findAll(pageable);
+            page = staffService.findAllStaff(pageable, mdl);
         }
-
         return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
@@ -177,7 +176,7 @@ public class StaffController {
         if (!module.isPresent()) {
             // Handle the case where the module is not present
         } else {
-            in = ExcelGenerator.generateUserList(staffService.findAll(pageable));
+            in = ExcelGenerator.generateUserList(staffService.findAllStaff(mdl));
         }
 
         return ResponseEntity
