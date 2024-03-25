@@ -69,36 +69,57 @@ public class ExcelGenerator {
 //            return new ByteArrayInputStream(out.toByteArray());
 //        }
 //    }
-public static ByteArrayInputStream generateAuditLogsCSV(Function1<Pageable, Page<CustomHttpTrace>> partialFunction) throws IOException {
+public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> auditLogs) throws IOException {
     String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
     try (ByteArrayOutputStream out = new ByteArrayOutputStream();
          CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
 
-        Pageable pageable = PageRequest.of(0,1000);
-        Page<CustomHttpTrace> pagedLogs = null;
-        do {
-            pagedLogs = partialFunction.apply(pageable);
-            List<CustomHttpTrace> logs = pagedLogs.getContent();
-            System.out.println("logs size "+logs.size());
-            for (CustomHttpTrace auditLog : logs) {
-                csvPrinter.printRecord(
-                        getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
-                        auditLog.getUsername(),
-                        dateFormat.format(auditLog.getTimestamp().getTime()),
-                        auditLog.getSourceIp(),
-                        auditLog.getQueryParams(),
-                        auditLog.getPath(),
-                        auditLog.getPayload(),
-                        auditLog.getSeverity().name()
-                );
-            }
-            pageable = pagedLogs.nextPageable();
-        }while (pagedLogs.hasNext());
-
+        for (CustomHttpTrace auditLog : auditLogs) {
+            csvPrinter.printRecord(
+                    getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
+                    auditLog.getUsername(),
+                    dateFormat.format(auditLog.getTimestamp().getTime()),
+                    auditLog.getSourceIp(),
+                    auditLog.getQueryParams(),
+                    auditLog.getPath(),
+                    auditLog.getPayload(),
+                    auditLog.getSeverity().name()
+            );
+        }
         csvPrinter.flush();
         return new ByteArrayInputStream(out.toByteArray());
     }
 }
+    public static ByteArrayInputStream generateAuditLogs(Function1<Pageable, Page<CustomHttpTrace>> partialFunction) throws IOException {
+        String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
+
+            Pageable pageable = PageRequest.of(0,1000);
+            Page<CustomHttpTrace> pagedLogs = null;
+            do {
+                pagedLogs = partialFunction.apply(pageable);
+                List<CustomHttpTrace> logs = pagedLogs.getContent();
+                System.out.println("logs size "+logs.size());
+                for (CustomHttpTrace auditLog : logs) {
+                    csvPrinter.printRecord(
+                            getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
+                            auditLog.getUsername(),
+                            dateFormat.format(auditLog.getTimestamp().getTime()),
+                            auditLog.getSourceIp(),
+                            auditLog.getQueryParams(),
+                            auditLog.getPath(),
+                            auditLog.getPayload(),
+                            auditLog.getSeverity().name()
+                    );
+                }
+                pageable = pagedLogs.nextPageable();
+            }while (pagedLogs.hasNext());
+
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        }
+    }
     private static String getDescriptionForMethod(String method) {
         return WRITE_METHODS.contains(method) ? "Write Operation" : "Read Operation";
     }

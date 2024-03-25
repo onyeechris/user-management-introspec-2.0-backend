@@ -66,6 +66,6 @@ public class TraceServiceImpl implements TraceService {
     }
     public ByteArrayInputStream getAudit(Integer status, Date from, Date to) throws IOException {
         Function1<Pageable, Page<CustomHttpTrace>> partialFunction = fetchAuditLogs.apply(status, from, to);
-       return ExcelGenerator.generateAuditLogsCSV(partialFunction);
+       return ExcelGenerator.generateAuditLogs(partialFunction);
     }
 }
