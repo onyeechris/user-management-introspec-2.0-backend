@@ -110,6 +110,7 @@ public class UserJWTController {
 
             // Continue with the rest of the code
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module);
+            staffModuleService.updateLastLogin(loginRequest.username);
             return ResponseEntity.ok(new JWTResponse(true, jwt));
         } catch (AuthenticationException e) {
             e.printStackTrace();

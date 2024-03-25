@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -92,6 +93,16 @@ public class StaffModuleServiceImpl implements StaffModuleService {
 
     private Staff findStaffByUsername(String username){
         return staffRepository.findByUsername(username).orElse(null);
+    }
+    //update last login
+    @Override
+    public void updateLastLogin(String username) {
+        log.debug("Request to get Staff : {}", username);
+        Optional<Staff> byId = staffRepository.findByUsername(username);
+        byId.ifPresent(staff -> {
+            staff.setLastLogin(LocalDateTime.now());
+            staffRepository.save(staff);
+        });
     }
 
     /**
