@@ -4,15 +4,9 @@ import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.repository.StaffRepository;
-import com.activedge.usermgt.service.JwtTokenProvider;
-import com.activedge.usermgt.service.MapValidationErrorService;
-import com.activedge.usermgt.service.StaffModuleService;
-import com.activedge.usermgt.service.StaffService;
+import com.activedge.usermgt.service.*;
 import com.activedge.usermgt.util.EncryptionUtils;
 import com.activedge.usermgt.util.SessionCountLogger;
-import dev.samstevens.totp.code.CodeVerifier;
-import dev.samstevens.totp.qr.QrDataFactory;
-import dev.samstevens.totp.qr.QrGenerator;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
@@ -59,6 +52,9 @@ public class UserJWTController {
 
     @Autowired
     private JmsMessagingTemplate jmsMessagingTemplate;
+
+    @Autowired
+    private LicenseService licenseService;
 
     @Autowired
     private Queue queue;
@@ -129,6 +125,15 @@ public class UserJWTController {
             boolean isDefault = principal!=null ? principal.isDefault() : false;
             boolean enrolled = principal.getEnrol();
             String userId = principal!=null ? principal.getId() : "";
+
+            // Check if the license is expired and update the group if necessary
+            boolean licenseExpired = licenseService.isExpiredAndUpdateGroup(loginRequest.getUsername());
+            if (licenseExpired) {
+                log.info("User '{}' logged in with an expired license. Group updated.", loginRequest.getUsername());
+            } else {
+                log.info("User '{}' logged in with a valid license.", loginRequest.getUsername());
+            }
+
 //            System.out.println("login module>>> "+module);
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated, enrolled, userId, isDefault);
 

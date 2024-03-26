@@ -1,10 +1,8 @@
 package com.activedge.usermgt.license;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Column;
@@ -13,12 +11,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Slf4j
 @Document(collection = "license")
 @Getter @Setter @ToString
 public class License {
 
-    private final EncryptionService encryptionService;
+    private EncryptionService encryptionService;
 
     @Id
     private String id;
@@ -58,40 +57,46 @@ public class License {
 
 
 
-    public boolean isExpired() {
-
-        // Decrypt expiry and grace values
-        String decryptedExpiry;
-        String decryptedGrace;
-        try {
-            decryptedExpiry = encryptionService.decrypt(expiry);
-            decryptedGrace = encryptionService.decrypt(grace);
-        } catch (Exception e) {
-            // Handle decryption error
-            log.error("Error decrypting expiry or grace", e);
-            return false; // or throw an exception
-        }
-
-        // Parse expiry date from string to LocalDate
-        LocalDate expiryDate = LocalDate.parse(decryptedExpiry, DateTimeFormatter.ISO_DATE);
-
-        // Parse grace period from string to long
-        long gracePeriod;
-        try {
-            gracePeriod = Long.parseLong(decryptedGrace);
-        } catch (NumberFormatException e) {
-            // Handle parsing error
-            log.error("Error parsing grace period", e);
-            return false; // or throw an exception
-        }
-
-        // Calculate the new expiry date with grace period
-        LocalDate expiryWithGrace = expiryDate.plusDays(gracePeriod);
-        log.info(expiryWithGrace +" is the date");
-
-        // Check if the current date is after the new expiry date
-        return LocalDate.now().isAfter(expiryWithGrace);
-
-    }
+//    public boolean isExpired() {
+//
+//        if (encryptionService == null) {
+//            log.error("Encryption service is not initialized");
+//            throw new IllegalStateException("Encryption service is not initialized");
+//        }
+//
+//        // Decrypt expiry and grace values
+//        String decryptedExpiry;
+//        String decryptedGrace;
+//        try {
+//            log.info("expiry details in try method: " + expiry);
+//            decryptedExpiry = encryptionService.decrypt(expiry);
+//            decryptedGrace = encryptionService.decrypt(grace);
+//        } catch (Exception e) {
+//            // Handle decryption error
+//            log.error("Error decrypting expiry or grace", e);
+//            return false; // or throw an exception
+//        }
+//
+//        // Parse expiry date from string to LocalDate
+//        LocalDate expiryDate = LocalDate.parse(decryptedExpiry, DateTimeFormatter.ISO_DATE);
+//
+//        // Parse grace period from string to long
+//        long gracePeriod;
+//        try {
+//            gracePeriod = Long.parseLong(decryptedGrace);
+//        } catch (NumberFormatException e) {
+//            // Handle parsing error
+//            log.error("Error parsing grace period", e);
+//            return false; // or throw an exception
+//        }
+//
+//        // Calculate the new expiry date with grace period
+//        LocalDate expiryWithGrace = expiryDate.plusDays(gracePeriod);
+//        log.info(expiryWithGrace +" is the date");
+//
+//        // Check if the current date is after the new expiry date
+//        return LocalDate.now().isAfter(expiryWithGrace);
+//
+//    }
 
 }

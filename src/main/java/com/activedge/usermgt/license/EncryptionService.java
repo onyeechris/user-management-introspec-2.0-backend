@@ -43,6 +43,9 @@ public class EncryptionService {
     }
 
     public String decrypt(String encryptedData) throws Exception {
+        if (encryptedData == null) {
+            throw new IllegalArgumentException("Encrypted data is null");
+        }
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         SecretKey secretKeySpec = new SecretKeySpec(licenseSecretKey.getBytes(StandardCharsets.UTF_8), ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
