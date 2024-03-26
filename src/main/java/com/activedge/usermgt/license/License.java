@@ -93,4 +93,5 @@ public class License {
         return LocalDate.now().isAfter(expiryWithGrace);
 
     }
+
 }

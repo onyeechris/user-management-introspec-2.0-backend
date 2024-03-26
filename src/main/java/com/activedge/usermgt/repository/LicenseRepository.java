@@ -13,4 +13,5 @@ public interface LicenseRepository extends PagingAndSortingRepository<License, S
     @Query(value = "{}", fields = "{ 'no_of_users' : 1}")
     Optional<License> findNoOfUsers();
 
+    Optional<License> findFirstByOrderByIdAsc();
 }

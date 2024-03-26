@@ -66,6 +66,6 @@ public interface GroupService {
      */
     Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable);
 
-
+    boolean updateGroupsByUsername(String username, String newGroup);
 
 }

@@ -14,6 +14,7 @@ import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.ModuleRepository;
+import com.activedge.usermgt.repository.StaffRepository;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service Implementation for managing Group.
@@ -35,6 +37,7 @@ public class GroupServiceImpl implements GroupService {
     private final Logger log = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     private final GroupRepository groupRepository;
+    private final StaffRepository staffRepository;
     private final ModuleRepository moduleRepository;
 
     private final GroupMapper groupMapper;
@@ -42,13 +45,14 @@ public class GroupServiceImpl implements GroupService {
     private final PermissionMapper permissionMapper;
     private final StaffMapper staffMapper;
 
-    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
+    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper, StaffRepository staffRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
         this.staffMapper = staffMapper;
         this.moduleMapper = moduleMapper;
         this.moduleRepository = moduleRepository;
+        this.staffRepository = staffRepository;
     }
 
     /**
@@ -66,7 +70,8 @@ public class GroupServiceImpl implements GroupService {
 
         Optional<Group> group = this.findById(groupPK);
 
-        if(!group.isPresent()) throw new NotFoundException("No Group ["+groupDTO.getId()+"] found for module["+groupDTO.getMod()+"]!");
+        if (!group.isPresent())
+            throw new NotFoundException("No Group [" + groupDTO.getId() + "] found for module[" + groupDTO.getMod() + "]!");
 
         g = group.get();
 
@@ -76,7 +81,7 @@ public class GroupServiceImpl implements GroupService {
         switch (flag) {
             // 1 => Add permission(s) | staffs to group if any is present
             case 1:
-                if(!groupDTO.getPermissions().isEmpty()) {
+                if (!groupDTO.getPermissions().isEmpty()) {
                     for (Permission p : g.getPermissions()) {
                         // add permission attached to entity
                         groupDTO.getPermissions().add(permissionMapper.toDto(p));
@@ -85,7 +90,7 @@ public class GroupServiceImpl implements GroupService {
                     groupDTO.setPermissions(permissionMapper.toDtoSet(g.getPermissions()));
                 }
                 // ---                                                              --- //
-                if(!groupDTO.getStaffs().isEmpty()) {
+                if (!groupDTO.getStaffs().isEmpty()) {
                     for (Staff s : g.getStaffs()) {
                         // add staff attached to entity
                         groupDTO.getStaffs().add(staffMapper.toDto(s));
@@ -98,8 +103,8 @@ public class GroupServiceImpl implements GroupService {
             // otherwise delete if flag is not set to true
             default:
                 // delete permission attached to entity
-                if(!groupDTO.getPermissions().isEmpty()) {
-                    for(PermissionDTO p: groupDTO.getPermissions()) {
+                if (!groupDTO.getPermissions().isEmpty()) {
+                    for (PermissionDTO p : groupDTO.getPermissions()) {
                         if (!g.getPermissions().add(permissionMapper.toEntity(p))) {
                             g.getPermissions().remove(permissionMapper.toEntity(p));
                         }
@@ -110,8 +115,8 @@ public class GroupServiceImpl implements GroupService {
                 }
 
                 // delete staff attached to entity
-                if(!groupDTO.getStaffs().isEmpty()) {
-                    for(StaffDTO s: groupDTO.getStaffs()) {
+                if (!groupDTO.getStaffs().isEmpty()) {
+                    for (StaffDTO s : groupDTO.getStaffs()) {
                         if (!g.getStaffs().add(staffMapper.toEntity(s))) {
                             g.getStaffs().remove(staffMapper.toEntity(s));
                         }
@@ -165,7 +170,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(readOnly = true)
     public Page<GroupDTO> findAll(String module, Pageable pageable) {
         return groupRepository.findAllByModule_Id(module, pageable)
-            .map(groupMapper::toDto);
+                .map(groupMapper::toDto);
     }
 
     /**
@@ -189,7 +194,7 @@ public class GroupServiceImpl implements GroupService {
     public Optional<GroupDTO> findOne(GroupPK id) {
         log.debug("Request to get Group : {}", id);
         return groupRepository.findById(id)
-            .map(groupMapper::toDto);
+                .map(groupMapper::toDto);
     }
 
     /**
@@ -203,6 +208,7 @@ public class GroupServiceImpl implements GroupService {
     public Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable) {
         return groupRepository.findByName(name, module, pageable).map(groupMapper::toDto);
     }
+
 
     @Transactional(readOnly = true)
     public Optional<Group> findById(GroupPK id) {
@@ -219,4 +225,28 @@ public class GroupServiceImpl implements GroupService {
         log.debug("Request to delete Group : {}", id);
         groupRepository.deleteById(id);
     }
+
+    @Override
+    public boolean updateGroupsByUsername(String username, String newGroup) {
+        Optional<Staff> staffOptional = staffRepository.findByUsername(username);
+        if (staffOptional.isPresent()) {
+            Optional<Group> groupOptional = groupRepository.findByName(newGroup);
+            if (groupOptional.isPresent()) {
+                Group group = groupOptional.get();
+                Staff staff = staffOptional.get();
+                Set<Group> groups = new HashSet<>();
+                groups.add(group);
+                staff.setGroups(groups);
+                staffRepository.save(staff);
+                return true; // Group updated successfully
+            }else {
+                log.error("New group '{}' not found", newGroup);
+                return false; // New group not found
+            }
+        }
+        log.error("Staff member with username '{}' not found", username);
+        return false; // Staff member not found
+    }
+
 }
+
