@@ -146,6 +146,12 @@ public class LdapService implements StaffService {
 
 
     @Override
+    public long countStaffMembers() {
+        return ldapRepository.count();
+    }
+
+
+    @Override
     public List<StaffDTO> wildcardSearch(String username) {
         List<LdapUser> users = ldapRepository.findByUsernameContaining(username);
         List<StaffDTO> staffList = new ArrayList<>();

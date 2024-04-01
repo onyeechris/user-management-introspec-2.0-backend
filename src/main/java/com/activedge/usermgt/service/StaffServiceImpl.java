@@ -362,6 +362,11 @@ public class StaffServiceImpl implements StaffService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public long countStaffMembers() {
+        return staffRepository.count();
+    }
+
     /**
      * Get one staff by id.
      *

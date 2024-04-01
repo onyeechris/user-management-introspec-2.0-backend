@@ -3,10 +3,13 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.license.EncryptionService;
+import com.activedge.usermgt.license.License;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.ResetPasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.repository.LicenseRepository;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
@@ -71,6 +74,12 @@ public class StaffController {
     @Qualifier("ldap")
     private StaffService ldapService;
 
+    @Autowired
+    private LicenseRepository licenseRepository;
+
+    @Autowired
+    private EncryptionService encryptionService;
+
     private final Environment env;
 
     private final ApplicationContext appCtx;
@@ -99,6 +108,22 @@ public class StaffController {
             throw new ValidationException(errors.getAllErrors().stream()
                     .map(x -> x.getDefaultMessage())
                     .collect(Collectors.joining(", ")));
+        }
+
+        //Retrieve license information from the database
+        Optional<License> licenseOptional = licenseRepository.findFirstByOrderByIdAsc();
+        if (!licenseOptional.isPresent()) {
+            log.error("No license found for this Application");
+        }
+        License license = licenseOptional.get();
+        //Decrypt no of users information
+        String decryptedUsers = encryptionService.decrypt(license.getNo_of_users());
+        int maxUsers = Integer.parseInt(decryptedUsers);
+        log.info("maximum number of users for this license is: " + maxUsers);
+
+        // Check if the number of staff members exceeds the allowed limit
+        if (staffService.countStaffMembers() >= maxUsers) {
+            throw new RuntimeException("Maximum number of staff members reached. Cannot create more staff. Please upgrade your license to enjoy additional staff features");
         }
 
         staffDTO.setId(null);

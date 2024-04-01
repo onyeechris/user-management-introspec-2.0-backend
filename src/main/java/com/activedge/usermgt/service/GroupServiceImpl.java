@@ -228,6 +228,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public boolean updateGroupsByUsername(String username, String newGroup) {
+
+        //TODO: Check logs for username being updated in both staff and group
         Optional<Staff> staffOptional = staffRepository.findByUsername(username);
         if (staffOptional.isPresent()) {
             Optional<Group> groupOptional = groupRepository.findByName(newGroup);
@@ -238,6 +240,7 @@ public class GroupServiceImpl implements GroupService {
                 groups.add(group);
                 staff.setGroups(groups);
                 staffRepository.save(staff);
+                log.info("group saved successfully");
                 return true; // Group updated successfully
             }else {
                 log.error("New group '{}' not found", newGroup);

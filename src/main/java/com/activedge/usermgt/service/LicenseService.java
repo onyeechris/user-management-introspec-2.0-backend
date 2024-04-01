@@ -40,10 +40,6 @@ public class LicenseService {
 
 
     public boolean isExpired(License license) {
-        if (encryptionService == null) {
-            log.error("Encryption service is not initialized");
-            throw new IllegalStateException("Encryption service is not initialized");
-        }
 
         // Ensure expiry and grace are not null or empty
         if (license.getExpiry() == null || license.getExpiry().isEmpty() ||
