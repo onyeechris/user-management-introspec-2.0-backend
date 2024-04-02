@@ -79,4 +79,11 @@ public interface StaffService {
 
     void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException;
 
+    /**
+     * Count the total number of staff members.
+     *
+     * @return the total count of staff members
+     */
+    long countStaffMembers();
+
 }

@@ -19,4 +19,7 @@ public interface LdapRepository extends CrudRepository<LdapUser, Name> {
     Page<LdapUser> findByUsernameLikeIgnoreCase(Pageable pageable, String username);
     List<LdapUser> findByUsernameContaining(String userid);
 
+    // Custom method to count the total number of users in LDAP
+    long count();
+
 }
