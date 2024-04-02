@@ -141,6 +141,7 @@ public class Group extends AbstractAuditingEntity<String> implements Serializabl
         return this;
     }
 
+
     public void setStaffs(Set<Staff> staff) {
         this.staffs = staff;
     }

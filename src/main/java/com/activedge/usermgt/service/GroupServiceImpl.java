@@ -240,6 +240,8 @@ public class GroupServiceImpl implements GroupService {
                 groups.add(group);
                 staff.setGroups(groups);
                 staffRepository.save(staff);
+                groupRepository.save(group);
+                log.info("staff: " + staff + " " + "groups: " + group);
                 log.info("group saved successfully");
                 return true; // Group updated successfully
             }else {
