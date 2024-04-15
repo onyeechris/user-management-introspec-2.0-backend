@@ -300,12 +300,6 @@ public class StaffController {
         return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
     }
 
-//    @PutMapping("/reset-password")
-//    public ResponseEntity<String> resetPassword(@RequestParam String email,@RequestHeader String newPassword){
-//        return new ResponseEntity<>(staffService.resetPassword(email,newPassword),HttpStatus.OK);
-//
-//    }
-
     @PostMapping("/reset-password-by-user")
     public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestBody PasswordRequest passwordRequest) {
         String newPassword = passwordRequest.getNewPassword();
