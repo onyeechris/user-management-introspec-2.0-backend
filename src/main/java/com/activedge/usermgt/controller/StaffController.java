@@ -24,10 +24,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -60,7 +62,8 @@ public class StaffController {
     private static final String STAFF_BY_STAFF_ID = "import/staff/{id}";
     private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
     private static final String RESET_PASSWORD_BY_ADMIN = "/reset-password";
-
+    private static final String FILE_UPLOADED="File uploaded successfully!";
+    private static final String FILE_ERROR="Error uploading file: ";
 
     static final String FILENAME = "UserList";
 
@@ -293,6 +296,38 @@ public class StaffController {
         log.debug("REST request to delete {} : {}", STAFFS, id);
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(STAFFS, id.toString())).build();
+    }
+
+    @PostMapping("/download-Columns")
+    public ResponseEntity<byte[]> downloadCSV(@RequestBody List<List<String>> columns) {
+        StringBuilder csvContent = new StringBuilder();
+
+        int numRows = columns.get(0).size();
+
+        for (int i = 0; i < numRows; i++) {
+            for (List<String> column : columns) {
+                csvContent.append(column.get(i)).append(",");
+            }
+            csvContent.deleteCharAt(csvContent.length() - 1);
+            csvContent.append("\n");
+        }
+        byte[] bytes = csvContent.toString().getBytes();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.parseMediaType("text/csv"));
+        responseHeaders.setContentDispositionFormData("attachment", "Users.csv");
+        responseHeaders.setContentLength(bytes.length);
+        return ResponseEntity.ok().headers(responseHeaders).body(bytes);
+    }
+
+    @PostMapping("/CSV-upload")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            staffService.processCSV(file);
+            return ResponseEntity.ok(FILE_UPLOADED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
+        }
     }
 
     @PutMapping("/forgot-password")
