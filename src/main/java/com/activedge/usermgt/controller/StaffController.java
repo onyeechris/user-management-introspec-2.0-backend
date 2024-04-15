@@ -6,6 +6,7 @@ import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.ResetPasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
+import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
@@ -299,10 +300,17 @@ public class StaffController {
         return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
     }
 
-    @PutMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email,@RequestHeader String newPassword){
-        return new ResponseEntity<>(staffService.resetPassword(email,newPassword),HttpStatus.OK);
+//    @PutMapping("/reset-password")
+//    public ResponseEntity<String> resetPassword(@RequestParam String email,@RequestHeader String newPassword){
+//        return new ResponseEntity<>(staffService.resetPassword(email,newPassword),HttpStatus.OK);
+//
+//    }
 
+    @PostMapping("/reset-password-by-user")
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestBody PasswordRequest passwordRequest) {
+        String newPassword = passwordRequest.getNewPassword();
+        return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
     }
+
 
 }
