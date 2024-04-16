@@ -56,11 +56,8 @@ public class TraceServiceImpl implements TraceService {
     public Function4<Integer, Date, Date, Pageable, Page<CustomHttpTrace>> fetchAuditLogs = this::getAuditLogs;
 
     private Page<CustomHttpTrace> getAuditLogs(Integer status, Date from, Date to, Pageable pageable) {
-        System.out.printf("page size %s from %s to %s ",pageable.getPageSize(), from, to).println();
         if(status != null) {
-            Page<CustomHttpTrace> test = traceRepository.findAllByStatusAndTimestampBetween(status, from, to, pageable);
-            System.out.println("test size "+test.getTotalElements());
-            return test;
+            return traceRepository.findAllByStatusAndTimestampBetween(status, from, to, pageable);
         }
         return traceRepository.findAllByTimestampBetween(from, to, pageable);
     }
