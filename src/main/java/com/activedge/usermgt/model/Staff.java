@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -80,6 +81,10 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @OneToMany(mappedBy = "staff", fetch = FetchType.EAGER)
     @DBRef
     Set<StaffModule> assignments;
+
+    @Column(name = "last_login")
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
+    private LocalDateTime lastLogin;
 
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {

@@ -39,6 +39,7 @@ public interface StaffModuleService {
 
     boolean matchModuleAndEmail(String module, String email);
     List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable);
+    void updateLastLogin(String id);
 
 
 

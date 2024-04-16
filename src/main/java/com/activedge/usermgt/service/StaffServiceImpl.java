@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ public class StaffServiceImpl implements StaffService {
             s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
             s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
             s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
+            s.setLastLogin(staff.getLastLogin() == null ? s.getLastLogin() : staff.getLastLogin());
             if(staff.getType() == null) {
                 s.setType(s.getType());
                 s.setAuthorities(s.getAuthorities());

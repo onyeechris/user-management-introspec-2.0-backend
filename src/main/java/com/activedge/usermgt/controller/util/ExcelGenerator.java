@@ -137,7 +137,7 @@ public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> au
                         user.getUsername(),
                         user.getUser_type(),
                         groups = String.join(",", user.getGroupNames()),
-                        user.getHire_date()
+                        user.getLast_login()
                 );
             }
             csvPrinter.flush();

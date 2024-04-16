@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +47,8 @@ public class StaffDTO implements Serializable {
 
     @JsonFormat(pattern = "MM/dd/yyyy")
     private LocalDate hire_date;
-
+    @JsonFormat(pattern = "yyyy-MM-dd_HH_mm_ss")
+    private LocalDateTime last_login;
     @NotNull(message = "Staff access group is required.")
     private Set<GroupDTO> groups = new HashSet<>();
 
@@ -73,6 +75,7 @@ public class StaffDTO implements Serializable {
                 ", user_type=" + user_type +
                 ", hire_date=" + hire_date +
                 ", activated=" + activated +
+                ", last_login=" + last_login +
                 '}';
     }
 
