@@ -38,14 +38,23 @@ public class LicenseService {
     @Autowired
     private EncryptionService encryptionService;
 
-
     public boolean isExpired(License license) {
+        LocalDate expiryWithGrace = getExpiryWithGrace(license);
+        if (expiryWithGrace == null) {
+            // Error occurred while calculating expiry with grace
+            return false;
+        }
 
+        // Check if the current date is after the new expiry date
+        return LocalDate.now().isAfter(expiryWithGrace);
+    }
+
+    public LocalDate getExpiryWithGrace(License license) {
         // Ensure expiry and grace are not null or empty
         if (license.getExpiry() == null || license.getExpiry().isEmpty() ||
                 license.getGrace() == null || license.getGrace().isEmpty()) {
             log.error("Expiry or grace is null or empty");
-            return false; // or throw an exception
+            return null; // or throw an exception
         }
 
         // Decrypt expiry and grace values
@@ -57,7 +66,7 @@ public class LicenseService {
         } catch (Exception e) {
             // Handle decryption error
             log.error("Error decrypting expiry or grace", e);
-            return false; // or throw an exception
+            return null; // or throw an exception
         }
 
         // Parse expiry date from string to LocalDate
@@ -67,7 +76,7 @@ public class LicenseService {
         } catch (DateTimeParseException e) {
             // Handle parsing error
             log.error("Error parsing expiry date", e);
-            return false; // or throw an exception
+            return null; // or throw an exception
         }
 
         // Parse grace period from string to long
@@ -77,15 +86,14 @@ public class LicenseService {
         } catch (NumberFormatException e) {
             // Handle parsing error
             log.error("Error parsing grace period", e);
-            return false; // or throw an exception
+            return null; // or throw an exception
         }
 
         // Calculate the new expiry date with grace period
         LocalDate expiryWithGrace = expiryDate.plusDays(gracePeriod);
-        log.info("Expiry date with grace: " + expiryWithGrace);
+        log.info("Expiry date with grace: {}", expiryWithGrace);
 
-        // Check if the current date is after the new expiry date
-        return LocalDate.now().isAfter(expiryWithGrace);
+        return expiryWithGrace;
     }
 
 

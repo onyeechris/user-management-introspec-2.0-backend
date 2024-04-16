@@ -1,8 +1,10 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.license.License;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.repository.LicenseRepository;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.*;
 import com.activedge.usermgt.util.EncryptionUtils;
@@ -57,6 +59,9 @@ public class UserJWTController {
     private LicenseService licenseService;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private Queue queue;
 //    @Autowired
 //    private GoogleAuthenticator gAuth;
@@ -81,6 +86,9 @@ public class UserJWTController {
     private StaffModuleService staffModuleService;
     @Autowired
     private SessionCountLogger sessionCountLogger;
+
+    @Autowired
+    private LicenseRepository licenseRepository;
 
     public UserJWTController(JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager, StaffModuleService staffModuleService) {
         this.tokenProvider = tokenProvider;
@@ -130,11 +138,21 @@ public class UserJWTController {
             boolean licenseExpired = licenseService.isExpiredAndUpdateGroup(loginRequest.getUsername());
             if (licenseExpired) {
                 log.info("User '{}' logged in with an expired license. Group updated.", loginRequest.getUsername());
+
             } else {
                 log.info("User '{}' logged in with a valid license.", loginRequest.getUsername());
             }
 
-//            System.out.println("login module>>> "+module);
+            Optional<License> licenseOptional = licenseRepository.findFirstByOrderByIdAsc();
+            if (licenseOptional.isPresent()) {
+                License license = licenseOptional.get();
+                notificationService.sendNotification(license);
+            } else {
+                // Handle case where no license record is found...
+                log.info("No license found to give a notification");
+            }
+
+            System.out.println("login module>>> "+module);
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated, enrolled, userId, isDefault);
 
             // log successful login

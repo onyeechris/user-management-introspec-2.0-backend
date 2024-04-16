@@ -14,4 +14,5 @@ public interface LicenseRepository extends PagingAndSortingRepository<License, S
     Optional<License> findNoOfUsers();
 
     Optional<License> findFirstByOrderByIdAsc();
+
 }
