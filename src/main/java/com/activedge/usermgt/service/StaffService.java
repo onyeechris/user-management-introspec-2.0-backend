@@ -81,4 +81,7 @@ public interface StaffService {
     void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException;
 
     void processCSV(MultipartFile file);
+    String forgotPassword(String email);
+
+    String resetPassword(String email, String newPassword);
 }

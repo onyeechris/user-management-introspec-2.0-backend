@@ -1,6 +1,7 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.config.Constants;
+import com.activedge.usermgt.controller.util.EmailUtil;
 import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.Authority;
@@ -39,13 +40,19 @@ import java.util.stream.Collectors;
 import javassist.NotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
+
 /**
  * Service Implementation for managing Staff.
  */
 @Transactional
 @Service("db")
 public class StaffServiceImpl implements StaffService {
+    private static final String RESET_EMAIL_SENT_MESSAGE = "Please check your email to set a new password";
+    private static final String RESET_EMAIL="New password set successfully login with new password";
 
+    @Autowired
+    private EmailUtil emailUtil;
     private final Logger log = LoggerFactory.getLogger(StaffServiceImpl.class);
 
     @Autowired
@@ -358,6 +365,35 @@ public class StaffServiceImpl implements StaffService {
         System.out.println("Entity details: " + entity);
         return isEmpty;
     }
+
+
+    @Override
+    public String forgotPassword(String email) {
+        Staff staff =staffRepository.findByEmail(email)
+                .orElseThrow(
+                        ()-> new RuntimeException("Staff not found with this email: "+email)
+                );
+        try {
+            String subject = "Set Password";
+            emailUtil.sendSetPassword(email,subject);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to set password please try again"+e);
+        }
+        return RESET_EMAIL_SENT_MESSAGE;
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        Staff staff =staffRepository.findByEmail(email)
+                .orElseThrow(
+                        ()-> new RuntimeException("Staff not found with this email: "+email)
+                );
+        String hashedPassword = encoder.encode(newPassword);
+        staff.setPassword(hashedPassword);
+        staffRepository.save(staff);
+        return RESET_EMAIL;
+    }
+
 
     /**
      * Get all the staff.

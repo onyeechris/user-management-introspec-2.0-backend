@@ -6,6 +6,7 @@ import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.ResetPasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
+import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.Pattern;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -328,5 +330,17 @@ public class StaffController {
             return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
         }
     }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password-by-user")
+    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
+         String newPassword = passwordRequest.getNewPassword();
+        return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
+    }
+
 
 }
