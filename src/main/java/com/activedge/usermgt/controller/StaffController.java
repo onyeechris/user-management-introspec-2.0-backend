@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.Pattern;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -336,8 +337,8 @@ public class StaffController {
     }
 
     @PostMapping("/reset-password-by-user")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestBody PasswordRequest passwordRequest) {
-        String newPassword = passwordRequest.getNewPassword();
+    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
+         String newPassword = passwordRequest.getNewPassword();
         return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
     }
 
