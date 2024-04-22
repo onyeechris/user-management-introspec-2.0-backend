@@ -1,7 +1,9 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.LdapUser;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.enumeration.Type;
@@ -15,10 +17,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -71,8 +76,8 @@ public class LdapService implements StaffService {
     }
 
     @Override
-    public Optional<StaffDTO> search(final String searchId) {
-        Optional<LdapUser> newUser = ldapRepository.findByUsername(searchId);
+    public Optional<StaffDTO> findByUsername(final String username) {
+        Optional<LdapUser> newUser = ldapRepository.findByUsername(username);
         Optional<StaffDTO> user = staffDTOAdapter.transform(newUser);
         StaffDTO uzer = new StaffDTO();
 
@@ -80,7 +85,7 @@ public class LdapService implements StaffService {
             try {
                 StaffDTO usr = user.get();
                 // check that this user was not previously imported before saving
-                Optional<StaffDTO> s1 = staffService.search(usr.getUsername());
+                Optional<StaffDTO> s1 = staffService.findByUsername(usr.getUsername());
                 if(s1.isPresent()) {
                     uzer = s1.get();
                 } else {
@@ -93,6 +98,45 @@ public class LdapService implements StaffService {
         }
         return Optional.of(uzer);
     }
+
+    @Override
+    public void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException {
+
+    }
+
+    @Override
+    public void processCSV(MultipartFile file) {
+
+    }
+
+    @Override
+    public String forgotPassword(String email) {
+        return null;
+    }
+
+    @Override
+    public String resetPassword(String email, String newPassword) {
+        return null;
+    }
+
+
+    @Override
+    public List<StaffDTO> wildcardSearch(String username) {
+        List<LdapUser> users = ldapRepository.findByUsernameContaining(username);
+        List<StaffDTO> staffList = new ArrayList<>();
+        for(LdapUser user : users){
+            Optional<StaffDTO> staff = staffDTOAdapter.transform(Optional.of(user));
+            if(staff.isPresent()){
+                StaffDTO usr = staff.get();
+                List<StaffDTO> s1 = staffService.wildcardSearch(usr.getUsername());
+                if(!s1.isEmpty()){
+                    staffList.add(s1.get(0));
+                }
+            }
+        }
+        return staffList;
+    }
+
 
     @Override
     public void delete(String id) {

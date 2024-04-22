@@ -1,11 +1,15 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
+import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.model.mapper.StaffModuleMapper;
 import com.activedge.usermgt.repository.StaffModuleRepository;
+import com.activedge.usermgt.repository.StaffRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,9 +31,12 @@ public class StaffModuleServiceImpl implements StaffModuleService {
 
     private final StaffModuleMapper staffModuleMapper;
 
-    public StaffModuleServiceImpl(StaffModuleRepository staffModuleRepository, StaffModuleMapper staffModuleMapper) {
+    private final StaffRepository staffRepository;
+
+    public StaffModuleServiceImpl(StaffModuleRepository staffModuleRepository, StaffModuleMapper staffModuleMapper, StaffRepository staffRepository) {
         this.staffModuleRepository = staffModuleRepository;
         this.staffModuleMapper = staffModuleMapper;
+        this.staffRepository = staffRepository;
     }
 
     /**
@@ -38,16 +45,38 @@ public class StaffModuleServiceImpl implements StaffModuleService {
      * @param staffModuleDTO the entity to save
      * @return the persisted entity
      */
+//    @Override
+//    public StaffModuleDTO save(StaffModuleDTO staffModuleDTO) {
+//        log.info("Request to save StaffModule : {}", staffModuleDTO);
+//
+//        StaffModule staffModule = staffModuleMapper.toEntity(staffModuleDTO);
+//
+//        staffModule = staffModuleRepository.save(staffModule);
+//
+//        return staffModuleMapper.toDto(staffModule);
+//    }
+
+
     @Override
     public StaffModuleDTO save(StaffModuleDTO staffModuleDTO) {
-        log.info("Request to save StaffModule : {}", staffModuleDTO);
-
+        log.info("Request to save StaffModule: {}", staffModuleDTO);
         StaffModule staffModule = staffModuleMapper.toEntity(staffModuleDTO);
+        Staff staff = staffRepository.findByUsername(staffModuleDTO.getStaff().getUsername()).orElse(null);
+        log.info("staff module staff {}",staff);
+        Optional<StaffModule> existingStaffModule = staffModuleRepository.findByModuleAndStaff(staffModule.getModule(), staff);
+        if (existingStaffModule.isPresent()) {
+            StaffModule existingModule = existingStaffModule.get();
+            existingModule.setGrade(staffModule.getGrade());
+            existingModule.setAssignAt(staffModule.getAssignAt());
+            existingModule = staffModuleRepository.save(existingModule);
+            return staffModuleMapper.toDto(existingModule);
+        } else {
 
-        staffModule = staffModuleRepository.save(staffModule);
-
-        return staffModuleMapper.toDto(staffModule);
+            staffModule = staffModuleRepository.save(staffModule);
+            return staffModuleMapper.toDto(staffModule);
+        }
     }
+
 
     /**
      * Get all the staffModules.

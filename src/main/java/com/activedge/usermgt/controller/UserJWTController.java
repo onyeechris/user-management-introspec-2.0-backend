@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.*;
 
 import static com.activedge.usermgt.config.Constants.PASSWORD_ENCRYPTION_KEY;
@@ -100,7 +101,7 @@ public class UserJWTController {
         starttime = System.currentTimeMillis();
         String jwt;
 
-        loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
+        loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)).toLowerCase());
         loginRequest.setPassword(EncryptionUtils.decrypt(loginRequest.getPassword(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
 
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
@@ -297,6 +298,7 @@ public class UserJWTController {
         @NotBlank(message = "Password cannot be blank")
         private String password;
 //        private boolean is2FaEnabled;
+
     }
 
     @Getter

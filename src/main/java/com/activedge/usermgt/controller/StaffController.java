@@ -4,12 +4,15 @@ import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.ResetPasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
+import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +24,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.Pattern;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -35,6 +41,7 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,13 +54,18 @@ import java.util.stream.Collectors;
 public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
-
     static final String STAFFS = "staffs";
     static final String STAFFS_PREFERENCE = "preference/{id}";
     static final String ENROLMENT_PREFERENCE = "enrol/{id}";
     private static final String STAFFS_DOWNLOAD = "download";
     private static final String STAFF_BY_ID = "{id}";
     private static final String STAFF_BY_USERNAME = "import/{username}";
+    private static final String STAFF_BY_STAFF_ID = "import/staff/{id}";
+    private static final String SEARCH_STAFF_BY_USERNAME_WILDCARD = "/searchStaff/{username}";
+    private static final String RESET_PASSWORD_BY_ADMIN = "/reset-password";
+    private static final String FILE_UPLOADED="File uploaded successfully!";
+    private static final String FILE_ERROR="Error uploading file: ";
+
     static final String FILENAME = "UserList";
 
     @Autowired
@@ -96,6 +108,7 @@ public class StaffController {
 
         staffDTO.setId(null);
         StaffDTO result = staffService.save(staffDTO);
+
 
         return ResponseEntity.created(new URI("/api/"+ STAFFS +"/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(STAFFS, result.getId().toString()))
@@ -243,15 +256,35 @@ public class StaffController {
 
         StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
 
-        Optional<StaffDTO> staffDTO = service.search(username);
+        Optional<StaffDTO> staffDTO = service.findByUsername(username);
 
         if (!staffDTO.isPresent()) {
             throw new ValidationException("No "+ STAFFS +" was found for username " + username);
         }
-
         return new ResponseEntity<>(staffDTO.get(), HttpStatus.OK);
-
     }
+    @GetMapping(SEARCH_STAFF_BY_USERNAME_WILDCARD)
+    public ResponseEntity<List<StaffDTO>> searchStaff(@PathVariable String username) {
+        log.debug("REST request to search for staff by username: {}", username);
+        StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
+        List<StaffDTO> staffDTOs = service.wildcardSearch(username);
+        if (staffDTOs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if no staff is found
+        }
+        return new ResponseEntity<>(staffDTOs, HttpStatus.OK);
+    }
+
+    @PostMapping(RESET_PASSWORD_BY_ADMIN)
+    public ResponseEntity<String> resetPasswordByAdmin(
+            @RequestBody ResetPasswordRequest request) throws NotFoundException {
+
+        // Reset the user's password
+        staffService.resetPasswordByAdmin(request.getUsername(), request.getAdminUsername(), request.getNewPassword());
+
+        return ResponseEntity.ok("Password reset successfully");
+
+}
+
 
     /**
      * DELETE  /staff/:id : delete the "id" staff.
@@ -265,5 +298,49 @@ public class StaffController {
         staffService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(STAFFS, id.toString())).build();
     }
+
+    @PostMapping("/download-Columns")
+    public ResponseEntity<byte[]> downloadCSV(@RequestBody List<List<String>> columns) {
+        StringBuilder csvContent = new StringBuilder();
+
+        int numRows = columns.get(0).size();
+
+        for (int i = 0; i < numRows; i++) {
+            for (List<String> column : columns) {
+                csvContent.append(column.get(i)).append(",");
+            }
+            csvContent.deleteCharAt(csvContent.length() - 1);
+            csvContent.append("\n");
+        }
+        byte[] bytes = csvContent.toString().getBytes();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.parseMediaType("text/csv"));
+        responseHeaders.setContentDispositionFormData("attachment", "Users.csv");
+        responseHeaders.setContentLength(bytes.length);
+        return ResponseEntity.ok().headers(responseHeaders).body(bytes);
+    }
+
+    @PostMapping("/CSV-upload")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            staffService.processCSV(file);
+            return ResponseEntity.ok(FILE_UPLOADED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
+        }
+    }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password-by-user")
+    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
+         String newPassword = passwordRequest.getNewPassword();
+        return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
+    }
+
 
 }

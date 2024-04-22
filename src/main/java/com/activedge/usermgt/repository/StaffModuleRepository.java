@@ -1,11 +1,14 @@
 package com.activedge.usermgt.repository;
 
+import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -18,4 +21,5 @@ public interface StaffModuleRepository extends PagingAndSortingRepository<StaffM
 
     Set<StaffModule> findByModule_Id(String module);
 
+    Optional<StaffModule> findByModuleAndStaff(Module module, Staff staff);
 }

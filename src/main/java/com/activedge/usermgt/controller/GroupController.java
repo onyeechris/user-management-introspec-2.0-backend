@@ -143,6 +143,29 @@ public class GroupController extends BaseEntity {
         return new ResponseEntity<>(new ResponseWrapper(page), headers, HttpStatus.OK);
     }
 
+
+    /**
+     * GET  /groups : search groups by name.
+     *
+     * @param pageable the pagination information
+     * @param name the name of the groupsDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and the group name and information in body
+     */
+    @GetMapping("/" + ENTITY_NAME + "/search-by-name")
+    public ResponseEntity<ResponseWrapper> searchGroupsByName(
+            @RequestHeader(value = "Module", required = true) String module,
+            @RequestParam(value = "name") String name,
+            Pageable pageable) {
+        Page<GroupDTO> groups = groupService.searchGroupsByName(name, module, pageable);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(groups, String.format("/api/groups/search-by-name?name=%s", name));
+
+        return new ResponseEntity<>(new ResponseWrapper(groups), headers, HttpStatus.OK);
+    }
+
+
+
+
     /**
      * GET  /groups/:id : get the "id" groups.
      *

@@ -2,12 +2,15 @@ package com.activedge.usermgt.service;
 
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,10 +68,8 @@ public interface StaffService {
      * @return the entity
      */
     Optional<StaffDTO> findOne(String id);
-
-
-    Optional<StaffDTO> search(String searchId);
-
+    Optional<StaffDTO> findByUsername(String username);
+    List<StaffDTO> wildcardSearch(String username);
 
     /**
      * Delete the "id" staff.
@@ -77,4 +78,10 @@ public interface StaffService {
      */
     void delete(String id);
 
+    void resetPasswordByAdmin(String username, String adminUsername, String newPassword) throws NotFoundException, UnauthorizedException;
+
+    void processCSV(MultipartFile file);
+    String forgotPassword(String email);
+
+    String resetPassword(String email, String newPassword);
 }

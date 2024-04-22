@@ -2,6 +2,7 @@ package com.activedge.usermgt.model.dto;
 
 import com.activedge.usermgt.model.enumeration.Type;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StaffDTO implements Serializable {
+
 
     private String id;
 
@@ -82,5 +84,7 @@ public class StaffDTO implements Serializable {
                 ", enrol=" + enrol +
                 '}';
     }
+
+
 
 }
