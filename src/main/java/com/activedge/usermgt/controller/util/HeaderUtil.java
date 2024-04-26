@@ -42,4 +42,9 @@ public final class HeaderUtil {
         headers.add("X-" + APPLICATION_NAME + "-params", entityName);
         return headers;
     }
+    public static HttpHeaders createDeactivationAlert(String entityName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("user-deactivated", "User" + entityName + " has been deactivated");
+        return headers;
+    }
 }

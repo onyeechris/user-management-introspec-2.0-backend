@@ -342,5 +342,10 @@ public class StaffController {
         return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
     }
 
+    @PostMapping("/{userId}/deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
+        staffService.deactivateUser(userId);
+        return ResponseEntity.ok().headers(HeaderUtil.createDeactivationAlert(userId)).build();
+    }
 
 }

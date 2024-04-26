@@ -394,6 +394,13 @@ public class StaffServiceImpl implements StaffService {
         return RESET_EMAIL;
     }
 
+    @Override
+    public void deactivateUser(String userId) {
+        Staff staff = staffRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Staff not found"));
+        staff.setActive(false);
+        staffRepository.save(staff);
+    }
+
 
     /**
      * Get all the staff.
@@ -457,7 +464,7 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(readOnly = true)
     public Optional<Staff> findById(String id) {
         log.debug("Request to get Staff : {}", id);
-        return staffRepository.findOneWithAuthoritiesById(id);
+        return staffRepository.findOneWithAuthoritiesByIdAndActiveIsTrue(id);
     }
 
     /**
