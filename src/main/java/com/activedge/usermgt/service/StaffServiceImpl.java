@@ -412,7 +412,7 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(readOnly = true)
     public Page<StaffDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Staff");
-        return staffRepository.findAll(pageable)
+        return staffRepository.findAllByActiveTrue(pageable)
             .map(staffMapper::toDto);
     }
 
@@ -428,7 +428,7 @@ public class StaffServiceImpl implements StaffService {
     public Optional<StaffDTO> findOne(String id) {
         log.debug("Request to get Staff : {}", id);
 
-        Optional<Staff> staffOptional = staffRepository.findById(id);
+        Optional<Staff> staffOptional = staffRepository.findByIdAndActiveIsTrue(id);
         if (staffOptional.isPresent()) {
             Staff staff = staffOptional.get();
             Set<Group> groups = new HashSet<>(groupRepository.findAllByStaffsContaining(staff));

@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ModuleRepository extends PagingAndSortingRepository<Module, String> {
 
     @Profile("jpa")
-    @Query("select modules from Module modules left join fetch modules.staffModules where modules.id =:id")
+    @Query("select modules from Module modules left join fetch modules.staffModules where modules.id =:id and modules.active=true ")
     @org.springframework.data.mongodb.repository.Query(value = "{'_id': ?0}")
     Optional<Module> findOneWithEagerRelationships(@Param("id") String id);
 

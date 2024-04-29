@@ -42,5 +42,7 @@ public class Module implements Serializable {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     @DBRef
     Set<StaffModule> staffModules;
+
+    private boolean active=true;
 }
 

@@ -345,7 +345,7 @@ public class StaffController {
     @PostMapping("/{userId}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
         staffService.deactivateUser(userId);
-        return ResponseEntity.ok().headers(HeaderUtil.createDeactivationAlert(userId)).build();
+        return ResponseEntity.ok("User deactivated successfully");
     }
 
 }

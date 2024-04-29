@@ -88,7 +88,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private Boolean default2FA = false;
     private Boolean enrol = false;
     private String secret;
-    private boolean active;
+    private boolean active=true;
 
     @ManyToMany
     @JoinTable(name = "staff_authority", joinColumns = {
