@@ -36,7 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJWTFromRequest(httpServletRequest);
-
+            String requestURI = httpServletRequest.getRequestURI();
+            if ("/auth/forgot-password".equals(requestURI)) {
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
+                return;
+            }
             if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String username = tokenProvider.getUsernameFromJWT(jwt);
                 if(username != null) {

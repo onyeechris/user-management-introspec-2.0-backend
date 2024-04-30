@@ -115,7 +115,7 @@ public class LdapService implements StaffService {
     }
 
     @Override
-    public String resetPassword(String email, String newPassword) {
+    public String resetPassword(String email, String newPassword, String confirmPassword) {
         return null;
     }
 
