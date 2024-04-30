@@ -382,15 +382,23 @@ public class StaffServiceImpl implements StaffService {
         return RESET_EMAIL_SENT_MESSAGE;
     }
 
-    @Override
-    public String resetPassword(String email, String newPassword) {
-        Staff staff =staffRepository.findByEmail(email)
-                .orElseThrow(
-                        ()-> new RuntimeException("Staff not found with this email: "+email)
-                );
+    public String resetPassword(String email, String newPassword, String confirmPassword) {
+        // Check if passwords match
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("New password and confirm password do not match");
+        }
+
+        // Retrieve staff by email
+        Staff staff = staffRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Staff not found with this email: " + email));
+
+        // Encode the new password
         String hashedPassword = encoder.encode(newPassword);
+
+        // Update staff password
         staff.setPassword(hashedPassword);
         staffRepository.save(staff);
+
         return RESET_EMAIL;
     }
 

@@ -83,5 +83,5 @@ public interface StaffService {
     void processCSV(MultipartFile file);
     String forgotPassword(String email);
 
-    String resetPassword(String email, String newPassword);
+    String resetPassword(String email, String newPassword, String confirmPassword);
 }

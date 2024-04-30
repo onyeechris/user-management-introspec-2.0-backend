@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.JwtTokenProvider;
 import com.activedge.usermgt.service.MapValidationErrorService;
@@ -17,6 +18,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.ldap.core.AttributesMapper;
@@ -134,6 +136,19 @@ public class UserJWTController {
         }
 
         return ResponseEntity.ok(new JWTResponse(true, jwt));
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        return new ResponseEntity<>(staffService.forgotPassword(email), HttpStatus.OK);
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
+        String newPassword = passwordRequest.getNewPassword();
+        String confirmPassword = passwordRequest.getConfirmPassword();
+        if(!newPassword.equals(confirmPassword)){
+            return new ResponseEntity<>("Passwords and  do not match", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(staffService.resetPassword(email, newPassword, confirmPassword), HttpStatus.OK);
     }
 
     @PostMapping("/yek_cne")
@@ -300,6 +315,7 @@ public class UserJWTController {
 //        private boolean is2FaEnabled;
 
     }
+
 
     @Getter
     @Setter

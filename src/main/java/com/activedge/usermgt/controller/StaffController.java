@@ -330,17 +330,4 @@ public class StaffController {
             return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
         }
     }
-
-    @PutMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email){
-        return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
-    }
-
-    @PostMapping("/reset-password-by-user")
-    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
-         String newPassword = passwordRequest.getNewPassword();
-        return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
-    }
-
-
 }
