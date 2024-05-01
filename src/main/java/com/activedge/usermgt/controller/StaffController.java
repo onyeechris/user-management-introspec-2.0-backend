@@ -342,7 +342,7 @@ public class StaffController {
         return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
     }
 
-    @PostMapping("/{userId}/deactivate")
+    @PutMapping("/{userId}/active-deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
         staffService.deactivateUser(userId);
         return ResponseEntity.ok("User deactivated successfully");
