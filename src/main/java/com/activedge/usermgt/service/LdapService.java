@@ -119,8 +119,9 @@ public class LdapService implements StaffService {
         return null;
     }
 
+
     @Override
-    public void deactivateUser(String userId) {
+    public void updateUserStatus(String userId, boolean active) {
 
     }
 

@@ -103,7 +103,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @ManyToMany(mappedBy = "staffs")
     @DBRef
     private Set<Group> groups = new HashSet<>();
-    private boolean active = true;
+    private boolean active;
 
     @PreRemove
     public void deleteGroup() {

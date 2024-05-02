@@ -331,10 +331,11 @@ public class StaffController {
         }
     }
 
-    @PutMapping("/{userId}/active-deactivate")
-    public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
-        staffService.deactivateUser(userId);
-        return ResponseEntity.ok("User deactivated successfully");
+    @PutMapping("/{userId}/activate-deactivate")
+    public ResponseEntity<String> updateUserStatus(@PathVariable String userId, @RequestParam("status") String status) {
+        boolean active = status.equalsIgnoreCase("activate");
+        staffService.updateUserStatus(userId, active);
+        return ResponseEntity.ok("User " + (active ? "activated" : "deactivated") + " successfully");
     }
 
 }

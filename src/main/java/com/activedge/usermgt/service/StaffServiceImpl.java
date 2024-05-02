@@ -402,10 +402,12 @@ public class StaffServiceImpl implements StaffService {
         return RESET_EMAIL;
     }
 
+
+
     @Override
-    public void deactivateUser(String userId) {
+    public void updateUserStatus(String userId, boolean active) {
         Staff staff = staffRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Staff not found"));
-        staff.setActive(false);
+        staff.setActive(active);
         staffRepository.save(staff);
     }
 

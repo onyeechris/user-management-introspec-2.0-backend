@@ -85,5 +85,6 @@ public interface StaffService {
 
     String resetPassword(String email, String newPassword, String confirmPassword);
 
-    void deactivateUser(String userId);
+
+    void updateUserStatus(String userId, boolean active);
 }
