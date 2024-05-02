@@ -84,4 +84,6 @@ public interface StaffService {
     String forgotPassword(String email);
 
     String resetPassword(String email, String newPassword, String confirmPassword);
+
+    void deactivateUser(String userId);
 }

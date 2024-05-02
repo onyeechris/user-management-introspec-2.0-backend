@@ -119,6 +119,11 @@ public class LdapService implements StaffService {
         return null;
     }
 
+    @Override
+    public void deactivateUser(String userId) {
+
+    }
+
 
     @Override
     public List<StaffDTO> wildcardSearch(String username) {

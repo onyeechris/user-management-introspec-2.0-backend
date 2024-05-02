@@ -103,6 +103,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @ManyToMany(mappedBy = "staffs")
     @DBRef
     private Set<Group> groups = new HashSet<>();
+    private boolean active = true;
 
     @PreRemove
     public void deleteGroup() {
@@ -126,5 +127,13 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

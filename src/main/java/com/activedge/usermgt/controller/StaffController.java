@@ -330,4 +330,11 @@ public class StaffController {
             return ResponseEntity.status(500).body( FILE_ERROR+ e.getMessage());
         }
     }
+
+    @PutMapping("/{userId}/active-deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable String userId) {
+        staffService.deactivateUser(userId);
+        return ResponseEntity.ok("User deactivated successfully");
+    }
+
 }
