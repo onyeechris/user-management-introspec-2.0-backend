@@ -107,6 +107,7 @@ public class StaffController {
         }
 
         staffDTO.setId(null);
+        staffDTO.setActive(true);
         StaffDTO result = staffService.save(staffDTO);
 
 

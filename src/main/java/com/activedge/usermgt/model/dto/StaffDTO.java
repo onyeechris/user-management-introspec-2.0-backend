@@ -7,7 +7,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.Indexed;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -39,8 +41,10 @@ public class StaffDTO implements Serializable {
 
     @NotNull(message = "Staff email address is required.")
     @Email(message = "Please enter a correct email address")
+    @Indexed(unique = true)
     private String email;
 
+    @Indexed(unique = true)
     private String username;
 
     @NotNull(message = "Staff ADMIN or USER type is required.")
@@ -58,6 +62,7 @@ public class StaffDTO implements Serializable {
     private Boolean enrol;
     private String enroll;
     private String secret;
+    private boolean active;
 
     public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 3, message = "Username length too short.") String username, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type user_type) {
         this.first_name = first_name;
