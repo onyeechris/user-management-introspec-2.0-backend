@@ -21,5 +21,6 @@ public class PasswordRequest {
             message = "Password must contain at least one uppercase and lowercase letter," +
                     "one special character,one digit and be 8 characters or longer.")
     private String newPassword;
+    private String confirmPassword;
 
 }

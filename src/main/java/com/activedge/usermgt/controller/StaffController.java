@@ -331,16 +331,10 @@ public class StaffController {
         }
     }
 
-    @PutMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email){
-        return new ResponseEntity<>(staffService.forgotPassword(email),HttpStatus.OK);
+    @PutMapping("/{userId}/activate-deactivate")
+    public ResponseEntity<String> updateUserStatus(@PathVariable String userId, @RequestParam("status") boolean active) {
+        staffService.updateUserStatus(userId, active);
+        return ResponseEntity.ok("User " + (active ? "activated" : "deactivated") + " successfully");
     }
-
-    @PostMapping("/reset-password-by-user")
-    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
-         String newPassword = passwordRequest.getNewPassword();
-        return new ResponseEntity<>(staffService.resetPassword(email, newPassword), HttpStatus.OK);
-    }
-
 
 }

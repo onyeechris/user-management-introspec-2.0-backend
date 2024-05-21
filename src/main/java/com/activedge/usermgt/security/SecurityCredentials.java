@@ -51,7 +51,9 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
             "/swagger-ui/**",
             "/introspec-cas/**",
             "/v2/api-docs/**",
-            "/swagger-resources/**"
+            "/swagger-resources/**",
+            "/auth/forgot-password",
+            "/auth/reset-password"
     };
 
     @Bean
@@ -82,7 +84,9 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                         "/**/*.jpg",
                         "/**/*.html",
                         "/**/*.css",
-                        "/**/*.js"
+                        "/**/*.js",
+                        "/auth/forgot-password",
+                        "/auth/reset-password"
                 ).permitAll()
                 .antMatchers(AUTH_WHITE_LIST).permitAll()
                 .antMatchers("/", "/index.html", "/static/**", "/swagger-ui.html**", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/actuator/**", "favicon.ico").permitAll()
@@ -108,7 +112,7 @@ public class SecurityCredentials extends WebSecurityConfigurerAdapter {
                 .antMatchers("/custom/**").hasRole("ADMIN")
                 .antMatchers("/enrol/**").hasAnyRole("PRE_VERIFICATION_USER","ADMIN", "USER", "DEV", "AUDITOR")
 
-                .antMatchers(HttpMethod.POST, "/auth", "/auth/test-ldap", "/auth/yek_cne", "/auth/test-ldap-search").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth","/auth/forgot-password","/auth/reset-password", "/auth/test-ldap", "/auth/yek_cne", "/auth/test-ldap-search").permitAll()
 
                 // any other requests must be authenticated
                 .anyRequest().authenticated();
