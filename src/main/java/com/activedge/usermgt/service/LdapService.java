@@ -125,6 +125,11 @@ public class LdapService implements StaffService {
 
     }
 
+    @Override
+    public boolean isUsernameOrEmailDuplicate(String username, String email) {
+        return false;
+    }
+
 
     @Override
     public List<StaffDTO> wildcardSearch(String username) {

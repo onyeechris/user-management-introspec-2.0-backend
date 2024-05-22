@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -55,7 +56,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private String phone;
 
     @NotNull
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false,unique = true)
     @Email
     private String email;
 
