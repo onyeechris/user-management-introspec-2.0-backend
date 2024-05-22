@@ -182,9 +182,6 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public StaffDTO save(NewStaffDTO staffDTO) throws ActivityRequiredException {
         log.info("Logging StaffDTO:{} by User:{}, Password:{}", staffDTO, staffDTO.getPassword());
-        if (staffRepository.existsByUsernameOrEmail(staffDTO.getUsername(), staffDTO.getEmail())) {
-            throw new IllegalArgumentException("Username or Email already exists: " + staffDTO.getUsername() + " or " + staffDTO.getEmail());
-        }
         Staff staff = staffMapper.toEntity(staffDTO);
         staff.setPassword(staffDTO.getPassword());
 
@@ -411,6 +408,11 @@ public class StaffServiceImpl implements StaffService {
         Staff staff = staffRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Staff not found"));
         staff.setActive(active);
         staffRepository.save(staff);
+    }
+
+    @Override
+    public boolean isUsernameOrEmailDuplicate(String username, String email) {
+        return staffRepository.existsByUsernameOrEmail(username, email);
     }
 
 

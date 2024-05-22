@@ -87,4 +87,5 @@ public interface StaffService {
 
 
     void updateUserStatus(String userId, boolean active);
+    boolean isUsernameOrEmailDuplicate(String username, String email);
 }

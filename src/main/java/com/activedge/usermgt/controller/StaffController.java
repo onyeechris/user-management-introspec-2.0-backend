@@ -96,8 +96,8 @@ public class StaffController {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping(produces = "application/json")
-    public ResponseEntity<StaffDTO> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
-        log.info("---REST request to save a {} : {}, token: {}", STAFFS, staffDTO, SecurityUtils.getCurrentUserLogin());
+    public ResponseEntity<?> createStaff(@Valid @RequestBody NewStaffDTO staffDTO, Errors errors) throws Exception {
+        log.info("---REST request to save a {} : {}, token: {}", "staff", staffDTO, SecurityUtils.getCurrentUserLogin());
 
         if (errors.hasErrors()) {
             log.error("Error in creating new user detected...\n{}", errors.getAllErrors());
@@ -106,15 +106,21 @@ public class StaffController {
                     .collect(Collectors.joining(", ")));
         }
 
+        if (staffService.isUsernameOrEmailDuplicate(staffDTO.getUsername(), staffDTO.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Username or Email already exists: " + staffDTO.getUsername() + " or " + staffDTO.getEmail());
+        }
+
         staffDTO.setId(null);
         staffDTO.setActive(true);
         StaffDTO result = staffService.save(staffDTO);
 
-
-        return ResponseEntity.created(new URI("/api/"+ STAFFS +"/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(STAFFS, result.getId().toString()))
-            .body(result);
+        return ResponseEntity.created(new URI("/api/staff/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert("staff", result.getId().toString()))
+                .body(result);
     }
+
+
 
     /**
      * PUT  /staff : Updates an existing staff.
