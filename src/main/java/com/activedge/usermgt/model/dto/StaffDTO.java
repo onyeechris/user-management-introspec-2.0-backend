@@ -41,10 +41,8 @@ public class StaffDTO implements Serializable {
 
     @NotNull(message = "Staff email address is required.")
     @Email(message = "Please enter a correct email address")
-    @Indexed(unique = true)
     private String email;
 
-    @Indexed(unique = true)
     private String username;
 
     @NotNull(message = "Staff ADMIN or USER type is required.")

@@ -31,5 +31,6 @@ public interface StaffRepository extends PagingAndSortingRepository<Staff, Strin
     List<Staff> findByUsernameContaining(String username);
     Optional<Staff> findByIdAndActiveIsTrue(String id);
     Page<Staff> findAllByActiveTrue(Pageable pageable);
+    Boolean existsByUsernameOrEmail(String username, String email);
 
 }

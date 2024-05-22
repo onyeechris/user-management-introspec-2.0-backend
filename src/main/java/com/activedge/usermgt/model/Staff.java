@@ -56,11 +56,11 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private String phone;
 
     @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false,unique = true)
     @Email
     private String email;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @NotNull
