@@ -50,7 +50,7 @@ public class V0001__user_indexes implements Migration {
                 .add("activated", true)
                 .add("authorities", user_authorities)
                 .add("is_2fa_enabled", false)
-                .add("status", "ACTIVE")
+                .add("active", true)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
