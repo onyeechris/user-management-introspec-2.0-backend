@@ -120,7 +120,10 @@ public class UserJWTController {
 
         // check if user belongs to the specified App before generating token
         if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
-            Optional<Staff> findStaff = staffRepository.findByUsername(loginRequest.username);
+            Optional<Staff> findStaff = staffRepository.findByUsernameAndActiveIsTrue(loginRequest.username);
+            if (!findStaff.isPresent()) {
+                return ResponseEntity.status(404).body("User not found or not active");
+            }
             Staff principal = findStaff.orElse(null);
             boolean authenticated = !principal.getEnable2FA();
             boolean isDefault = principal!=null ? principal.isDefault() : false;
