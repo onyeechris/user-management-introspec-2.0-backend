@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +57,8 @@ public class StaffController {
 
     private final Logger log = LoggerFactory.getLogger(StaffController.class);
     static final String STAFFS = "staffs";
+    private static final String ALL_STAFF_AND_SEARCH = "staffAndSearch";
+
     static final String STAFFS_PREFERENCE = "preference/{id}";
     static final String ENROLMENT_PREFERENCE = "enrol/{id}";
     private static final String STAFFS_DOWNLOAD = "download";
@@ -342,6 +346,29 @@ public class StaffController {
     public ResponseEntity<String> updateUserStatus(@PathVariable String userId, @RequestParam("status") boolean active) {
         staffService.updateUserStatus(userId, active);
         return ResponseEntity.ok("User " + (active ? "activated" : "deactivated") + " successfully");
+    }
+    @GetMapping(ALL_STAFF_AND_SEARCH)
+    public ResponseEntity<ResponseWrapper> getAllStaffAndSearch(
+            @RequestHeader(value = "Module", required = true) String mdl,
+            @RequestParam(value = "username", required = false) String username,
+            Pageable pageable) throws ServletRequestBindingException {
+
+        log.debug("REST request to get staff with Module: {}", mdl);
+
+        Page<StaffDTO> page = new PageImpl<>(Collections.emptyList(), pageable, 0);
+
+        Optional<Module> module = this.moduleRepository.findById(mdl);
+
+        if (username != null) {
+            StaffService service = appCtx.getBean(env.getProperty("introspecsso.backend"), StaffService.class);
+            List<StaffDTO> staffDTOs = service.wildcardSearch(username);
+            if (!staffDTOs.isEmpty()) {
+                page = new PageImpl<>(staffDTOs, pageable, staffDTOs.size());
+            }
+        } else {
+            page = staffService.findAll(pageable);
+        }
+        return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
 
 }
