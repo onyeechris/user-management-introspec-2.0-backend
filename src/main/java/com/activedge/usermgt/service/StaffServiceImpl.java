@@ -426,7 +426,7 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(readOnly = true)
     public Page<StaffDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Staff");
-        return staffRepository.findAllByActiveTrue(pageable)
+        return staffRepository.findAll(pageable)
             .map(staffMapper::toDto);
     }
 

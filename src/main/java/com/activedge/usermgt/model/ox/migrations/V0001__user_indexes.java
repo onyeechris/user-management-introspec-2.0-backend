@@ -50,7 +50,7 @@ public class V0001__user_indexes implements Migration {
                 .add("activated", true)
                 .add("authorities", user_authorities)
                 .add("is_2fa_enabled", false)
-                .add("status", true)
+                .add("active", true)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -66,7 +66,7 @@ public class V0001__user_indexes implements Migration {
                 .add("activated", true)
                 .add("authorities", user_authorities)
                 .add("is_2fa_enabled", false)
-                .add("status", true)
+                .add("active", true)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -82,7 +82,7 @@ public class V0001__user_indexes implements Migration {
                 .add("activated", true)
                 .add("authorities", admin_authorities)
                 .add("is_2fa_enabled", false)
-                .add("status", true)
+                .add("active", true)
                 .get());
 
         db.getCollection("staff").insert(BasicDBObjectBuilder
@@ -98,7 +98,7 @@ public class V0001__user_indexes implements Migration {
                 .add("activated", true)
                 .add("authorities", sysdev_authorities)
                 .add("is_2fa_enabled", false)
-                .add("status", true)
+                .add("active", true)
                 .get());
 
     }
