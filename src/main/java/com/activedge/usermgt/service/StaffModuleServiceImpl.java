@@ -4,6 +4,10 @@ import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.model.mapper.StaffMapper;
+import com.activedge.usermgt.exception.ExceptionParser;
+import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.StaffModule;
+import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.model.mapper.StaffModuleMapper;
 import com.activedge.usermgt.repository.StaffModuleRepository;
 import com.activedge.usermgt.repository.StaffRepository;
@@ -15,8 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing StaffModule.
@@ -59,7 +66,8 @@ public class StaffModuleServiceImpl implements StaffModuleService {
 
     @Override
     public StaffModuleDTO save(StaffModuleDTO staffModuleDTO) {
-        log.info("Request to save StaffModule: {}", staffModuleDTO);
+        log.info("Request to save StaffModule : {}", staffModuleDTO);
+
         StaffModule staffModule = staffModuleMapper.toEntity(staffModuleDTO);
         Staff staff = staffRepository.findByUsername(staffModuleDTO.getStaff().getUsername()).orElse(null);
         log.info("staff module staff {}",staff);
@@ -99,6 +107,30 @@ public class StaffModuleServiceImpl implements StaffModuleService {
             String eml = x.getStaff().getEmail() == null ? "" : x.getStaff().getEmail();
             String usn = x.getStaff().getUsername() == null ? "" : x.getStaff().getUsername();
             return eml.equalsIgnoreCase(email) || usn.equalsIgnoreCase(email);
+        });
+    }
+
+    @Override
+    public List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable) {
+        List<StaffModule> staffModules = staffModuleRepository.findAllByModule_IdAndStaff(module, findStaffByUsername(username), pageable);
+        log.info("find all by username {}", findStaffByUsername(username));
+        log.info("staff module {}", staffModules);
+        return staffModules.stream()
+                .map(staffModuleMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private Staff findStaffByUsername(String username){
+        return staffRepository.findByUsername(username).orElse(null);
+    }
+    //update last login
+    @Override
+    public void updateLastLogin(String username) {
+        log.debug("Request to get Staff : {}", username);
+        Optional<Staff> byId = staffRepository.findByUsername(username);
+        byId.ifPresent(staff -> {
+            staff.setLastLogin(LocalDateTime.now());
+            staffRepository.save(staff);
         });
     }
 

@@ -10,6 +10,7 @@ import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.GroupService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/")
+@SecurityRequirement(name = "introspec-sso")
 public class GroupController extends BaseEntity {
 
     private final Logger log = LoggerFactory.getLogger(GroupController.class);

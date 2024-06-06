@@ -28,6 +28,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,7 @@ import static com.activedge.usermgt.config.Constants.TOKEN_PREFIX;
 @RestController
 @RequestMapping("/auth")
 @SecurityRequirement(name = "introspec-cas")
+@SecurityRequirement(name = "introspec-sso")
 public class UserJWTController {
 
     @Autowired

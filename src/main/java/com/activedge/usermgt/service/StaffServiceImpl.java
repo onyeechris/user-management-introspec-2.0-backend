@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,7 @@ public class StaffServiceImpl implements StaffService {
             s.setEmail(staff.getEmail() == null ? s.getEmail() : staff.getEmail());
             s.setPassword(staff.getPassword() == null ? s.getPassword() : encoder.encode(staff.getPassword()));
             s.setHireDate(staff.getHireDate() == null ? s.getHireDate() : staff.getHireDate());
+            s.setLastLogin(staff.getLastLogin() == null ? s.getLastLogin() : staff.getLastLogin());
             if(staff.getType() == null) {
                 s.setType(s.getType());
                 s.setAuthorities(s.getAuthorities());
@@ -382,12 +384,9 @@ public class StaffServiceImpl implements StaffService {
     }
 
     public String resetPassword(String email, String newPassword, String confirmPassword) {
-        // Check if passwords match
         if (!newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("New password and confirm password do not match");
         }
-
-        // Retrieve staff by email
         Staff staff = staffRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Staff not found with this email: " + email));
 
@@ -428,6 +427,45 @@ public class StaffServiceImpl implements StaffService {
         log.debug("Request to get all Staff");
         return staffRepository.findAll(pageable)
             .map(staffMapper::toDto);
+    }
+
+    @Override
+    public Page<StaffDTO> findAllStaff(Pageable pageable, String mdl) {
+        log.debug("Request to get all Staff");
+
+        List<StaffDTO> staffDTOList = new ArrayList<>();
+
+        staffRepository.findAll().forEach(staff -> {
+            // For each staff member, fetch their group names
+            Set<String> groupNames = new HashSet<>();
+            groupRepository.findAllByModule_IdAndStaffsContains(mdl,staff).forEach(group -> groupNames.add(group.getName()));
+//            System.out.printf("staffID %s groupNames %s",staff.getId(), groupNames).println();
+            StaffDTO staffDTO = staffMapper.toDto(staff);
+            staffDTO.setGroupNames(groupNames);
+
+            staffDTOList.add(staffDTO);
+        });
+
+        return new PageImpl<>(staffDTOList, pageable, staffDTOList.size());
+    }
+
+    @Override
+    public List<StaffDTO> findAllStaff(String mdl) {
+        log.debug("Request to get all Staff");
+
+        List<StaffDTO> staffDTOList = new ArrayList<>();
+
+        staffRepository.findAll().forEach(staff -> {
+            // For each staff member, fetch their group names
+            Set<String> groupNames = new HashSet<>();
+            groupRepository.findAllByModule_IdAndStaffsContains(mdl,staff).forEach(group -> groupNames.add(group.getName()));
+            StaffDTO staffDTO = staffMapper.toDto(staff);
+            staffDTO.setGroupNames(groupNames);
+
+            staffDTOList.add(staffDTO);
+        });
+
+        return staffDTOList;
     }
 
 

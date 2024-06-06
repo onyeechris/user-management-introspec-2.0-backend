@@ -5,6 +5,7 @@ import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,6 +38,9 @@ public interface StaffModuleService {
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
     boolean matchModuleAndEmail(String module, String email);
+    List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable);
+    void updateLastLogin(String id);
+
 
 
     /**

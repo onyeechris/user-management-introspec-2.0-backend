@@ -5,9 +5,11 @@ import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.StaffModule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,4 +24,8 @@ public interface StaffModuleRepository extends PagingAndSortingRepository<StaffM
     Set<StaffModule> findByModule_Id(String module);
 
     Optional<StaffModule> findByModuleAndStaff(Module module, Staff staff);
+    List<StaffModule> findByModule_IdAndStaff_Username(String module, String username);
+    List<StaffModule> findAllByModule_IdAndStaff(String module, Staff staff, Pageable pageable);
+
+
 }

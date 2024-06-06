@@ -17,4 +17,6 @@ public interface TraceRepository extends PagingAndSortingRepository<CustomHttpTr
     Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable);
     Stream<CustomHttpTrace> findByUsernameOrTimestampGreaterThanEqualOrderByTimestampDesc(String username, Date date);
     Page<CustomHttpTrace> findAllByTimestampBetween(Date from, Date to, Pageable pageable);
+    Page<CustomHttpTrace> findAllByStatusAndTimestampBetween(Integer status, Date from, Date to, Pageable pageable);
+
 }

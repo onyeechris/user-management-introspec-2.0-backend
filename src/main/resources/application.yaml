@@ -98,6 +98,7 @@ ldap:
   ou: ${introspec_sso_ldap_ou:ou=staffs}
   filter: ${introspec_sso_ldap_filter:sAMAccountName}
 
+
 management:
 #  This will trigger security on
 #  server:
