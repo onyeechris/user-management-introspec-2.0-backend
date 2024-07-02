@@ -35,7 +35,6 @@ public class NotificationService {
 
             // Send notification message
             log.info("Sending notification: {}", message);
-            // Send message to frontend or any other logic...
         } else {
             log.error("Unable to calculate expiry with grace for license {}", license.getId());
         }

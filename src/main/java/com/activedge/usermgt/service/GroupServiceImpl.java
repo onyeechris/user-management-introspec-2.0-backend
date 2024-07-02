@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -252,6 +253,33 @@ public class GroupServiceImpl implements GroupService {
         log.error("Staff member with username '{}' not found", username);
         return false; // Staff member not found
     }
+
+//    @Override
+//    public boolean updateGroupsByUsername(String username, String newGroup) {
+//        // Find the staff entity by username
+//        Optional<Staff> staffOptional = staffRepository.findByUsername(username);
+//        if (staffOptional.isPresent()) {
+//            Optional<Group> groupOptional = groupRepository.findByName(newGroup);
+//            if (groupOptional.isPresent()) {
+//                Group group = groupOptional.get();
+//                Staff staff = staffOptional.get();
+//                Set<Group> groups = new HashSet<>();
+//                groups.add(group);
+//                staff.setGroups(groups);
+//                staffRepository.save(staff);
+//                groupRepository.save(group);
+//                log.info("Staff: {}, Groups: {}", staff, group);
+//                log.info("Group saved successfully");
+//                return true; // Group updated successfully
+//            } else {
+//                log.error("New group '{}' not found", newGroup);
+//                return false; // New group not found
+//            }
+//        }
+//        log.error("Staff member with username '{}' not found", username);
+//        return false; // Staff member not found
+//    }
+
 
 }
 
