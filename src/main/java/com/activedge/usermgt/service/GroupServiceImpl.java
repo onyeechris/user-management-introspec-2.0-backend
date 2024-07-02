@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -202,6 +203,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(readOnly = true)
     public Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable) {
         return groupRepository.findByName(name, module, pageable).map(groupMapper::toDto);
+    }
+
+    @Override
+    public List<Group> findByModuleIdAndStaffId(String moduleId, String staffId) {
+        return groupRepository.findByModuleIdAndStaffsContainsStaffId(moduleId, staffId);
     }
 
     @Transactional(readOnly = true)

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -45,4 +46,6 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Group
     List<Group> findAllByStaffsContaining( Staff staff);
 
     Page<Group> findByName(String name, String module, Pageable pageable);
+    @org.springframework.data.mongodb.repository.Query("{ 'module.$id': ?0, 'staffs.$id': ObjectId(?1) }")
+    List<Group> findByModuleIdAndStaffsContainsStaffId(String moduleId, String staffId);
 }
