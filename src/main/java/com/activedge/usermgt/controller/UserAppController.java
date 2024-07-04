@@ -3,6 +3,7 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
@@ -65,6 +66,10 @@ public class UserAppController {
     @PostMapping("/"+ENTITY_NAME)
     public ResponseEntity<StaffModuleDTO> createStaffModule(@RequestHeader(value = "Module", required = true) String mdl, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors) throws URISyntaxException, ServletRequestBindingException {
         log.debug("REST request to save {} : {}", ENTITY_NAME, staffModuleDTO);
+        //Check if users id already exists in any module
+        List<StaffModule> byModuleAndStaffId = staffModuleService.findByModuleAndStaffId(mdl, staffModuleDTO.getStaff().getId());
+        if(byModuleAndStaffId.size()>0)
+            throw new ValidationException("Staff already assigned to a staff Module");
 
         if (errors.hasErrors()) {
             log.error("Error in creating new staffModule detected...\n{}", errors.getAllErrors());

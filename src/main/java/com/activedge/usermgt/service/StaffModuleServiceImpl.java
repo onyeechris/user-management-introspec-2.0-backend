@@ -1,7 +1,6 @@
 package com.activedge.usermgt.service;
 
-import com.activedge.usermgt.model.Staff;
-import com.activedge.usermgt.model.StaffModule;
+import com.activedge.usermgt.model.*;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.exception.ExceptionParser;
@@ -160,6 +159,11 @@ public class StaffModuleServiceImpl implements StaffModuleService {
         log.debug("Request to get StaffModule : {}", id);
         return staffModuleRepository.findById(id)
             .map(staffModuleMapper::toDto);
+    }
+
+    @Override
+    public List<StaffModule> findByModuleAndStaffId(String module_Id, String staffId) {
+        return staffModuleRepository.findByModule_IdAndStaff_Id(module_Id, staffId);
     }
 
     /**
