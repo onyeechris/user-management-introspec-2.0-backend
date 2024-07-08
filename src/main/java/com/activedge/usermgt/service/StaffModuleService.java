@@ -1,6 +1,8 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +52,8 @@ public interface StaffModuleService {
      * @return the entity
      */
     Optional<StaffModuleDTO> findOne(String id);
+
+    List<StaffModule> findByModuleAndStaffId(String module_Id, String staffId);
 
     /**
      * Delete the "id" staffModule.
