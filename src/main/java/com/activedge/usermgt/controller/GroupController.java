@@ -9,12 +9,14 @@ import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
+import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.GroupService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -122,6 +124,34 @@ public class GroupController extends BaseEntity {
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+
+    /**
+     * PUT  /groups/reassign/groupName : reassigns and updates user to existing group.
+     *
+     * @param staffModuleDTO the staffModule  to reassign
+     * @param groupName value of group name you intend to add the staff
+     * @return the ResponseEntity with status 200 (OK) and with body the updated groupDTO,
+     * or with status 400 (Bad Request) if the staffDto is not valid
+     * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @PutMapping("/"+ENTITY_NAME+"/reassign/{groupName}")
+    public ResponseEntity<GroupDTO> reassignGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody StaffModuleDTO staffModuleDTO, Errors errors, @PathVariable String groupName) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+        log.debug("REST request to update StaffModule : {}", staffModuleDTO);
+
+        if (errors.hasErrors() || staffModuleDTO.getId() == null) {
+            log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
+            throw new ValidationException(errors.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(",")));
+        }
+        GroupDTO result = groupService.reassignStaffGroup(groupName, staffModuleDTO);
+
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, result.getId()))
+                .body(result);
+    }
+
 
     /**
      * GET  /groups : get all the groups.
