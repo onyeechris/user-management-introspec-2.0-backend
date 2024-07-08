@@ -92,17 +92,18 @@ public class AuditController {
         String formattedFrom = dateFormatter.format(from);
         String formattedTo = dateFormatter.format(to);
 
-        String filename = String.format("attachment; filename=%s_%s_to_%s.xlsx", FILENAME, formattedFrom, formattedTo);
+        String filename = String.format("AuditLogs_%s_to_%s.xlsx", formattedFrom, formattedTo);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/octet-stream");
-        headers.add("Content-Disposition", filename);
+        headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .body(new InputStreamResource(in));
     }
+
 
 
     /**
