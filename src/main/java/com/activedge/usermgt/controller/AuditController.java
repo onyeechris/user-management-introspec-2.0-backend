@@ -2,6 +2,11 @@ package com.activedge.usermgt.controller;
 
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.service.TraceService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.dto.CustomHttpTraceDTO;
 import com.activedge.usermgt.service.TraceService;
@@ -22,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,6 +42,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(AuditController.AUDIT_CONTROLLER)
 @RequiredArgsConstructor
+@SecurityRequirement(name = "introspec-sso")
 public class AuditController {
 
     static final String AUDIT_CONTROLLER = "audit";
@@ -59,6 +67,7 @@ public class AuditController {
             @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_PAGE_SIZE)
             @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) {
+
         return new ResponseEntity<>(new ResponseWrapper(traceService.findAll(from, to, pageable)), HttpStatus.OK);
     }
 
@@ -69,27 +78,33 @@ public class AuditController {
      * @return the ResponseEntity of http traces
      */
     @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
-    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByDateRangeExcel(
+    public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByStatusExcel(
+            @RequestParam(name = "status", required = false) Integer status,
             @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
             @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
-            @SortDefault.SortDefaults({@SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)}) Pageable pageable) throws IOException {
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
+            }) Pageable pageable) throws IOException {
 
-        ByteArrayInputStream in = ExcelGenerator.generateAuditLogs(traceService.findAll(from, to, pageable));
+        ByteArrayInputStream in = traceService.getAudit(status, from, to);
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedFrom = dateFormatter.format(from);
+        String formattedTo = dateFormatter.format(to);
 
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
-        String currentDateTime = dateFormatter.format(new Date());
+        String filename = String.format("AuditLogs_%s_to_%s.xlsx", formattedFrom, formattedTo);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/octet-stream");
-        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
+        headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .body(new InputStreamResource(in));
-
     }
+
+
 
     /**
      * GET all Http trace logs by status.

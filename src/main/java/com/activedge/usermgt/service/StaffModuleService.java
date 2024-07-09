@@ -1,10 +1,13 @@
 package com.activedge.usermgt.service;
 
 
+import com.activedge.usermgt.model.Module;
+import com.activedge.usermgt.model.StaffModule;
 import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,6 +40,9 @@ public interface StaffModuleService {
     Page<StaffModuleDTO> findAllByModule(String module, Pageable pageable);
 
     boolean matchModuleAndEmail(String module, String email);
+    List<StaffModuleDTO> wildcardSearchModule(String module, String username, Pageable pageable);
+    void updateLastLogin(String id);
+
 
 
     /**
@@ -46,6 +52,8 @@ public interface StaffModuleService {
      * @return the entity
      */
     Optional<StaffModuleDTO> findOne(String id);
+
+    List<StaffModule> findByModuleAndStaffId(String module_Id, String staffId);
 
     /**
      * Delete the "id" staffModule.

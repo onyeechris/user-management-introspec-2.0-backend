@@ -1,7 +1,10 @@
 package com.activedge.usermgt.service;
 
+import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.repository.TraceRepository;
+import io.vavr.Function1;
+import io.vavr.Function4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
+
 import java.util.Date;
-import java.util.List;
+
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 
 /**
  * Service Implementation for managing Trace.
@@ -41,10 +47,30 @@ public class TraceServiceImpl implements TraceService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<CustomHttpTrace> findAllByStatusAndDateRange(Integer status, Date from, Date to, Pageable pageable) {
+        return traceRepository.findAllByStatusAndTimestampBetween(status, from, to, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<CustomHttpTrace> findAllByStatus(Integer status, Pageable pageable) {
         log.debug("Request to get all Trace by status");
         return traceRepository.findAllByStatus(status, pageable);
     }
+
+    public Function4<Integer, Date, Date, Pageable, Page<CustomHttpTrace>> fetchAuditLogs = this::getAuditLogs;
+
+    private Page<CustomHttpTrace> getAuditLogs(Integer status, Date from, Date to, Pageable pageable) {
+        if(status != null) {
+            return traceRepository.findAllByStatusAndTimestampBetween(status, from, to, pageable);
+        }
+        return traceRepository.findAllByTimestampBetween(from, to, pageable);
+    }
+    public ByteArrayInputStream getAudit(Integer status, Date from, Date to) throws IOException {
+        Function1<Pageable, Page<CustomHttpTrace>> partialFunction = fetchAuditLogs.apply(status, from, to);
+       return ExcelGenerator.generateAuditLogs(partialFunction);
+    }
+
     @Override
     public Optional<CustomHttpTrace> searchAuditLogsByUsernameOrDate(String username, String dateStr) {
         log.debug("Request to search username or date");

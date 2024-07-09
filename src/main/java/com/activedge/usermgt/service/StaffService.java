@@ -18,6 +18,7 @@ import java.util.Optional;
  */
 public interface StaffService {
 
+
     /**
      * Save a staff.
      *
@@ -25,6 +26,7 @@ public interface StaffService {
      * @return the persisted entity
      */
     StaffDTO save(StaffDTO staffDTO) throws ActivityRequiredException, NotFoundException;
+
 
     /**
      *
@@ -59,6 +61,9 @@ public interface StaffService {
      * @return the list of entities
      */
     Page<StaffDTO> findAll(Pageable pageable);
+    Page<StaffDTO> findAllStaff(Pageable pageable, String mdl);
+    List<StaffDTO> findAllStaff(String mdl);
+
 
 
     /**

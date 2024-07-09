@@ -5,11 +5,13 @@ import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.PaginationUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.exception.ActivityRequiredException;
+import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.service.GroupService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/")
+@SecurityRequirement(name = "introspec-sso")
 public class GroupController extends BaseEntity {
 
     private final Logger log = LoggerFactory.getLogger(GroupController.class);
@@ -94,10 +98,16 @@ public class GroupController extends BaseEntity {
      * or with status 500 (Internal Server Error) if the groupDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/"+ENTITY_NAME+"/{flag:[0|1]}")
-    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors, @PathVariable int flag) throws URISyntaxException, NotFoundException, ActivityRequiredException {
+    @PutMapping(value = {"/"+ENTITY_NAME+"/{flag:[0|1]}","/"+ENTITY_NAME+"/{flag:[0|1]}/{staffId}"})
+    public ResponseEntity<GroupDTO> updateGroups(@RequestHeader(value = "Module", required = true) String module, @Valid @RequestBody GroupDTO groupDTO, Errors errors, @PathVariable int flag, @PathVariable(required = false) String staffId) throws URISyntaxException, NotFoundException, ActivityRequiredException {
         log.debug("REST request to update {} : {}", ENTITY_NAME, groupDTO);
-
+        if(staffId != null) {
+            List<Group> byModuleIdAndStaffId = groupService.findByModuleIdAndStaffId(module, staffId);
+            System.out.println(byModuleIdAndStaffId.toString());
+            if (byModuleIdAndStaffId.size() > 0) {
+                throw new ValidationException(String.format("User already assigned to %s in this group Module", byModuleIdAndStaffId.get(0).getName()));
+            }
+        }
         if (errors.hasErrors() || groupDTO.getId() == null) {
             log.error("Error in creating new {} detected...\n{}", ENTITY_NAME, errors.getAllErrors());
             throw new ValidationException(errors.getAllErrors().stream()

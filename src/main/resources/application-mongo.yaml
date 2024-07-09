@@ -6,5 +6,6 @@ spring:
       repositories:
         enabled: false
     mongodb:
-      uri: ${introspec_sso_mongo_uri:mongodb+srv://doadmin:0s3cAM6O17259TXf@aetdevops-mongodb-27b4e102.mongo.ondigitalocean.com/usermgt1?tls=true&authSource=admin&replicaSet=aetdevops-mongodb}
+      uri: ${introspec_sso_mongo_uri:mongodb://localhost:27017/usermgt2}
+#      uri: ${introspec_sso_mongo_uri:mongodb+srv://doadmin:*****@aetdevops-mongodb-27b4e102.mongo.ondigitalocean.com/settlement?tls=true&authSource=admin&replicaSet=aetdevops-mongodb
 #      uri: ${introspec_sso_mongo_uri:mongodb+srv://doadmin:CH30N75q4l928Bid@mongodb-cluster-a6d7af7e.mongo.ondigitalocean.com/usermgt?tls=true&authSource=admin&replicaSet=mongodb-cluster}
