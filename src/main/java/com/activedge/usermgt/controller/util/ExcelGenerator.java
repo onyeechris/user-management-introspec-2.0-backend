@@ -94,7 +94,7 @@ public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> au
     }
 }
     public static ByteArrayInputStream generateAuditLogs(Function1<Pageable, Page<CustomHttpTrace>> partialFunction) throws IOException {
-        String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Value", "Severity"};
+        String[] COLUMNs = {"Description", "Username", "Datetime", "Maker_IP", "Activity", "User/Product Affected", "Severity"};
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(COLUMNs))) {
 
@@ -108,11 +108,10 @@ public static ByteArrayInputStream generateAuditLogsCSV(Page<CustomHttpTrace> au
                     csvPrinter.printRecord(
                             getDescriptionForMethod(auditLog.getMethod()), // Adjust this method to return a description
                             auditLog.getUsername(),
-                            dateFormat.format(auditLog.getTimestamp().getTime()),
+                            dateFormat.format(auditLog.getTimestamp()),
                             auditLog.getSourceIp(),
                             auditLog.getQueryParams(),
                             auditLog.getPath(),
-                            auditLog.getPayload(),
                             auditLog.getSeverity().name()
                     );
                 }
