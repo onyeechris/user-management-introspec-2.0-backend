@@ -193,12 +193,6 @@
 					<artifactId>junit</artifactId>
 				</exclusion>
 			</exclusions>
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>junit</groupId>-->
-<!--					<artifactId>junit</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
