@@ -80,28 +80,31 @@ public class AuditController {
     @GetMapping(AUDIT_CONTROLLER_DOWNLOAD)
     public ResponseEntity<InputStreamResource> getAllCustomHttpTracesByStatusExcel(
             @RequestParam(name = "status", required = false) Integer status,
-            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+            @RequestParam(required = false, defaultValue = THREE_DAYS_AGO) @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+            @RequestParam(required = false, defaultValue = NOW) @DateTimeFormat(pattern = "yyyy-MM-dd") Date to,
             @PageableDefault(size = DEFAULT_DOWNLOAD_PAGE_SIZE)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
             }) Pageable pageable) throws IOException {
 
-//        ByteArrayInputStream in = ExcelGenerator.generateAuditLogsCSV(status == null? traceService.findAll(from, to, pageable) : traceService.findAllByStatusAndDateRange(status,from, to, pageable));
         ByteArrayInputStream in = traceService.getAudit(status, from, to);
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss");
-        String currentDateTime = dateFormatter.format(new Date());
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedFrom = dateFormatter.format(from);
+        String formattedTo = dateFormatter.format(to);
+
+        String filename = String.format("AuditLogs_%s_to_%s.xlsx", formattedFrom, formattedTo);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/octet-stream");
-        headers.add("Content-Disposition", "attachment; filename=" + FILENAME + currentDateTime + ".xlsx");
+        headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .body(new InputStreamResource(in));
-
     }
+
+
 
     /**
      * GET all Http trace logs by status.
