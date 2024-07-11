@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.DigestException;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -30,6 +31,8 @@ public abstract class EncryptionUtils {
         //System.out.println(decryptedText);
         return decryptedText;
     }
+
+
 
     /**
      * Generates a key and an initialization vector (IV) with the given salt and password.

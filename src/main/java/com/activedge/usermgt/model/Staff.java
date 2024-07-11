@@ -90,7 +90,7 @@ public class Staff extends AbstractAuditingEntity<String> implements Serializabl
     private Boolean default2FA = false;
     private Boolean enrol = false;
     private String secret;
-
+    private boolean passwordChangeRequired;
     @Column(name = "last_login")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime lastLogin;

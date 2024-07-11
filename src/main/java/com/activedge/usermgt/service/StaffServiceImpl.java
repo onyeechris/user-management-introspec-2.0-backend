@@ -195,6 +195,7 @@ public class StaffServiceImpl implements StaffService {
 
 
         staff.setAuthorities(authorities);
+        staff.setPasswordChangeRequired(staffDTO.isPasswordChangeRequired());
         staff.setPassword(encoder.encode(staff.getPassword()));
         staff.setActivated(true);
 

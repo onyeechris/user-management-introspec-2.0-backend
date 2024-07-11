@@ -3,13 +3,16 @@ package com.activedge.usermgt.controller;
 import com.activedge.usermgt.controller.util.ExcelGenerator;
 import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
+import com.activedge.usermgt.model.ChangePasswordRequest;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.ResetPasswordRequest;
+import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
+import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,6 +85,8 @@ public class StaffController {
     @Autowired
     @Qualifier("db")
     private StaffService staffService;
+    @Autowired
+    private StaffRepository staffRepository;
 
     @Autowired
     @Qualifier("ldap")
@@ -124,12 +129,15 @@ public class StaffController {
 
         staffDTO.setId(null);
         staffDTO.setActive(true);
+        staffDTO.setPasswordChangeRequired(true); // Set flag to true for new users
+
         StaffDTO result = staffService.save(staffDTO);
 
         return ResponseEntity.created(new URI("/api/staff/" + result.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert("staff", result.getId().toString()))
                 .body(result);
     }
+
 
 
 
@@ -379,4 +387,25 @@ public class StaffController {
 
         return new ResponseEntity<>(new ResponseWrapper(page), HttpStatus.OK);
     }
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) throws Exception {
+        if (!changePasswordRequest.isPasswordValid()) {
+            return ResponseEntity.status(400).body("Password does not meet the policy requirements");
+        }
+
+        Optional<StaffDTO> findStaff = staffService.findByUsername(changePasswordRequest.getUsername());
+        if (!findStaff.isPresent()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        Staff staff = staffRepository.findById(findStaff.get().getId())
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        staff.setPasswordChangeRequired(false);
+        staffRepository.save(staff);
+
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
+
 }
