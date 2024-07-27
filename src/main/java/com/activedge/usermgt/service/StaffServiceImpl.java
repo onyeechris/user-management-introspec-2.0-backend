@@ -9,6 +9,7 @@ import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.dto.UserStatusResponse;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
@@ -404,10 +405,13 @@ public class StaffServiceImpl implements StaffService {
 
 
     @Override
-    public void updateUserStatus(String userId, boolean active) {
+    public UserStatusResponse updateUserStatus(String userId, boolean active) {
         Staff staff = staffRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Staff not found"));
         staff.setActive(active);
         staffRepository.save(staff);
+        String message = "User " + (active ? "activated" : "deactivated") + " successfully";
+        LocalDateTime timestamp = LocalDateTime.now();
+        return new UserStatusResponse(userId, active, message, timestamp);
     }
 
     @Override
