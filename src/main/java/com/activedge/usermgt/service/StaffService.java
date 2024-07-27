@@ -5,6 +5,7 @@ import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.exception.UnauthorizedException;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.dto.UserStatusResponse;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -91,6 +92,6 @@ public interface StaffService {
     String resetPassword(String email, String newPassword, String confirmPassword);
 
 
-    void updateUserStatus(String userId, boolean active);
+    UserStatusResponse updateUserStatus(String userId, boolean active);
     boolean isUsernameOrEmailDuplicate(String username, String email);
 }
