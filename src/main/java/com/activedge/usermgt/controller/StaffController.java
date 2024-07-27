@@ -5,10 +5,8 @@ import com.activedge.usermgt.controller.util.HeaderUtil;
 import com.activedge.usermgt.controller.util.ResponseWrapper;
 import com.activedge.usermgt.model.Module;
 import com.activedge.usermgt.model.ResetPasswordRequest;
+import com.activedge.usermgt.model.dto.*;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
-import com.activedge.usermgt.model.dto.PasswordRequest;
-import com.activedge.usermgt.model.dto.NewStaffDTO;
-import com.activedge.usermgt.model.dto.StaffDTO;
 import com.activedge.usermgt.repository.ModuleRepository;
 import com.activedge.usermgt.security.SecurityUtils;
 import com.activedge.usermgt.service.StaffService;
@@ -350,9 +348,9 @@ public class StaffController {
     }
 
     @PutMapping("/{userId}/activate-deactivate")
-    public ResponseEntity<String> updateUserStatus(@PathVariable String userId, @RequestParam("status") boolean active) {
-        staffService.updateUserStatus(userId, active);
-        return ResponseEntity.ok("User " + (active ? "activated" : "deactivated") + " successfully");
+    public ResponseEntity<UserStatusResponse> updateUserStatus(@PathVariable String userId, @RequestParam("status") boolean active) {
+        UserStatusResponse response = staffService.updateUserStatus(userId, active);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(ALL_STAFF_AND_SEARCH)
