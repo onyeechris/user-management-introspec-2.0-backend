@@ -6,6 +6,7 @@ import com.activedge.usermgt.model.LdapUser;
 import com.activedge.usermgt.model.Staff;
 import com.activedge.usermgt.model.dto.NewStaffDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.dto.UserStatusResponse;
 import com.activedge.usermgt.model.enumeration.Type;
 import com.activedge.usermgt.repository.LdapRepository;
 import com.activedge.usermgt.service.adapter.StaffDTOAdapter;
@@ -131,7 +132,10 @@ public class LdapService implements StaffService {
 
 
     @Override
-    public void updateUserStatus(String userId, boolean active) {
+    public UserStatusResponse updateUserStatus(String userId, boolean active) {
+        return null;
+    }
+    {
 
     }
 

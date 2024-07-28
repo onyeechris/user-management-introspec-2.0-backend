@@ -64,6 +64,7 @@ public class StaffDTO implements Serializable {
     private String enroll;
     private String secret;
     private boolean active;
+    private boolean passwordChangeRequired;
     private Set<String> groupNames = new HashSet<>();
 
     public StaffDTO(@NotNull(message = "Staff firstname is required") @Size(max = 50) String first_name, String last_name, @Size(min = 3, message = "Username length too short.") String username, @NotNull(message = "Staff email address is required.") @Email(message = "Please enter a correct email address") String email, Type user_type) {

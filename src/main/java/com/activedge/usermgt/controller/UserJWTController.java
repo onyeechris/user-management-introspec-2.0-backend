@@ -1,5 +1,6 @@
 package com.activedge.usermgt.controller;
 
+import com.activedge.usermgt.model.ChangePasswordRequest;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
@@ -30,6 +31,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,20 +67,12 @@ public class UserJWTController {
 
     @Autowired
     private Queue queue;
-//    @Autowired
-//    private GoogleAuthenticator gAuth;
+
     private static final String TITLE = "Introspec-CAS";
 
     private static long starttime;
     private static long endtime;
-//    @Autowired
-//    private QrDataFactory qrDataFactory;
-//
-//    @Autowired
-//    private QrGenerator qrGenerator;
-//
-//    @Autowired
-//    private CodeVerifier verifier;
+
     @Autowired
     @Qualifier("db")
     private StaffService staffService;
@@ -101,15 +95,20 @@ public class UserJWTController {
      * @return the ResponseEntity with status 200 (OK) and with body the modulesDTO, or with status 404 (Not Found)
      */
     @PostMapping
-    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Module", required = false) String module, HttpServletRequest req, BindingResult result) throws Exception {
-        starttime = System.currentTimeMillis();
+    public ResponseEntity<?> authenticate(
+            @Valid @RequestBody LoginRequest loginRequest,
+            @RequestHeader(value = "Module", required = false) String module,
+            HttpServletRequest req,
+            BindingResult result) throws Exception {
+
+        long starttime = System.currentTimeMillis();
         String jwt;
 
         loginRequest.setUsername(EncryptionUtils.decrypt(loginRequest.getUsername(), System.getProperty(PASSWORD_ENCRYPTION_KEY)).toLowerCase());
         loginRequest.setPassword(EncryptionUtils.decrypt(loginRequest.getPassword(), System.getProperty(PASSWORD_ENCRYPTION_KEY)));
 
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
-        if(errorMap != null) return errorMap;
+        if (errorMap != null) return errorMap;
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -120,28 +119,28 @@ public class UserJWTController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // check if user belongs to the specified App before generating token
-        if(staffModuleService.matchModuleAndEmail(module, loginRequest.username)) {
-            Optional<Staff> findStaff = staffRepository.findByUsernameAndActiveIsTrue(loginRequest.username);
+        if (staffModuleService.matchModuleAndEmail(module, loginRequest.getUsername())) {
+            Optional<Staff> findStaff = staffRepository.findByUsernameAndActiveIsTrue(loginRequest.getUsername());
             if (!findStaff.isPresent()) {
                 return ResponseEntity.status(404).body("User not found or not active");
             }
+
             Staff principal = findStaff.orElse(null);
             boolean authenticated = !principal.getEnable2FA();
-            boolean isDefault = principal!=null ? principal.isDefault() : false;
+            boolean isDefault = principal != null && principal.isDefault();
             boolean enrolled = principal.getEnrol();
-            String userId = principal!=null ? principal.getId() : "";
-//            System.out.println("login module>>> "+module);
+            String userId = principal != null ? principal.getId() : "";
+
             jwt = TOKEN_PREFIX + tokenProvider.getJwtToken(authentication, module, authenticated, enrolled, userId, isDefault);
 
-            // log successful login
             audit(req, authentication);
+
+            return ResponseEntity.ok(new JWTResponse(true, jwt));
         } else {
             throw new NotSupportedException("User account not supported in the specified App: " + module);
         }
-
-        return ResponseEntity.ok(new JWTResponse(true, jwt));
     }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email){
         return new ResponseEntity<>(staffService.forgotPassword(email), HttpStatus.OK);
@@ -317,7 +316,6 @@ public class UserJWTController {
          */
         @NotBlank(message = "Password cannot be blank")
         private String password;
-//        private boolean is2FaEnabled;
 
     }
 
@@ -334,13 +332,6 @@ public class UserJWTController {
         private String filter;
     }
 
-//    @Getter
-//    @Setter
-//    @NoArgsConstructor
-//    private static class QRCodeRequest {
-//        private String code;
-//        private String username;
-//        private String password;
-//    }
+
 
 }
