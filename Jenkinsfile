@@ -54,18 +54,25 @@ pipeline {
     //     }
     //   }
     // }
-    stage('Push API Image') {
-      steps { 
-        script { 
-          docker.withRegistry( '', registryCredential ) { // empty registry '' defaults to dockerhub
-            umsDockerImage.push()
-          }
-        } 
+        stage('Push Docker Image') {
+      steps {
+        script {
+          sh "docker push ${apiRegistry}:${tagPrefix}${BUILD_NUMBER}"
+        }
       }
     }
+    // stage('Push API Image') {
+    //   steps { 
+    //     script { 
+    //       docker.withRegistry( '', registryCredential ) { // empty registry '' defaults to dockerhub
+    //         umsDockerImage.push()
+    //       }
+    //     } 
+    //   }
+    // }
     stage('HOUSE KEEPING...!') {
       steps {
-        sh "docker rmi $umsRegistry:$tagPrefix$BUILD_NUMBER"
+        sh "docker rmi $apiRegistry:$tagPrefix$BUILD_NUMBER"
       }
     } 
     stage('Cleanup github repo on Jenkins server') {
