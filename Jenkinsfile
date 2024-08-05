@@ -1,10 +1,13 @@
 pipeline { 
 
   environment {
-    registryCredential = 'AET-Docker-Credential' // Jenkins Global Credential ID
-    tagPrefix = 'dev-v'
-    umsRegistry = "activedgetechnologies/usermangement-2-0"
-    umsDockerImage = ''
+    // registryCredential = 'AET-Docker-Credential' // Jenkins Global Credential ID
+    registryCredential = 'digitalOceanRegistryCredential' // Jenkins Global Credential ID
+    tagPrefix = 'v'
+    // umsRegistry = "activedgetechnologies/usermangement-2-0"
+    apiRegistry = "registry.digitalocean.com/activedgetechnologies/usermangement-2-0"
+    apiDockerImage = ''
+    // umsDockerImage = ''
   }
 
   agent any // use available executors
@@ -28,13 +31,29 @@ pipeline {
         }
       }
     }
-    stage('Docker Build API Image') {
-      steps { 
-        script {
-          umsDockerImage = docker.build(umsRegistry + ":$tagPrefix$BUILD_NUMBER", "-f ./deployment/Dockerfile .")
+      stage('Build') {
+      steps {
+        withCredentials([
+          string(credentialsId: 'DIGITALOCEAN_ACCESS_TOKEN', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+        ]) {
+          sh "doctl auth init --access-token $DIGITALOCEAN_ACCESS_TOKEN"
         }
       }
     }
+        stage('Docker Build Images') {
+      steps {
+        script {
+          sh "docker build -t ${apiRegistry}:${tagPrefix}${BUILD_NUMBER}, -f ./deployment/Dockerfile ."
+        }
+      }
+    }
+    // stage('Docker Build API Image') {
+    //   steps { 
+    //     script {
+    //       umsDockerImage = docker.build(umsRegistry + ":$tagPrefix$BUILD_NUMBER", "-f ./deployment/Dockerfile .")
+    //     }
+    //   }
+    // }
     stage('Push API Image') {
       steps { 
         script { 
