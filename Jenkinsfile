@@ -43,7 +43,7 @@ pipeline {
         stage('Docker Build Images') {
       steps {
         script {
-          sh "docker build -t ${apiRegistry}:${tagPrefix}${BUILD_NUMBER}, -f ./deployment/Dockerfile ."
+          sh "docker build -t ${apiRegistry}:${tagPrefix}${BUILD_NUMBER}, -f deployment/Dockerfile ."
         }
       }
     }
