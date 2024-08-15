@@ -1,19 +1,18 @@
 package com.activedge.usermgt.service;
 
 import com.activedge.usermgt.exception.ActivityRequiredException;
-import com.activedge.usermgt.model.Group;
-import com.activedge.usermgt.model.GroupPK;
-import com.activedge.usermgt.model.Permission;
-import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.*;
 import com.activedge.usermgt.model.dto.GroupDTO;
 import com.activedge.usermgt.model.dto.PermissionDTO;
 import com.activedge.usermgt.model.dto.StaffDTO;
+import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import com.activedge.usermgt.model.mapper.GroupMapper;
 import com.activedge.usermgt.model.mapper.ModuleMapper;
 import com.activedge.usermgt.model.mapper.PermissionMapper;
 import com.activedge.usermgt.model.mapper.StaffMapper;
 import com.activedge.usermgt.repository.GroupRepository;
 import com.activedge.usermgt.repository.ModuleRepository;
+import com.activedge.usermgt.repository.StaffModuleRepository;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service Implementation for managing Group.
@@ -42,14 +39,16 @@ public class GroupServiceImpl implements GroupService {
     private final ModuleMapper moduleMapper;
     private final PermissionMapper permissionMapper;
     private final StaffMapper staffMapper;
+    private final StaffModuleRepository staffModuleRepository;
 
-    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper) {
+    public GroupServiceImpl(GroupRepository groupRepository, ModuleRepository moduleRepository, GroupMapper groupMapper, PermissionMapper permissionMapper, ModuleMapper moduleMapper, StaffMapper staffMapper, StaffModuleRepository staffModuleRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.permissionMapper = permissionMapper;
         this.staffMapper = staffMapper;
         this.moduleMapper = moduleMapper;
         this.moduleRepository = moduleRepository;
+        this.staffModuleRepository = staffModuleRepository;
     }
 
     /**
@@ -209,7 +208,34 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> findByModuleIdAndStaffId(String moduleId, String staffId) {
         return groupRepository.findByModuleIdAndStaffsContainsStaffId(moduleId, staffId);
     }
-
+    @Override
+    public GroupDTO reassignStaffGroup(String groupName, StaffModuleDTO staffModule) {
+        Optional<Group> byName = groupRepository.findByName(groupName);
+        Optional<StaffModule> byStaffId = staffModule == null? Optional.empty() : staffModuleRepository.findByStaff_IdAndModule_Id(staffModule.getStaff().getId(), staffModule.getModule());
+        List<Group> byModuleIdAndStaffId;
+        if(staffModule!= null) {
+            byModuleIdAndStaffId = findByModuleIdAndStaffId(staffModule.getModule(), staffModule.getStaff().getId());
+            if (byModuleIdAndStaffId.size()>0){
+                byModuleIdAndStaffId.forEach(group -> {
+                    Set<Staff> staffs = group.getStaffs();
+                    staffs.forEach(staff -> {
+                        if(Objects.equals(staff.getId(), staffModule.getStaff().getId())){
+                            log.debug("Removing staff from group... {}", group);
+                            group.removeStaff(staff);
+                            groupRepository.save(group);
+                        }
+                    });
+                });
+            }
+        }
+        if(byName.isPresent() && byStaffId.isPresent()){
+            Group group = byName.get();
+            group.getStaffs().add(staffMapper.toEntity(staffModule.getStaff()));
+            log.debug("Saving group... {}", group);
+            return groupMapper.toDto(groupRepository.save(group));
+        }
+        return null;
+    }
     @Transactional(readOnly = true)
     public Optional<Group> findById(GroupPK id) {
         return groupRepository.findOneWithEagerRelationships(id);
