@@ -4,6 +4,7 @@ import com.activedge.usermgt.model.ChangePasswordRequest;
 import com.activedge.usermgt.model.CustomHttpTrace;
 import com.activedge.usermgt.model.LdapSetting;
 import com.activedge.usermgt.model.Staff;
+import com.activedge.usermgt.model.dto.ForgetPasswordResponse;
 import com.activedge.usermgt.model.dto.PasswordRequest;
 import com.activedge.usermgt.repository.StaffRepository;
 import com.activedge.usermgt.service.JwtTokenProvider;
@@ -142,19 +143,26 @@ public class UserJWTController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email){
-        return new ResponseEntity<>(staffService.forgotPassword(email), HttpStatus.OK);
-    }
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email,@Valid @RequestBody PasswordRequest passwordRequest) {
-        String newPassword = passwordRequest.getNewPassword();
-        String confirmPassword = passwordRequest.getConfirmPassword();
-        if(!newPassword.equals(confirmPassword)){
-            return new ResponseEntity<>("Passwords and  do not match", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(staffService.resetPassword(email, newPassword, confirmPassword), HttpStatus.OK);
+    public ResponseEntity<ForgetPasswordResponse<String>> forgotPassword(@RequestParam String email) {
+        String result = staffService.forgotPassword(email);
+        ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.OK.value(), "Password reset link sent successfully", result);
+        return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<ForgetPasswordResponse<String>> resetPassword(@RequestParam String email, @Valid @RequestBody PasswordRequest passwordRequest) {
+        String newPassword = passwordRequest.getNewPassword();
+        String confirmPassword = passwordRequest.getConfirmPassword();
+
+        if (!newPassword.equals(confirmPassword)) {
+            ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.BAD_REQUEST.value(), "Passwords do not match", null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        String result = staffService.resetPassword(email, newPassword, confirmPassword);
+        ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.OK.value(), "Password reset successfully", result);
+        return ResponseEntity.ok(response);
+    }
     @PostMapping("/yek_cne")
     public String yekCne() {
         return System.getProperty("PASSWORD_ENCRYPTION_KEY");
