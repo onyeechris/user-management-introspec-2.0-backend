@@ -15,7 +15,7 @@ pipeline {
               sh "git config user.email smarta@activedgetechnologies.com"
               sh "git config user.name smartcloud2023"
               sh "cat settlement-files/user-mgt-backend.yaml"
-              sh "sed -i 's+activedgetechnologies/usermangement.*+activedgetechnologies/usermangement-2-0:dev-v${DOCKERIMAGETAG}+g' settlement-files/user-mgt-backend.yaml"
+              sh "sed -i 's+registry.digitalocean.com/activedgetechnologies/usermangement.*+registry.digitalocean.com/activedgetechnologies/usermangement-2-0:v${DOCKERIMAGETAG}+g' settlement-files/user-mgt-backend.yaml"
               sh "cat settlement-files/user-mgt-backend.yaml"
               sh "git add ."
               sh "git commit -m 'settlement-files user-mgt-backend.yaml docker images updated done by Jenkins Job: ${env.BUILD_NUMBER}'"
