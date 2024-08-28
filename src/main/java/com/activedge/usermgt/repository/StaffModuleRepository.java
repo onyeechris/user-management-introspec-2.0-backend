@@ -27,6 +27,7 @@ public interface StaffModuleRepository extends PagingAndSortingRepository<StaffM
     List<StaffModule> findByModule_IdAndStaff_Username(String module, String username);
     List<StaffModule> findAllByModule_IdAndStaff(String module, Staff staff, Pageable pageable);
     List<StaffModule> findByModule_IdAndStaff_Id(String module_Id, String staffId);
+    Optional<StaffModule> findByStaff_IdAndModule_Id(String staffId, String moduleId);
 
 
 }

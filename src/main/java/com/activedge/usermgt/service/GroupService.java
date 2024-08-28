@@ -5,6 +5,7 @@ import com.activedge.usermgt.exception.ActivityRequiredException;
 import com.activedge.usermgt.model.Group;
 import com.activedge.usermgt.model.GroupPK;
 import com.activedge.usermgt.model.dto.GroupDTO;
+import com.activedge.usermgt.model.dto.StaffModuleDTO;
 import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +68,7 @@ public interface GroupService {
      */
     Page<GroupDTO> searchGroupsByName(String name, String module, Pageable pageable);
     public List<Group> findByModuleIdAndStaffId(String moduleId, String staffId);
+    GroupDTO reassignStaffGroup(String groupName, StaffModuleDTO StaffModule);
 
 
 
