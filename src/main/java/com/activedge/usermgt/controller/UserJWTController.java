@@ -154,7 +154,6 @@ public class UserJWTController {
             @RequestParam String token,
             @Valid @RequestBody PasswordRequest passwordRequest) {
 
-        // Validate passwords
         String newPassword = passwordRequest.getNewPassword();
         String confirmPassword = passwordRequest.getConfirmPassword();
 
@@ -163,7 +162,6 @@ public class UserJWTController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Decode the token back to the email
         String email;
         try {
             byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
@@ -173,7 +171,7 @@ public class UserJWTController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Reset the password
+
         String result = staffService.resetPassword(email, newPassword,confirmPassword);
 
         ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.OK.value(), "Password reset successfully", result);

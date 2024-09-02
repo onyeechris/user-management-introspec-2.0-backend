@@ -23,13 +23,11 @@ import java.util.Base64;
             this.javaMailSender = emailSender;
         }
         public void sendSetPassword(String email, String subject) throws MessagingException {
-            // Base64 encode the email to make it URL-safe
+
             String encodedEmail = Base64.getUrlEncoder().encodeToString(email.getBytes());
 
-            // Construct the reset URL
             String resetUrl = baseUrl + "/reset-password?token=" + encodedEmail;
 
-            // Create and send the email
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
             mimeMessageHelper.setTo(email);
