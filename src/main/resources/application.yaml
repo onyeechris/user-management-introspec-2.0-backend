@@ -130,4 +130,4 @@ client:
 
 
 introspec:
-  auth_backend_url: http://localhost:9100/auth-service/auth
+  auth_backend_url: https://auth.aetdevops.com/#
