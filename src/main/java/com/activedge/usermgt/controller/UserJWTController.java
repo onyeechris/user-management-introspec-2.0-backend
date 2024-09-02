@@ -150,7 +150,7 @@ public class UserJWTController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ForgetPasswordResponse<String>> resetPassword(@RequestParam String email, @Valid @RequestBody PasswordRequest passwordRequest) {
+    public ResponseEntity<ForgetPasswordResponse<String>> resetPassword(@RequestParam String token, @Valid @RequestBody PasswordRequest passwordRequest) {
         String newPassword = passwordRequest.getNewPassword();
         String confirmPassword = passwordRequest.getConfirmPassword();
 
@@ -159,7 +159,7 @@ public class UserJWTController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        String result = staffService.resetPassword(email, newPassword, confirmPassword);
+        String result = staffService.resetPassword(token, newPassword, confirmPassword);
         ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.OK.value(), "Password reset successfully", result);
         return ResponseEntity.ok(response);
     }
