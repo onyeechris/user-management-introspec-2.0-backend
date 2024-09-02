@@ -150,7 +150,10 @@ public class UserJWTController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ForgetPasswordResponse<String>> resetPassword(@RequestParam String email, @Valid @RequestBody PasswordRequest passwordRequest) {
+    public ResponseEntity<ForgetPasswordResponse<String>> resetPassword(
+            @RequestParam String token,
+            @Valid @RequestBody PasswordRequest passwordRequest) {
+
         String newPassword = passwordRequest.getNewPassword();
         String confirmPassword = passwordRequest.getConfirmPassword();
 
@@ -159,7 +162,18 @@ public class UserJWTController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        String result = staffService.resetPassword(email, newPassword, confirmPassword);
+        String email;
+        try {
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
+            email = new String(decodedBytes);
+        } catch (IllegalArgumentException e) {
+            ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.BAD_REQUEST.value(), "Invalid token", null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+
+        String result = staffService.resetPassword(email, newPassword,confirmPassword);
+
         ForgetPasswordResponse<String> response = new ForgetPasswordResponse<>(HttpStatus.OK.value(), "Password reset successfully", result);
         return ResponseEntity.ok(response);
     }
