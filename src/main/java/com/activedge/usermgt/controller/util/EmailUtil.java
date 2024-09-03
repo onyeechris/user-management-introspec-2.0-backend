@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Base64;
 
-    @Component
+@Component
     public class EmailUtil {
         @Autowired
         private JavaMailSender javaMailSender;
@@ -21,11 +22,14 @@ import javax.mail.internet.MimeMessage;
         public EmailUtil(JavaMailSender emailSender) {
             this.javaMailSender = emailSender;
         }
-        public void sendSetPassword(String email,String subject) throws MessagingException {
-            String hashedEmail = encoder.encode(email);
-            MimeMessage mimeMessage=javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage);
-            String resetUrl = baseUrl + "/reset-password?token="+hashedEmail;
+        public void sendSetPassword(String email, String subject) throws MessagingException {
+
+            String encodedEmail = Base64.getUrlEncoder().encodeToString(email.getBytes());
+
+            String resetUrl = baseUrl + "/reset-password?token=" + encodedEmail;
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
             mimeMessageHelper.setTo(email);
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(String.format("<div><a href=\"%s\" target=\"_blank\">Click on link to set password</a></div>", resetUrl), true);
