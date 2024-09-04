@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import java.util.Optional;
@@ -42,8 +45,18 @@ public class TraceServiceImpl implements TraceService {
     @Transactional(readOnly = true)
     public Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable) {
         log.debug("Request to get all Trace");
-        return traceRepository.findAllByTimestampBetween(start, end, pageable);
+
+        LocalDate startDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate endDate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Instant startInstant = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant endInstant = endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        Date formattedStart = Date.from(startInstant);
+        Date formattedEnd = Date.from(endInstant);
+        return traceRepository.findAllByTimestampBetween(formattedStart, formattedEnd, pageable);
     }
+
 
     @Override
     @Transactional(readOnly = true)
