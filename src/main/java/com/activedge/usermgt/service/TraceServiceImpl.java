@@ -46,19 +46,14 @@ public class TraceServiceImpl implements TraceService {
     public Page<CustomHttpTrace> findAll(Date start, Date end, Pageable pageable) {
         log.debug("Request to get all Trace");
 
-        // Convert Date to LocalDate
         LocalDate startDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate endDate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        // Adjust the end date to include the entire end day
         Instant startInstant = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant endInstant = endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
-        // Convert Instant back to Date
         Date formattedStart = Date.from(startInstant);
         Date formattedEnd = Date.from(endInstant);
-
-        // Perform the repository query with the converted dates
         return traceRepository.findAllByTimestampBetween(formattedStart, formattedEnd, pageable);
     }
 
