@@ -65,6 +65,14 @@ public class V0005__permission_indexes implements Migration {
                 .add("module", new DBRef("introspec_modules", "ADMIN"))
                 .get());
 
+        db.getCollection("permissions").insert(BasicDBObjectBuilder
+                .start()
+                .add("_id", "AUTO_POST")
+                .add("action", "AUTO-POST")
+                .add("description", "Autopost endpoints")
+                .add("module", new DBRef("introspec_modules", "SETTLEMENT"))
+                .get());
+
     }
 
     @Override
