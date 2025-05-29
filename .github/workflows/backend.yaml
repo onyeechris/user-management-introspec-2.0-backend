@@ -1,0 +1,38 @@
+name: CI/CD Pipeline to DOKS with Docker Hub
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - cicd
+    paths-ignore:
+      - "README.md"
+
+jobs:
+  build-and-push:
+    name: Build Docker Image, Push to Docker Hub
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: registry.digitalocean.com/activedgetechnologies/introspec-settlement-2-0-ui
+      IMAGE_TAG: dev-${{ github.run_number }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+  
+      - name: Build and push Docker image
+        run: |
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker push $IMAGE_NAME:$IMAGE_TAG
+
+
