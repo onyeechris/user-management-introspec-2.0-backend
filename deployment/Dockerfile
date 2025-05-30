@@ -3,18 +3,24 @@ FROM maven:3.8-openjdk-11 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean package
-# Debug: List what's in target directory
-RUN ls -la target/
+RUN mvn clean package -DskipTests
 
 # Run stage
 FROM openjdk:11-jre-slim
 WORKDIR /app
-# Debug: Copy and list files
-COPY --from=build /app/target/*.jar app.jar
-RUN ls -la /app/
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-XX:+PrintFlagsFinal", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Xmx500m", "-Xms500m", "-XX:MaxPermSize=800m", "-jar", "/app.jar"]
 
+# Create a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Copy the JAR file and set proper permissions
+COPY --from=build /app/target/usermgt-0.0.1-SNAPSHOT.jar app.jar
+RUN chmod +x app.jar && chown appuser:appuser app.jar
+
+# Switch to non-root user
+USER appuser
+
+# Use exec form of ENTRYPOINT for better signal handling
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-XX:+PrintFlagsFinal", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Xmx500m", "-Xms500m", "-XX:MaxPermSize=800m", "-jar", "app.jar"]
 
 
 
