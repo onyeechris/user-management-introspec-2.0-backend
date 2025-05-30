@@ -8,21 +8,12 @@ RUN mvn clean package -DskipTests
 # Run stage
 FROM openjdk:11-jre-slim
 WORKDIR /app
-
-# Copy all target contents first
-COPY --from=build /app/target/ ./target/
-
-# Find and copy the main JAR file
-RUN find ./target -name "*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar" -exec cp {} app.jar \;
-
-# Verify the file exists
-RUN ls -la app.jar
-
+# Copy the specific JAR file (adjust the pattern as needed)
+COPY --from=build /app/target/*-SNAPSHOT.jar app.jar
+# Or try copying all JARs and renaming the main one
+# COPY --from=build /app/target/ ./target/
+# RUN cp target/*-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-XX:+PrintFlagsFinal", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Xmx500m", "-Xms500m", "-XX:MaxPermSize=800m", "-jar", "/app.jar"]
-
-
-
-
 
 
 
