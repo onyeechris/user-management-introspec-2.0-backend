@@ -19,9 +19,14 @@ RUN chmod +x app.jar && chown appuser:appuser app.jar
 # Switch to non-root user
 USER appuser
 
-# Use exec form of ENTRYPOINT for better signal handling
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-XX:+PrintFlagsFinal", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Xmx500m", "-Xms500m", "-XX:MaxPermSize=800m", "-jar", "app.jar"]
-
+# Use modern JVM options compatible with Java 11
+ENTRYPOINT ["java", \
+    "-Djava.security.egd=file:/dev/./urandom", \
+    "-XX:+UseContainerSupport", \
+    "-XX:MaxRAMPercentage=75.0", \
+    "-Xms512m", \
+    "-Xmx512m", \
+    "-jar", "app.jar"]
 
 
 
